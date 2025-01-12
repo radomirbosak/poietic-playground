@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://fhtvpa30rrel"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_2q6io"]
+[ext_resource type="Script" path="res://diagram_canvas.gd" id="2_lulh0"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_2q6io")
+
+[node name="DiagramCanvas" type="Node2D" parent="."]
+script = ExtResource("2_lulh0")
