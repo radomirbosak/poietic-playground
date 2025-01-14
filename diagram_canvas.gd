@@ -8,10 +8,13 @@ var acceleration = 400     # Acceleration rate
 var deceleration = 600     # Deceleration rate
 var velocity = Vector2.ZERO  # Current velocity of the camera
 
-# Connector tool
-var current_connector: Node2D = null
-var connector_origin: Node2D = null
+# Content
+var connections: Array[DiagramConnection] = []
 
+# Connector tool
+var dragging_connection: DiagramConnection = null
+var dragging_target: Node2D = null
+	
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	print("Diagram ready")
@@ -45,13 +48,11 @@ func _process(delta):
 	position += velocity * delta
 	
 	
-
-func object_at_position(position: Vector2):
+func object_at_position(test_position: Vector2):
 	for child in get_children():
 		if not child is DiagramNode:
 			continue
-		var child_pos = child.get_global_transform().basis_xform(child.position)
-		if child.has_point(position):
+		if child.has_point(test_position):
 			return child
 			
 	return null
@@ -67,7 +68,7 @@ func _input(event):
 
 func handle_select_input(event):
 	if event is InputEventMouseButton:
-		if event.is_action_pressed("click"):
+		if event.is_pressed():
 			var mouse_position = get_viewport().get_mouse_position()
 			print("Click at ", event.position, " mouse at ", mouse_position)
 			var new_selection = object_at_position(mouse_position)
@@ -79,74 +80,88 @@ func handle_select_input(event):
 			else:
 				selected_objects = []
 				is_dragging = false
-		elif event.is_action_released("click"):
-			print("RELEASE")
+		elif event.is_released():
+			print("Conclude move")
 			is_dragging = false
 
 	if event is InputEventMouseMotion and is_dragging:
-		
-		print("Move to: ", event.position)
 		var move_delta = event.position - drag_position
 		for object in selected_objects:
-			object.position += move_delta
+			move_diagram_node(object, object.position + move_delta)
 		drag_position = event.position
 
 
 func handle_connect_input(event: InputEvent):
-	print("Is pressed: ", event.is_pressed(), " Is action pressed: ", event.is_action_pressed("click"))
-	print("Type ", event)
 	if event is InputEventMouseButton:
 		if event.is_pressed():
 			print("initiate connect")
 			var mouse_position = get_viewport().get_mouse_position()
 			var selection = object_at_position(mouse_position)
 			if selection != null:
-				create_connector(selection)
+				create_drag_connection(selection)
 				is_dragging = true
-				print("connect initiated at ", selection)
+				print("Connect initiated at ", selection)
 			else:
 				print("Empty connect click")
 				is_dragging = false
 		elif event.is_released():
+			print("Conclude connect")
+			if dragging_connection == null:
+				push_error("Concluding connection without connection node")
+				return
 			is_dragging = false
-			if current_connector != null:
-				current_connector.free()
+			dragging_target.free()
+
+			var mouse_position = get_viewport().get_mouse_position()
+			var target = object_at_position(mouse_position)
+			if target != null:
+				add_connection(dragging_connection.origin, target)
+			dragging_connection.free()
+			dragging_connection = null
 				
 	elif event is InputEventMouseMotion and is_dragging:
 		print("Connect to: ", event.position)
-		drag_position = event.position
-		update_connector(drag_position)
+		var mouse_position = get_viewport().get_mouse_position()
+		dragging_target.position = dragging_target.get_parent().to_local(mouse_position)
+		dragging_connection.update_shape()
 
+func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
+	var children: Array[DiagramConnection] = []
+	for conn in connections:
+		if conn.origin == node or conn.target == node:
+			children.append(conn)
+	return children
 
-func create_connector(origin):
-	var connector = Node2D.new()
-	connector.name = "connector"
-	add_child(connector)
-	connector_origin = origin
-	current_connector = connector
-	update_connector(origin.position)
+func move_diagram_node(node: DiagramNode, new_position: Vector2):
+	node.position = new_position
 	
-func update_connector(target_location):
-	if connector_origin == null:
+	for connection in get_connections(node):
+		connection.update_shape()
+
+func create_drag_connection(origin):
+	if dragging_connection != null:
+		push_error("Creating drag connection when one already exists")
+	dragging_connection = DiagramConnection.new()
+	dragging_target = Node2D.new()
+	add_child(dragging_connection)
+	add_child(dragging_target)
+	dragging_target.position = origin.position
+	dragging_connection.set_connection(origin, dragging_target)
+	
+	dragging_connection.update_shape()
+
+func add_node(new_position: Vector2) -> DiagramNode:
+	var node: DiagramNode = DiagramNode.new()
+	node.set_position(new_position)
+	add_child(node)
+	return node
+
+func add_connection(origin: DiagramNode, target: DiagramNode):
+	if origin == null or target == null:
+		push_error("Trying to add a connection without origin or target")
 		return
-	if current_connector == null:
-		return
-	
-	var line = current_connector.get_node("connector_line")
-	if not line:
-		line = Line2D.new()
-		line.name = "connector_line"
-		current_connector.add_child(line)
-		
-	line.clear_points()
-	
-	line.add_point(connector_origin.position)
-	line.add_point(target_location)
-	
-
-func add_node(position: Vector2):
-	print("Adding node")
-	var scene = load("res://diagram_node.tscn")
-	var instance: DiagramNode = DiagramNode.new()
-	instance.set_position(position)
-	add_child(instance)
+	var conn = DiagramConnection.new()
+	conn.name = "diagram_connection"
+	add_child(conn)
+	conn.set_connection(origin, target)	
+	connections.append(conn)

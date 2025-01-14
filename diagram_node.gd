@@ -2,8 +2,8 @@ class_name DiagramNode extends Node2D
 
 # var sprite: Sprite2D
 var label: Label # = $Label
-@onready var sprite = $Sprite
-@onready var outline = $Outline
+# @onready var sprite = $Sprite
+# @onready var outline = $Outline
 var shape: Shape2D
 
 # Called when the node enters the scene tree for the first time.
