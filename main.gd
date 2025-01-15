@@ -21,11 +21,10 @@ func _ready():
 
 
 func _input(event):
-	if event.is_action_pressed("connect-tool"):
-		set_tool(Global.Tool.CONNECT)
-	elif event.is_action_pressed("selection-tool"):
-		set_tool(Global.Tool.SELECT)
-
+	if event.is_action_pressed("selection-tool"):
+		Global.current_tool = Global.selection_tool
+	elif event.is_action_pressed("connect-tool"):
+		Global.current_tool = Global.connect_tool
 	elif event.is_action_pressed("add-node"):
 		var mouse_position = get_viewport().get_mouse_position()
 		var new_postion = $DiagramCanvas.to_local(mouse_position)
@@ -34,28 +33,19 @@ func _input(event):
 	elif event.is_action_pressed("delete"):
 		print("Delete (not yet)")
 
-		
-
-func set_tool(tool: Global.Tool):
-	print("Use tool: ", tool)
-	Global.current_tool = tool
-	update_status_text()
-
 func _process(delta):
 	update_status_text()
 
 func update_status_text():
 	var text = "Tool: "
-	if Global.current_tool == Global.Tool.SELECT:
-		text += "select"
-	elif Global.current_tool == Global.Tool.CONNECT:
-		text += "connect"
+	var tool = Global.current_tool
+	if tool != null:
+		text += tool.tool_name()
 	else:
-		text += "(UNKNOWN TOOL)"
+		text += "(none)"
 		
 	text += " | Child count: " + str($DiagramCanvas.get_child_count())
 	$StatusText.text = text
-		
 
 func _on_window_resized():
 	var window_size = DisplayServer.window_get_size()

@@ -17,9 +17,7 @@ func _ready():
 	shape = CircleShape2D.new()
 	shape.radius = 48
 	update_children()
-	print("Node position :", self.position)
-	print("Label position:", label.position)
-	
+
 func bounding_circle_radius() -> float:
 	return shape.radius
 	
@@ -35,12 +33,6 @@ func _draw():
 func set_selected(flag: bool):
 	self.is_selected = flag
 	queue_redraw()
-	if flag:
-		# selection_highlight = ShapeNode.new()
-		# selection_highlight.shape
-		pass
-	else:
-		pass
 		
 func has_point(point: Vector2):
 	var local_point = to_local(point)
