@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://fhtvpa30rrel"]
+[gd_scene load_steps=4 format=3 uid="uid://fhtvpa30rrel"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_2q6io"]
 [ext_resource type="Script" path="res://diagram/diagram_canvas.gd" id="2_lulh0"]
+[ext_resource type="Script" path="res://help.gd" id="3_jalvu"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_2q6io")
@@ -13,3 +14,15 @@ script = ExtResource("2_lulh0")
 offset_right = 40.0
 offset_bottom = 23.0
 text = "Text"
+
+[node name="Help" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Keyboard Help:
+1 - Selection tool
+3 - Connection tool
+A - Add new node
+Backspace - Delete selection
+Shift+click - Extend selection
+H - Show/Hide this help"
+script = ExtResource("3_jalvu")

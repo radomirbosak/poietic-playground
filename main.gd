@@ -17,6 +17,10 @@ func _ready():
 			config.get_value("window", "width", 1280),
 			config.get_value("window", "height", 720)
 			)
+		if config.get_value("help", "visible", true):
+			$Help.show()
+		else:
+			$Help.hide()
 		DisplayServer.window_set_size(window_size)
 
 
@@ -25,6 +29,8 @@ func _input(event):
 		Global.current_tool = Global.selection_tool
 	elif event.is_action_pressed("connect-tool"):
 		Global.current_tool = Global.connect_tool
+	elif event.is_action_pressed("help-toggle"):
+		toggle_help()
 	elif event.is_action_pressed("add-node"):
 		var mouse_position = get_viewport().get_mouse_position()
 		var new_postion = $DiagramCanvas.to_local(mouse_position)
@@ -50,6 +56,20 @@ func update_status_text():
 func _on_window_resized():
 	var window_size = DisplayServer.window_get_size()
 	var config = ConfigFile.new()
+	var load_result = config.load("user://settings.cfg")
 	config.set_value("window", "width", window_size.x)
 	config.set_value("window", "height", window_size.y)
+	config.save("user://settings.cfg")
+
+func toggle_help():
+	if $Help.visible:
+		print("Hide")
+		$Help.hide()
+	else:
+		print("Show")
+		$Help.show()
+
+	var config = ConfigFile.new()
+	var load_result = config.load("user://settings.cfg")
+	config.set_value("help", "visible", $Help.visible)
 	config.save("user://settings.cfg")
