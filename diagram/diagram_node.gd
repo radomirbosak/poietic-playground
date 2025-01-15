@@ -1,17 +1,18 @@
 class_name DiagramNode extends Node2D
 
+var is_selected: bool = false
+var selection_highlight: Node2D = null
+
 # var sprite: Sprite2D
 var label: Label # = $Label
-# @onready var sprite = $Sprite
-# @onready var outline = $Outline
 var shape: Shape2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	label = Label.new()
-	label.text = "node"
-	label.add_theme_color_override("font_color", Color.GREEN)
 	self.add_child(label)
+	self.label.text = "node"
+	label.add_theme_color_override("font_color", Color.GREEN)
 	
 	shape = CircleShape2D.new()
 	shape.radius = 48
@@ -19,6 +20,8 @@ func _ready():
 	print("Node position :", self.position)
 	print("Label position:", label.position)
 	
+func bounding_circle_radius() -> float:
+	return shape.radius
 	
 func update_children():
 	var size = label.get_minimum_size()
@@ -26,11 +29,19 @@ func update_children():
 	
 func _draw():
 	draw_circle(Vector2(0, 0), shape.radius, Color.GREEN, false)
+	if is_selected:
+		draw_circle(Vector2(0, 0), shape.radius + 4, Color.WHITE, false, 2)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
+func set_selected(flag: bool):
+	self.is_selected = flag
+	queue_redraw()
+	if flag:
+		# selection_highlight = ShapeNode.new()
+		# selection_highlight.shape
+		pass
+	else:
+		pass
+		
 func has_point(point: Vector2):
 	var local_point = to_local(point)
 	if shape is RectangleShape2D:

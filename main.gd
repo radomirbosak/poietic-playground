@@ -5,7 +5,9 @@ func _ready():
 	get_viewport().connect("size_changed", Callable(self, "_on_window_resized"))
 	var a = $DiagramCanvas.add_node(Vector2(200, 200))
 	var b = $DiagramCanvas.add_node(Vector2(400, 250))
+	var c = $DiagramCanvas.add_node(Vector2(300, 400))
 	$DiagramCanvas.add_connection(a, b)
+	$DiagramCanvas.add_connection(b, c)
 	update_status_text()
 
 	var config = ConfigFile.new()
