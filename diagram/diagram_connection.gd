@@ -1,6 +1,10 @@
 class_name DiagramConnection extends Node2D
 
+const default_line_color = Color.GREEN
+
 var line: Line2D
+var arrow_head: Line2D
+var arrow_tail: Line2D
 var origin: DiagramNode
 var target: Node2D
 
@@ -9,10 +13,19 @@ var target: Node2D
 func _ready():
 	self.line = Line2D.new()
 	self.line.name = "line"
-	self.line.default_color = Color.GREEN
+	self.line.default_color = default_line_color
 	self.line.width = 2.0
 	
 	add_child(line)
+
+	arrow_head = Line2D.new()
+	arrow_head.width = 2.0
+	arrow_head.default_color = default_line_color
+	add_child(arrow_head)
+	arrow_tail = Line2D.new()
+	arrow_tail.width = 2.0
+	arrow_tail.default_color = default_line_color
+	add_child(arrow_tail)
 
 @warning_ignore("shadowed_variable")
 func set_connection(origin: DiagramNode, target: Node2D):
@@ -36,20 +49,36 @@ func update_shape():
 
 	var radius = origin.shape.radius
 	var origin_inter = intersect_line_with_circle(origin_center,target_center, origin_center, radius)
+
+	var arrow_origin: Vector2
+	var arrow_target: Vector2
+	
 	if len(origin_inter) >= 1:
-		line.add_point(to_local(origin_inter[0]))
+		arrow_origin = to_local(origin_inter[0])
 	else:
-		line.add_point(to_local(origin_center))
+		arrow_origin = to_local(origin_center)
 
 	if target is DiagramNode:
 		var target_inter = intersect_line_with_circle(origin_center,target_center, target_center, radius)
 		if len(target_inter) >= 1:
-			line.add_point(to_local(target_inter[0]))
+			arrow_target = to_local(target_inter[0])
 		else:
-			line.add_point(to_local(target_center))
+			arrow_target = to_local(target_center)
 	else:
-		line.add_point(to_local(target_center))
+		arrow_target = to_local(target_center)
 		
+	line.add_point(arrow_origin)
+	line.add_point(arrow_target)
+	
+	var head = ShapeCreator.arrow_points(arrow_origin, arrow_target, ShapeCreator.ArrowHeadType.STICK, 30)
+	arrow_head.clear_points()
+	if len(head) > 0:
+		for point in head:
+			arrow_head.add_point(point)
+		arrow_head.show()
+	else:
+		arrow_head.hide()
+	
 func intersect_line_with_circle(point_a: Vector2, point_b: Vector2, center: Vector2, radius: float) -> Array[Vector2]:
 	# Define the line as a parametric equation: P = line_start + t * (line_end - line_start)
 	var d = point_b - point_a
