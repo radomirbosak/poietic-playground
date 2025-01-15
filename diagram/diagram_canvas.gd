@@ -99,3 +99,18 @@ func add_connection(origin: DiagramNode, target: DiagramNode):
 	add_child(conn)
 	conn.set_connection(origin, target)	
 	connections.append(conn)
+
+func delete_selection():
+	for node in selection:
+		var conns = get_connections(node)
+		for conn in conns:
+			var index = connections.find(conn)
+			assert(index != -1)
+			connections.remove_at(index)
+			conn.free()
+
+		var index = nodes.find(node)
+		assert(index != -1)
+		nodes.remove_at(index)
+		node.free()
+	selection.clear()

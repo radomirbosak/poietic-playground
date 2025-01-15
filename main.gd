@@ -31,7 +31,7 @@ func _input(event):
 		$DiagramCanvas.add_node(new_postion)
 
 	elif event.is_action_pressed("delete"):
-		print("Delete (not yet)")
+		$DiagramCanvas.delete_selection()
 
 func _process(delta):
 	update_status_text()
