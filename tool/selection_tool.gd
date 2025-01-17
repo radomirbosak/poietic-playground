@@ -14,25 +14,12 @@ func input_began(event: InputEvent, pointer_position: Vector2):
 	var candidate = canvas.object_at_position(pointer_position)
 	if candidate:
 		if event.shift_pressed:
-			var index = canvas.selection.find(candidate)
-			if index == -1:
-				candidate.set_selected(true)
-				canvas.selection.append(candidate)
-			else:
-				candidate.set_selected(false)
-				canvas.selection.remove_at(index)
+			canvas.selection_append_or_remove(candidate)
 		else:
 			if canvas.selection.is_empty():
-				candidate.set_selected(true)
-				canvas.selection = [candidate]
-			else:
-				var index = canvas.selection.find(candidate)
-				if index == -1:
-					canvas.clear_selection()
-					candidate.set_selected(true)
-					canvas.selection = [candidate]
-				else:
-					pass
+				canvas.selection_set([candidate])
+			elif canvas.selection.find(candidate) == -1:
+				canvas.selection_set([candidate])
 
 		last_pointer_position = pointer_position
 		state = SelectToolState.HIT

@@ -1,5 +1,7 @@
 class_name DiagramCanvas extends Node2D
 
+signal selection_changed(selection: Array[DiagramNode])
+
 # Diagram Content
 var connections: Array[DiagramConnection] = []
 var nodes: Array[DiagramNode] = []
@@ -14,7 +16,7 @@ var acceleration = 400     # Acceleration rate
 var deceleration = 600     # Deceleration rate
 var velocity = Vector2.ZERO  # Current velocity of the camera
 
-func _input(event):
+func _unhandled_input(event):
 	var tool = Global.current_tool
 	if tool != null:
 		tool.canvas = self
@@ -55,16 +57,6 @@ func object_at_position(test_position: Vector2):
 			
 	return null
 
-func clear_selection():
-	for node in selection:
-		node.set_selected(false)
-	selection.clear()
-
-func move_selection(delta: Vector2):
-	for node in selection:
-		var new_position = node.position + delta
-		move_diagram_node(node, new_position)
-
 func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
 	var children: Array[DiagramConnection] = []
 	for conn in connections:
@@ -80,11 +72,12 @@ func move_diagram_node(node: DiagramNode, new_position: Vector2):
 
 var counter: int = 0
 
-func add_node(new_position: Vector2) -> DiagramNode:
+func create_node(new_position: Vector2, label: String) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
 	counter += 1
 	node.name = "diagram_node" + str(counter)
 	node.set_position(new_position)
+	node.label = label
 	add_child(node)
 	nodes.append(node)
 	return node
@@ -100,6 +93,56 @@ func add_connection(origin: DiagramNode, target: DiagramNode):
 	conn.set_connection(origin, target)	
 	connections.append(conn)
 
+# Selection
+# ----------------------------------------------------------------
+
+func clear_selection():
+	if selection.is_empty():
+		return
+		
+	for node in selection:
+		node.set_selected(false)
+	selection.clear()
+	selection_changed.emit(selection)
+
+func selection_append(object: DiagramNode):
+	object.set_selected(true)
+	selection.append(object)
+	selection_changed.emit(selection)
+	
+func selection_set(objects: Array[DiagramNode]):
+	for node in selection:
+		node.set_selected(false)
+	for node in objects:
+		node.set_selected(true)
+	
+	selection.clear()
+	selection += objects
+	
+	selection_changed.emit(selection)
+
+func selection_remove(object: DiagramNode):
+	var index = selection.find(object)
+	if index != -1:
+		object.set_selected(false)
+		selection.remove_at(index)
+		selection_changed.emit(selection)
+	
+func selection_append_or_remove(object: DiagramNode):
+	var index = selection.find(object)
+	if index == -1:
+		object.set_selected(true)
+		selection.append(object)
+	else:
+		object.set_selected(false)
+		selection.remove_at(index)
+	selection_changed.emit(selection)
+
+func move_selection(delta: Vector2):
+	for node in selection:
+		var new_position = node.position + delta
+		move_diagram_node(node, new_position)
+
 func delete_selection():
 	for node in selection:
 		var conns = get_connections(node)
@@ -114,3 +157,4 @@ func delete_selection():
 		nodes.remove_at(index)
 		node.free()
 	selection.clear()
+	selection_changed.emit(selection)

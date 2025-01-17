@@ -4,16 +4,19 @@ var is_selected: bool = false
 var selection_highlight: Node2D = null
 
 # var sprite: Sprite2D
-var label: Label # = $Label
+var label_text: Label # = $Label
 var shape: Shape2D
+
+var label: String = "(node)":
+	get:
+		return label
+	set(value):
+		label = value
+		update_children()
+		
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	label = Label.new()
-	self.add_child(label)
-	self.label.text = "node"
-	label.add_theme_color_override("font_color", Color.GREEN)
-	
 	shape = CircleShape2D.new()
 	shape.radius = 48
 	update_children()
@@ -22,8 +25,18 @@ func bounding_circle_radius() -> float:
 	return shape.radius
 	
 func update_children():
-	var size = label.get_minimum_size()
-	label.position = -size * 0.5
+	if label_text == null:
+		label_text = Label.new()
+		self.add_child(label_text)
+		label_text.add_theme_color_override("font_color", Color.GREEN)
+
+	if label == null:
+		label_text.text = ""
+	else:
+		label_text.text = label
+		label_text.queue_redraw()
+	var size = label_text.get_minimum_size()
+	label_text.position = -size * 0.5
 	
 func _draw():
 	draw_circle(Vector2(0, 0), shape.radius, Color.GREEN, false)

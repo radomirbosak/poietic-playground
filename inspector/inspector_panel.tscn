@@ -1,0 +1,57 @@
+[gd_scene load_steps=2 format=3 uid="uid://dgupp2doqjm1a"]
+
+[ext_resource type="Script" path="res://inspector/inspector_panel.gd" id="1_ye7ip"]
+
+[node name="InspectorPanel" type="Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -1280.0
+offset_right = -1080.0
+offset_bottom = 400.0
+grow_horizontal = 0
+size_flags_horizontal = 10
+size_flags_vertical = 2
+script = ExtResource("1_ye7ip")
+
+[node name="InspectorTitle" type="Label" parent="."]
+layout_mode = 0
+offset_top = 1.0
+offset_right = 210.0
+offset_bottom = 24.0
+text = "Inspector"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_top = 32.0
+offset_right = 200.0
+offset_bottom = 400.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="SelectionInfoLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "selection info"
+
+[node name="NameFieldLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Name"
+
+[node name="NameField" type="LineEdit" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="FormulaFieldLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Formula"
+
+[node name="FormulaText" type="TextEdit" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[connection signal="text_submitted" from="MarginContainer/VBoxContainer/NameField" to="." method="_on_name_field_text_submitted"]

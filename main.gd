@@ -3,11 +3,7 @@ extends Node2D
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	get_viewport().connect("size_changed", Callable(self, "_on_window_resized"))
-	var a = $DiagramCanvas.add_node(Vector2(200, 200))
-	var b = $DiagramCanvas.add_node(Vector2(400, 250))
-	var c = $DiagramCanvas.add_node(Vector2(300, 400))
-	$DiagramCanvas.add_connection(a, b)
-	$DiagramCanvas.add_connection(b, c)
+	create_demo()
 	update_status_text()
 
 	var config = ConfigFile.new()
@@ -18,23 +14,33 @@ func _ready():
 			config.get_value("window", "height", 720)
 			)
 		if config.get_value("help", "visible", true):
-			$Help.show()
+			$Gui/HelpPanel.show()
 		else:
-			$Help.hide()
+			$Gui/HelpPanel.hide()
 		DisplayServer.window_set_size(window_size)
 
+	%InspectorPanel.canvas = $DiagramCanvas
 
-func _input(event):
+func create_demo():
+	var a = $DiagramCanvas.create_node(Vector2(200, 200), "one")
+	var b = $DiagramCanvas.create_node(Vector2(400, 250), "two")
+	var c = $DiagramCanvas.create_node(Vector2(300, 400), "three")
+	$DiagramCanvas.add_connection(a, b)
+	$DiagramCanvas.add_connection(b, c)
+
+func _unhandled_input(event):
 	if event.is_action_pressed("selection-tool"):
 		Global.current_tool = Global.selection_tool
 	elif event.is_action_pressed("connect-tool"):
 		Global.current_tool = Global.connect_tool
 	elif event.is_action_pressed("help-toggle"):
 		toggle_help()
+	elif event.is_action_pressed("inspector-toggle"):
+		toggle_inspector()
 	elif event.is_action_pressed("add-node"):
 		var mouse_position = get_viewport().get_mouse_position()
 		var new_postion = $DiagramCanvas.to_local(mouse_position)
-		$DiagramCanvas.add_node(new_postion)
+		$DiagramCanvas.create_node(new_postion, "node")
 
 	elif event.is_action_pressed("delete"):
 		$DiagramCanvas.delete_selection()
@@ -51,7 +57,7 @@ func update_status_text():
 		text += "(none)"
 		
 	text += " | Child count: " + str($DiagramCanvas.get_child_count())
-	$StatusText.text = text
+	$Gui/StatusText.text = text
 
 func _on_window_resized():
 	var window_size = DisplayServer.window_get_size()
@@ -62,14 +68,20 @@ func _on_window_resized():
 	config.save("user://settings.cfg")
 
 func toggle_help():
-	if $Help.visible:
+	if $Gui/HelpPanel.visible:
 		print("Hide")
-		$Help.hide()
+		$Gui/HelpPanel.hide()
 	else:
 		print("Show")
-		$Help.show()
+		$Gui/HelpPanel.show()
 
 	var config = ConfigFile.new()
 	var load_result = config.load("user://settings.cfg")
-	config.set_value("help", "visible", $Help.visible)
+	config.set_value("help", "visible", $Gui/HelpPanel.visible)
 	config.save("user://settings.cfg")
+
+func toggle_inspector():
+	if $Gui/InspectorPanel.visible:
+		$Gui/InspectorPanel.hide()
+	else:
+		$Gui/InspectorPanel.show()
