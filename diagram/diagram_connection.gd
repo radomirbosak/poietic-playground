@@ -127,7 +127,8 @@ func set_selected(flag: bool):
 	update_highlight()
 
 func contains_point(point: Vector2):
-	return Geometry2D.is_point_in_polygon(point, touchable_outline)
+	var local = to_local(point)
+	return Geometry2D.is_point_in_polygon(local, touchable_outline)
 	
 func intersect_line_with_circle(point_a: Vector2, point_b: Vector2, center: Vector2, radius: float) -> Array[Vector2]:
 	# Define the line as a parametric equation: P = line_start + t * (line_end - line_start)
