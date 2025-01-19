@@ -14,18 +14,16 @@ func input_began(event: InputEvent, pointer_position: Vector2):
 	var candidate = canvas.object_at_position(pointer_position)
 	if candidate:
 		if event.shift_pressed:
-			canvas.selection_append_or_remove(candidate)
+			canvas.selection.toggle(candidate)
 		else:
-			if canvas.selection.is_empty():
-				canvas.selection_set([candidate])
-			elif canvas.selection.find(candidate) == -1:
-				canvas.selection_set([candidate])
+			if canvas.selection.is_empty() or !canvas.selection.contains(candidate):
+				canvas.selection.replace([candidate])
 
 		last_pointer_position = pointer_position
 		state = SelectToolState.HIT
 	else:
 		# print("Clearing selection")
-		canvas.clear_selection()
+		canvas.selection.clear()
 		state = SelectToolState.SELECT
 		# Initiate rubber band
 

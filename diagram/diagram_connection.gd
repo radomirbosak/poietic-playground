@@ -2,30 +2,50 @@ class_name DiagramConnection extends Node2D
 
 const default_line_color = Color.GREEN
 
-var line: Line2D
-var arrow_head: Line2D
-var arrow_tail: Line2D
+# Diagram Properties
 var origin: DiagramNode
 var target: Node2D
 
-	
-# Called when the node enters the scene tree for the first time.
+# Children and Shapes
+var line: Line2D
+var arrow_head: Line2D
+var arrow_tail: Line2D
+
+# Select Tool
+var touchable_outline: PackedVector2Array = []
+var is_selected: bool = false
+var selection_highlight: Node2D = null
+
+# Debug
+var debug_outline_shape: Shape2D
+var debug_outline: Polygon2D
+
 func _ready():
-	self.line = Line2D.new()
-	self.line.name = "line"
-	self.line.default_color = default_line_color
-	self.line.width = 2.0
-	
+	line = Line2D.new()
+	line.name = "line"
+	line.default_color = default_line_color
+	line.width = 2.0
 	add_child(line)
 
 	arrow_head = Line2D.new()
 	arrow_head.width = 2.0
 	arrow_head.default_color = default_line_color
 	add_child(arrow_head)
+	
 	arrow_tail = Line2D.new()
 	arrow_tail.width = 2.0
 	arrow_tail.default_color = default_line_color
 	add_child(arrow_tail)
+	
+	debug_outline = Polygon2D.new()
+	debug_outline.color = Color.RED
+	debug_outline.z_index = -100
+	# add_child(debug_outline)
+	
+	selection_highlight = Line2D.new()
+	selection_highlight.width = 2.0
+	add_child(selection_highlight)
+
 
 @warning_ignore("shadowed_variable")
 func set_connection(origin: DiagramNode, target: Node2D):
@@ -78,6 +98,36 @@ func update_shape():
 		arrow_head.show()
 	else:
 		arrow_head.hide()
+		
+	# Debug Outline
+	#
+	var polygons = Geometry2D.offset_polyline(line.points, 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+	if len(polygons) >= 1:
+		debug_outline.set_polygon(polygons[0])
+		touchable_outline = polygons[0]
+
+	update_highlight()
+	
+func update_highlight():
+	if is_selected:
+		selection_highlight.clear_points()
+
+		var polygons = Geometry2D.offset_polyline(line.points, 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+		if len(polygons) >= 1:
+			for point in polygons[0]:
+				selection_highlight.add_point(point)
+			self.add_child(selection_highlight)
+		selection_highlight.default_color = Selection.default_selection_color
+		selection_highlight.show()
+	else:
+		selection_highlight.hide()
+
+func set_selected(flag: bool):
+	self.is_selected = flag
+	update_highlight()
+
+func contains_point(point: Vector2):
+	return Geometry2D.is_point_in_polygon(point, touchable_outline)
 	
 func intersect_line_with_circle(point_a: Vector2, point_b: Vector2, center: Vector2, radius: float) -> Array[Vector2]:
 	# Define the line as a parametric equation: P = line_start + t * (line_end - line_start)

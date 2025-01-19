@@ -3,20 +3,20 @@ class_name InspectorPanel extends Panel
 ##
 
 var canvas: DiagramCanvas
-var selection: Array[DiagramNode]
+var selection: Selection
 
 func _on_diagram_canvas_selection_changed(new_selection):
 	self.selection = new_selection
 	
-	print("Selection changed: ", len(selection), " nodes selected")
-	var values = get_property_values(selection, "name")
+	print("Selection changed: ", selection.count(), " nodes selected")
+	var values = selection.get_distinct_values("label")
 
 	if len(values) == 0:
-		$MarginContainer/VBoxContainer/NameField.text = ""
+		%NameField.text = ""
 	elif len(values) == 1:
-		$MarginContainer/VBoxContainer/NameField.text = str(values[0])
+		%NameField.text = str(values[0])
 	else:
-		$MarginContainer/VBoxContainer/NameField.text = "(multiple)"
+		%NameField.text = "(multiple)"
 		
 	pass # Replace with function body.
 
@@ -33,6 +33,6 @@ func get_property_values(selection: Array[DiagramNode], property: String) -> Arr
 	return values
 
 func _on_name_field_text_submitted(new_text):
-	for object in selection:
+	for object in selection.objects:
 		object.label = new_text
 	# TODO: Call controller

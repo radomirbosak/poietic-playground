@@ -1,5 +1,7 @@
 class_name DiagramNode extends Node2D
 
+# Select Tool
+var touchable_outline: PackedVector2Array = []
 var is_selected: bool = false
 var selection_highlight: Node2D = null
 
@@ -19,6 +21,7 @@ var label: String = "(node)":
 func _ready():
 	shape = CircleShape2D.new()
 	shape.radius = 48
+
 	update_children()
 
 func bounding_circle_radius() -> float:
@@ -41,13 +44,13 @@ func update_children():
 func _draw():
 	draw_circle(Vector2(0, 0), shape.radius, Color.GREEN, false)
 	if is_selected:
-		draw_circle(Vector2(0, 0), shape.radius + 4, Color.WHITE, false, 2)
+		draw_circle(Vector2(0, 0), shape.radius + 10, Selection.default_selection_color, false, 2)
 
 func set_selected(flag: bool):
 	self.is_selected = flag
 	queue_redraw()
 		
-func has_point(point: Vector2):
+func contains_point(point: Vector2):
 	var local_point = to_local(point)
 	if shape is RectangleShape2D:
 		return shape.get_rect().has_point(local_point)

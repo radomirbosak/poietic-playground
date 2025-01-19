@@ -44,6 +44,7 @@ layout_mode = 2
 text = "Name"
 
 [node name="NameField" type="LineEdit" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="FormulaFieldLabel" type="Label" parent="MarginContainer/VBoxContainer"]
@@ -51,6 +52,7 @@ layout_mode = 2
 text = "Formula"
 
 [node name="FormulaText" type="TextEdit" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 

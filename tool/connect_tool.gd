@@ -16,7 +16,7 @@ func tool_name() -> String:
 
 func input_began(event: InputEvent, pointer_position: Vector2):
 	var candidate = canvas.object_at_position(pointer_position)
-	if candidate != null:
+	if candidate is DiagramNode:
 		create_drag_connection(candidate, pointer_position)
 		state = ConnectToolState.CONNECT
 	else:
