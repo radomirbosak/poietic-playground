@@ -67,8 +67,10 @@ func update_shape():
 	var origin_center = to_global(origin.position)
 	var target_center = to_global(target.position)
 
-	var radius = origin.shape.radius
-	var origin_inter = intersect_line_with_circle(origin_center,target_center, origin_center, radius)
+	var origin_trans = origin.global_transform
+	var target_trans = target.global_transform
+	
+	var origin_inter = ShapeCreator.intersect_line_with_shape(origin_center, target_center, origin.shape, origin.global_transform)
 
 	var arrow_origin: Vector2
 	var arrow_target: Vector2
@@ -79,7 +81,7 @@ func update_shape():
 		arrow_origin = to_local(origin_center)
 
 	if target is DiagramNode:
-		var target_inter = intersect_line_with_circle(origin_center,target_center, target_center, radius)
+		var target_inter = ShapeCreator.intersect_line_with_shape(target_center, origin_center, target.shape, target.global_transform)
 		if len(target_inter) >= 1:
 			arrow_target = to_local(target_inter[0])
 		else:
@@ -130,35 +132,3 @@ func contains_point(point: Vector2):
 	var local = to_local(point)
 	return Geometry2D.is_point_in_polygon(local, touchable_outline)
 	
-func intersect_line_with_circle(point_a: Vector2, point_b: Vector2, center: Vector2, radius: float) -> Array[Vector2]:
-	# Define the line as a parametric equation: P = line_start + t * (line_end - line_start)
-	var d = point_b - point_a
-	var f = point_a - center
-
-	# Quadratic equation coefficients
-	var a = d.dot(d)
-	var b = 2 * f.dot(d)
-	var c = f.dot(f) - radius * radius
-
-	# Solve the quadratic equation: at^2 + bt + c = 0
-	var discriminant = b * b - 4 * a * c
-
-	if discriminant < 0:
-		# No intersection
-		return []
-
-	discriminant = sqrt(discriminant)
-
-	# Compute the two solutions for t
-	var t1 = (-b - discriminant) / (2 * a)
-	var t2 = (-b + discriminant) / (2 * a)
-
-	var intersections: Array[Vector2] = []
-
-	# Check if t1 and t2 are valid
-	if 0 <= t1 and t1 <= 1:
-		intersections.append(point_a + t1 * d)
-	if 0 <= t2 and t2 <= 1:
-		intersections.append(point_a + t2 * d)
-
-	return intersections

@@ -32,8 +32,10 @@ func input_ended(event: InputEvent, pointer_position: Vector2):
 			dragging_target.free()
 
 			var target = canvas.object_at_position(pointer_position)
-			if target != null:
+			if target is DiagramNode:
 				canvas.add_connection(dragging_connection.origin, target)
+			else:
+				print("Concluded with target: ", target)
 			dragging_connection.free()
 			dragging_connection = null
 	

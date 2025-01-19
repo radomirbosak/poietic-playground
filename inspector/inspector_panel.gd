@@ -5,6 +5,9 @@ class_name InspectorPanel extends Panel
 var canvas: DiagramCanvas
 var selection: Selection
 
+func _ready():
+	update_known_types()
+
 func _on_diagram_canvas_selection_changed(new_selection):
 	self.selection = new_selection
 	
@@ -19,6 +22,12 @@ func _on_diagram_canvas_selection_changed(new_selection):
 		%NameField.text = "(multiple)"
 		
 	pass # Replace with function body.
+
+func update_known_types():
+	%TypeButton.clear()
+	%TypeButton.add_item("Stock", 1)
+	%TypeButton.add_item("Flow", 1)
+	%TypeButton.add_item("Auxiliary", 1)
 
 func get_property_values(selection: Array[DiagramNode], property: String) -> Array[Variant]:
 	if property != "name":

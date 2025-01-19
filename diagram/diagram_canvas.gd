@@ -22,7 +22,6 @@ func _exit_tree():
 	pass
 	
 func _on_selection_changed(objects):
-	print("FWD")
 	selection_changed.emit(objects)
 
 func _unhandled_input(event):
@@ -80,17 +79,17 @@ func move_diagram_node(node: DiagramNode, new_position: Vector2):
 	for connection in get_connections(node):
 		connection.update_shape()
 
-
 var counter: int = 0
 
-func create_node(new_position: Vector2, label: String) -> DiagramNode:
+func create_node(type_name: String, new_position: Vector2, label: String) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
+	node.type_name = type_name
 	counter += 1
 	node.name = "diagram_node" + str(counter)
 	node.set_position(new_position)
 	node.label = label
-	add_child(node)
 	nodes.append(node)
+	add_child(node)
 	return node
 
 func add_connection(origin: DiagramNode, target: DiagramNode):

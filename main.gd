@@ -22,9 +22,9 @@ func _ready():
 	%InspectorPanel.canvas = $DiagramCanvas
 
 func create_demo():
-	var a = $DiagramCanvas.create_node(Vector2(200, 200), "one")
-	var b = $DiagramCanvas.create_node(Vector2(400, 250), "two")
-	var c = $DiagramCanvas.create_node(Vector2(300, 400), "three")
+	var a = $DiagramCanvas.create_node("stock", Vector2(200, 200), "source")
+	var b = $DiagramCanvas.create_node("flow", Vector2(400, 250), "flow")
+	var c = $DiagramCanvas.create_node("stock", Vector2(600, 200), "sink")
 	$DiagramCanvas.add_connection(a, b)
 	$DiagramCanvas.add_connection(b, c)
 
@@ -40,7 +40,7 @@ func _unhandled_input(event):
 	elif event.is_action_pressed("add-node"):
 		var mouse_position = get_viewport().get_mouse_position()
 		var new_postion = $DiagramCanvas.to_local(mouse_position)
-		$DiagramCanvas.create_node(new_postion, "node")
+		$DiagramCanvas.create_node("auxiliary", new_postion, "node")
 
 	elif event.is_action_pressed("delete"):
 		$DiagramCanvas.delete_selection()

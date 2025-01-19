@@ -56,4 +56,12 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Type"
+
+[node name="TypeButton" type="OptionButton" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
 [connection signal="text_submitted" from="MarginContainer/VBoxContainer/NameField" to="." method="_on_name_field_text_submitted"]
