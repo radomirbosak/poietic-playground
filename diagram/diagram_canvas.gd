@@ -1,5 +1,9 @@
 class_name DiagramCanvas extends Node2D
 
+const default_pictogram_color = Color(1.0,0.8,0)
+const default_label_color = Color(1.0,0.8,0)
+const default_selection_color: Color = Color.WHITE
+
 signal selection_changed(selection: Selection)
 
 # Diagram Content
@@ -18,6 +22,7 @@ var velocity = Vector2.ZERO  # Current velocity of the camera
 
 func _ready():
 	selection.selection_changed.connect(_on_selection_changed)
+	
 func _exit_tree():
 	pass
 	
@@ -74,19 +79,14 @@ func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
 			children.append(conn)
 	return children
 
-func move_diagram_node(node: DiagramNode, new_position: Vector2):
-	node.position = new_position
-	for connection in get_connections(node):
-		connection.update_shape()
-
 var counter: int = 0
 
 func create_node(type_name: String, new_position: Vector2, label: String) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
-	node.type_name = type_name
 	counter += 1
 	node.name = "diagram_node" + str(counter)
-	node.set_position(new_position)
+	node.type_name = type_name
+	node.position = new_position
 	node.label = label
 	nodes.append(node)
 	add_child(node)
@@ -105,18 +105,27 @@ func add_connection(origin: DiagramNode, target: DiagramNode):
 
 # Selection
 # ----------------------------------------------------------------
-
-func move_selection(delta: Vector2):
+func begin_drag_selection(mouse_position: Vector2):
 	for node in selection.objects:
 		if node is DiagramNode:
-			var new_position = node.position + delta
-			move_diagram_node(node, new_position)
+			node.is_dragged = true
+
+func drag_selection(move_delta: Vector2):
+	for node in selection.objects:
+		if node is DiagramNode:
+			node.position += move_delta
 		elif node is DiagramConnection:
 			# For now, do nothing (and let the reader of the source know)
 			pass
 		else:
-			push_error("Trying to move invalid node: ", node)
+			push_error("Trying to drag invalid node: ", node)
 
+func finish_drag_selection(final_position: Vector2) -> void:
+	for node in selection.objects:
+		if node is DiagramNode:
+			node.is_dragged = false
+			# node.position = final_position
+		
 func delete_selection():
 	for object in selection.objects:
 		if object is DiagramNode:

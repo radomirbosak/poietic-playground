@@ -63,5 +63,6 @@ text = "Type"
 [node name="TypeButton" type="OptionButton" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+item_count = 1
 
 [connection signal="text_submitted" from="MarginContainer/VBoxContainer/NameField" to="." method="_on_name_field_text_submitted"]

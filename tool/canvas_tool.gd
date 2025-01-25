@@ -16,20 +16,20 @@ func handle_intput(event: InputEvent):
 		elif event.is_released():
 			input_ended(event, mouse_position)
 			initial_pointer_position = Vector2()
-	elif event is InputEventMouseMotion:
+	elif event is InputEventMouseMotion and event.button_mask == MOUSE_BUTTON_LEFT:
 		input_moved(event, event.relative)
 	elif event.is_canceled():
 		input_cancelled(event)
 		initial_pointer_position = Vector2()
 
-func input_began(event: InputEvent, pointer_position: Vector2):
+func input_began(_event: InputEvent, _pointer_position: Vector2):
 	pass
 	
-func input_ended(event: InputEvent, pointer_position: Vector2):
+func input_ended(_event: InputEvent, _pointer_position: Vector2):
 	pass
 	
-func input_moved(event: InputEvent, move_delta: Vector2):
+func input_moved(_event: InputEvent, _move_delta: Vector2):
 	pass
 	
-func input_cancelled(event: InputEvent):
+func input_cancelled(_event: InputEvent):
 	pass

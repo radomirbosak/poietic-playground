@@ -1,5 +1,9 @@
 extends Node2D
 
+# Simulation
+var is_running: bool = false
+var step: int = 0
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	get_viewport().connect("size_changed", Callable(self, "_on_window_resized"))
@@ -22,11 +26,11 @@ func _ready():
 	%InspectorPanel.canvas = $DiagramCanvas
 
 func create_demo():
-	var a = $DiagramCanvas.create_node("stock", Vector2(200, 200), "source")
-	var b = $DiagramCanvas.create_node("flow", Vector2(400, 250), "flow")
-	var c = $DiagramCanvas.create_node("stock", Vector2(600, 200), "sink")
-	$DiagramCanvas.add_connection(a, b)
-	$DiagramCanvas.add_connection(b, c)
+	var a = %DiagramCanvas.create_node("stock", Vector2(200, 200), "source")
+	var b = %DiagramCanvas.create_node("flow", Vector2(400, 250), "flow")
+	var c = %DiagramCanvas.create_node("stock", Vector2(600, 200), "sink")
+	%DiagramCanvas.add_connection(b, c)
+	%DiagramCanvas.add_connection(a, b)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("selection-tool"):
@@ -37,6 +41,8 @@ func _unhandled_input(event):
 		toggle_help()
 	elif event.is_action_pressed("inspector-toggle"):
 		toggle_inspector()
+	elif event.is_action_pressed("run"):
+		toggle_run()
 	elif event.is_action_pressed("add-node"):
 		var mouse_position = get_viewport().get_mouse_position()
 		var new_postion = $DiagramCanvas.to_local(mouse_position)
@@ -45,7 +51,7 @@ func _unhandled_input(event):
 	elif event.is_action_pressed("delete"):
 		$DiagramCanvas.delete_selection()
 
-func _process(delta):
+func _process(_delta):
 	update_status_text()
 
 func update_status_text():
@@ -56,13 +62,13 @@ func update_status_text():
 	else:
 		text += "(none)"
 		
-	text += " | Child count: " + str($DiagramCanvas.get_child_count())
+	text += " | Child count: " + str(%DiagramCanvas.get_child_count())
 	$Gui/StatusText.text = text
 
 func _on_window_resized():
 	var window_size = DisplayServer.window_get_size()
 	var config = ConfigFile.new()
-	var load_result = config.load("user://settings.cfg")
+	config.load("user://settings.cfg")
 	config.set_value("window", "width", window_size.x)
 	config.set_value("window", "height", window_size.y)
 	config.save("user://settings.cfg")
@@ -76,7 +82,7 @@ func toggle_help():
 		$Gui/HelpPanel.show()
 
 	var config = ConfigFile.new()
-	var load_result = config.load("user://settings.cfg")
+	config.load("user://settings.cfg")
 	config.set_value("help", "visible", $Gui/HelpPanel.visible)
 	config.save("user://settings.cfg")
 
@@ -85,3 +91,6 @@ func toggle_inspector():
 		$Gui/InspectorPanel.hide()
 	else:
 		$Gui/InspectorPanel.show()
+
+func toggle_run():
+	pass

@@ -14,7 +14,7 @@ var dragging_target: Node2D = null
 func tool_name() -> String:
 	return "connect"
 
-func input_began(event: InputEvent, pointer_position: Vector2):
+func input_began(_event: InputEvent, pointer_position: Vector2):
 	var candidate = canvas.object_at_position(pointer_position)
 	if candidate is DiagramNode:
 		create_drag_connection(candidate, pointer_position)
@@ -22,7 +22,7 @@ func input_began(event: InputEvent, pointer_position: Vector2):
 	else:
 		state = ConnectToolState.EMPTY
 	
-func input_ended(event: InputEvent, pointer_position: Vector2):
+func input_ended(_event: InputEvent, pointer_position: Vector2):
 	match state:
 		ConnectToolState.EMPTY:
 			pass
@@ -39,7 +39,7 @@ func input_ended(event: InputEvent, pointer_position: Vector2):
 			dragging_connection.free()
 			dragging_connection = null
 	
-func input_moved(event: InputEvent, move_delta: Vector2):
+func input_moved(_event: InputEvent, move_delta: Vector2):
 	if state == ConnectToolState.CONNECT:
 		dragging_target.position += move_delta
 		dragging_connection.update_shape()

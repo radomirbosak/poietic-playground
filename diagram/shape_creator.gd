@@ -18,6 +18,7 @@ static func arrow_points(tail: Vector2, head: Vector2, type: ArrowHeadType, size
 			var right = line_vector.rotated(-angle).normalized() * length
 			return [head - left, head, head - right]
 		_:
+			push_warning("Unknown arrowhead type: ", type)
 			return []
 
 static func intersect_line_with_shape(point_a: Vector2, point_b: Vector2, shape: Shape2D, shape_transform: Transform2D = Transform2D()) -> PackedVector2Array:
@@ -31,7 +32,6 @@ static func intersect_line_with_shape(point_a: Vector2, point_b: Vector2, shape:
 
 static func intersect_line_with_rect(point_a: Vector2, point_b: Vector2, rect: Rect2, transform: Transform2D) -> PackedVector2Array:
 	var result:Array[Vector2] = []
-	# var corners: PackedVector2Array = rectangle_to_polygon(rect) * transform
 	var corners: PackedVector2Array = transform * rectangle_to_polygon(rect)
 	var popo = Geometry2D.clip_polyline_with_polygon([point_a, point_b], corners)
 	if len(popo) >= 1:

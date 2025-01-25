@@ -5,6 +5,14 @@ class_name InspectorPanel extends Panel
 var canvas: DiagramCanvas
 var selection: Selection
 
+func get_type_id(type_name: String):
+	match type_name:
+		"stock": return 1
+		"flow": return 2
+		"auxiliary": return 3
+		_: return 0
+		
+
 func _ready():
 	update_known_types()
 
@@ -12,34 +20,38 @@ func _on_diagram_canvas_selection_changed(new_selection):
 	self.selection = new_selection
 	
 	print("Selection changed: ", selection.count(), " nodes selected")
-	var values = selection.get_distinct_values("label")
+	
+	var distinct_label = selection.get_distinct_values("label")
 
-	if len(values) == 0:
+	if len(distinct_label) == 0:
 		%NameField.text = ""
-	elif len(values) == 1:
-		%NameField.text = str(values[0])
+	elif len(distinct_label) == 1:
+		%NameField.text = str(distinct_label[0])
 	else:
 		%NameField.text = "(multiple)"
 		
+	var distinct_type = selection.get_distinct_values("type_name")
+	
+	if len(distinct_type) == 0:
+		%TypeButton.select(%TypeButton.get_item_index(0))
+	elif len(distinct_type) == 1:
+		var type_name = distinct_type[0]
+		var id = get_type_id(type_name)
+		%TypeButton.select(%TypeButton.get_item_index(id))
+		%NameField.text = str(distinct_label[0])
+	else:
+		%TypeButton.select(%TypeButton.get_item_index(0))
+
+	
 	pass # Replace with function body.
 
 func update_known_types():
 	%TypeButton.clear()
+	%TypeButton.add_item("Unknown", 0)
 	%TypeButton.add_item("Stock", 1)
-	%TypeButton.add_item("Flow", 1)
-	%TypeButton.add_item("Auxiliary", 1)
-
-func get_property_values(selection: Array[DiagramNode], property: String) -> Array[Variant]:
-	if property != "name":
-		push_error("Only name property can be fetched in this prototype")
-		return []
-	var values: Array[Variant] = []
-
-	for object in selection:
-		if values.find(object.label) == -1:
-			values.append(object.label)
-	
-	return values
+	%TypeButton.add_item("Flow", 2)
+	%TypeButton.add_item("Auxiliary", 3)
+	%TypeButton.select(0)
 
 func _on_name_field_text_submitted(new_text):
 	for object in selection.objects:

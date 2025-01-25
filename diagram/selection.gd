@@ -1,7 +1,5 @@
 class_name Selection extends Object
 
-const default_selection_color: Color = Color.YELLOW
-
 signal selection_changed(selection: Selection)
 
 ## List of objects in the selection.

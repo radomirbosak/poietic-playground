@@ -22,22 +22,25 @@ func input_began(event: InputEvent, pointer_position: Vector2):
 		last_pointer_position = pointer_position
 		state = SelectToolState.HIT
 	else:
-		# print("Clearing selection")
 		canvas.selection.clear()
 		state = SelectToolState.SELECT
-		# Initiate rubber band
+		# TODO: Initiate rubber band here
 
 func input_moved(event: InputEvent, move_delta: Vector2):
+	var mouse_position = event.global_position
+	last_pointer_position += move_delta
 	match state:
 		SelectToolState.SELECT:
 			pass
-		SelectToolState.HIT, SelectToolState.MOVE:
-			canvas.move_selection(move_delta)
-			last_pointer_position += move_delta
-			state == SelectToolState.MOVE
+		SelectToolState.HIT:
+			canvas.begin_drag_selection(mouse_position)
+			state = SelectToolState.MOVE
+		SelectToolState.MOVE:
+			canvas.drag_selection(move_delta)
 
-func input_ended(event: InputEvent, mouse_position: Vector2):
+func input_ended(_event: InputEvent, mouse_position: Vector2):
 	state = SelectToolState.EMPTY
+	canvas.finish_drag_selection(mouse_position)
 
-func input_cancelled(event: InputEvent):
+func input_cancelled(_event: InputEvent):
 	pass

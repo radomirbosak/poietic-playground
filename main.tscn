@@ -8,6 +8,7 @@
 script = ExtResource("1_2q6io")
 
 [node name="DiagramCanvas" type="Node2D" parent="."]
+unique_name_in_owner = true
 script = ExtResource("2_lulh0")
 
 [node name="Gui" type="Node" parent="."]
