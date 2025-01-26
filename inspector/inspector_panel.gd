@@ -1,4 +1,5 @@
-class_name InspectorPanel extends Panel
+class_name InspectorPanel extends PanelContainer
+
 ## Panel for inspecting diagram elements.
 ##
 
