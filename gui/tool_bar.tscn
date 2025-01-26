@@ -1,0 +1,40 @@
+[gd_scene load_steps=3 format=3 uid="uid://l7uejktm712d"]
+
+[ext_resource type="Script" path="res://gui/tool_bar.gd" id="1_kmcp4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2vh0h"]
+bg_color = Color(0.130208, 0.130208, 0.130208, 1)
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 1)
+border_blend = true
+corner_radius_bottom_right = 12
+
+[node name="ToolBar" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1130.0
+offset_bottom = -760.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_2vh0h")
+script = ExtResource("1_kmcp4")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SelectionToolButton" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Sel"
+
+[node name="ConnectToolButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Conn"
+
+[connection signal="pressed" from="HBoxContainer/SelectionToolButton" to="." method="_on_selection_tool_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/ConnectToolButton" to="." method="_on_connect_tool_button_pressed"]

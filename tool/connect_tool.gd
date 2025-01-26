@@ -42,7 +42,7 @@ func input_ended(_event: InputEvent, pointer_position: Vector2):
 func input_moved(_event: InputEvent, move_delta: Vector2):
 	if state == ConnectToolState.CONNECT:
 		dragging_target.position += move_delta
-		dragging_connection.update_shape()
+		dragging_connection.update_arrow()
 	
 func create_drag_connection(origin: DiagramNode, pointer_position: Vector2):
 	assert(canvas != null)
@@ -55,4 +55,4 @@ func create_drag_connection(origin: DiagramNode, pointer_position: Vector2):
 	dragging_target.position = pointer_position
 	dragging_connection.set_connection(origin, dragging_target)
 	
-	dragging_connection.update_shape()
+	dragging_connection.update_arrow()

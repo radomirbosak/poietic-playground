@@ -1,12 +1,10 @@
 extends Node2D
 
-# Simulation
-var is_running: bool = false
-var step: int = 0
+@onready var canvas: DiagramCanvas = %DiagramCanvas
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	get_viewport().connect("size_changed", Callable(self, "_on_window_resized"))
+	get_viewport().connect("size_changed", _on_window_resized)
 	create_demo()
 	update_status_text()
 
@@ -26,17 +24,17 @@ func _ready():
 	%InspectorPanel.canvas = $DiagramCanvas
 
 func create_demo():
-	var a = %DiagramCanvas.create_node("stock", Vector2(200, 200), "source")
-	var b = %DiagramCanvas.create_node("flow", Vector2(400, 250), "flow")
-	var c = %DiagramCanvas.create_node("stock", Vector2(600, 200), "sink")
-	%DiagramCanvas.add_connection(b, c)
-	%DiagramCanvas.add_connection(a, b)
+	var a = canvas.create_node("stock", Vector2(200, 200), "source")
+	var b = canvas.create_node("flow", Vector2(400, 250), "flow")
+	var c = canvas.create_node("stock", Vector2(600, 200), "sink")
+	canvas.add_connection(b, c)
+	canvas.add_connection(a, b)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("selection-tool"):
-		Global.current_tool = Global.selection_tool
+		Global.change_tool(Global.selection_tool)
 	elif event.is_action_pressed("connect-tool"):
-		Global.current_tool = Global.connect_tool
+		Global.change_tool(Global.connect_tool)
 	elif event.is_action_pressed("help-toggle"):
 		toggle_help()
 	elif event.is_action_pressed("inspector-toggle"):
@@ -45,11 +43,11 @@ func _unhandled_input(event):
 		toggle_run()
 	elif event.is_action_pressed("add-node"):
 		var mouse_position = get_viewport().get_mouse_position()
-		var new_postion = $DiagramCanvas.to_local(mouse_position)
-		$DiagramCanvas.create_node("auxiliary", new_postion, "node")
+		var new_postion = canvas.to_local(mouse_position)
+		canvas.create_node("auxiliary", new_postion, "node")
 
 	elif event.is_action_pressed("delete"):
-		$DiagramCanvas.delete_selection()
+		canvas.delete_selection()
 
 func _process(_delta):
 	update_status_text()
@@ -62,7 +60,7 @@ func update_status_text():
 	else:
 		text += "(none)"
 		
-	text += " | Child count: " + str(%DiagramCanvas.get_child_count())
+	text += " | Child count: " + str(canvas.get_child_count())
 	$Gui/StatusText.text = text
 
 func _on_window_resized():

@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://fhtvpa30rrel"]
+[gd_scene load_steps=6 format=3 uid="uid://fhtvpa30rrel"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_2q6io"]
 [ext_resource type="Script" path="res://diagram/diagram_canvas.gd" id="2_lulh0"]
+[ext_resource type="PackedScene" uid="uid://c3kn0jiqoe5fm" path="res://gui/control_bar.tscn" id="3_bgr8b"]
+[ext_resource type="PackedScene" uid="uid://l7uejktm712d" path="res://gui/tool_bar.tscn" id="3_qq1bh"]
 [ext_resource type="PackedScene" uid="uid://dgupp2doqjm1a" path="res://inspector/inspector_panel.tscn" id="4_uq7uj"]
 
 [node name="Main" type="Node2D"]
@@ -12,6 +14,17 @@ unique_name_in_owner = true
 script = ExtResource("2_lulh0")
 
 [node name="Gui" type="Node" parent="."]
+
+[node name="ToolBar" parent="Gui" instance=ExtResource("3_qq1bh")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 134.0
+offset_bottom = 35.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="ControlBar" parent="Gui" instance=ExtResource("3_bgr8b")]
 
 [node name="StatusText" type="Label" parent="Gui"]
 anchors_preset = 2
@@ -24,6 +37,7 @@ text = "Text"
 
 [node name="InspectorPanel" parent="Gui" instance=ExtResource("4_uq7uj")]
 unique_name_in_owner = true
+visible = false
 offset_left = -201.0
 offset_right = -1.0
 

@@ -1,0 +1,78 @@
+[gd_scene load_steps=4 format=3 uid="uid://c3kn0jiqoe5fm"]
+
+[ext_resource type="Script" path="res://gui/control_bar.gd" id="1_bjxsy"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7v4cc"]
+bg_color = Color(0.10862, 0.111979, 0.110691, 1)
+border_width_left = 4
+border_width_right = 4
+border_width_bottom = 4
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q16gx"]
+bg_color = Color(0.171875, 0.171875, 0.171875, 1)
+
+[node name="ControlBar" type="PanelContainer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -217.0
+offset_right = 217.0
+offset_bottom = 51.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7v4cc")
+script = ExtResource("1_bjxsy")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Reset" type="Button" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reset"
+
+[node name="RunStopButton" type="Button" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Run"
+
+[node name="Loop" type="Button" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Loop"
+
+[node name="TimeLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Time"
+horizontal_alignment = 2
+
+[node name="Time" type="Label" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_q16gx")
+text = "0
+"
+horizontal_alignment = 2
+
+[node name="StepsLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Steps"
+
+[node name="StepsField" type="LineEdit" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "10"
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/Reset" to="." method="_on_reset_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/RunStopButton" to="." method="_on_run_pressed"]
