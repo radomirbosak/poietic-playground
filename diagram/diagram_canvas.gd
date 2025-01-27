@@ -1,14 +1,41 @@
 class_name DiagramCanvas extends Node2D
 
+var design: Design
+
 const default_pictogram_color = Color(1.0,0.8,0)
 const default_label_color = Color(1.0,0.8,0)
 const default_selection_color: Color = Color.WHITE
 
 signal selection_changed(selection: Selection)
 
+var sync_needed: bool = true
+
 # Diagram Content
-var connections: Array[DiagramConnection] = []
-var nodes: Array[DiagramNode] = []
+var diagram_objects: Dictionary = {} # int -> Node2
+# var objects: Dictionary = {} # int -> DesignObject
+# var connections: Array[DiagramConnection] = []
+# var nodes: Array[DiagramNode] = []
+
+func all_diagram_nodes() -> Array[DiagramNode]:
+	var result: Array[DiagramNode]
+	for object in diagram_objects.values():
+		if object is DiagramNode:
+			result.append(object)
+	return result
+
+func all_diagram_connections() -> Array[DiagramConnection]:
+	var result: Array[DiagramConnection]
+	for object in diagram_objects.values():
+		if object is DiagramConnection:
+			result.append(object)
+	return result
+
+func get_diagram_node(id: int) -> DiagramNode:
+	var object = diagram_objects.get(id)
+	if object is DiagramNode:
+		return object
+	else:
+		return null
 
 # Selection
 var selection: Selection = Selection.new()
@@ -20,11 +47,22 @@ var acceleration = 400     # Acceleration rate
 var deceleration = 600     # Deceleration rate
 var velocity = Vector2.ZERO  # Current velocity of the camera
 
+func _init():
+	design = Design.global
+
 func _ready():
 	selection.selection_changed.connect(_on_selection_changed)
+	GlobalSimulator.simulation_step.connect(_on_simulation_step)
 	
 func _exit_tree():
 	pass
+	
+func _on_simulation_step():
+	for node in design.all_nodes():
+		var diagram_node = get_diagram_node(node.object_id)
+		# We might get null node when sync is queued and we do not have a canvas node yeta
+		if diagram_node != null:
+			diagram_node.update_from(node)
 	
 func _on_selection_changed(objects):
 	selection_changed.emit(objects)
@@ -35,7 +73,14 @@ func _unhandled_input(event):
 		tool.canvas = self
 		tool.handle_intput(event)
 
+func queue_sync():
+	sync_needed = true
+
 func _process(delta):
+	if sync_needed:
+		sync_design()
+		sync_needed = false
+		
 	var direction = Vector2.ZERO
 	# Check input for panning directions
 	if Input.is_action_pressed("pan-left"):
@@ -74,34 +119,86 @@ func object_at_position(test_position: Vector2):
 
 func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
 	var children: Array[DiagramConnection] = []
-	for conn in connections:
+	for conn in all_diagram_connections():
 		if conn.origin == node or conn.target == node:
 			children.append(conn)
 	return children
 
 var counter: int = 0
 
-func create_node(type_name: String, new_position: Vector2, label: String) -> DiagramNode:
+func sync_design():
+	sync_nodes()
+	sync_edges()
+	
+func sync_nodes():
+	# 1. Get existing model node solids
+	var existing: Dictionary = {}
+	
+	for node in self.all_diagram_nodes():
+		existing[node.object_id] = node
+
+	# 2. Update all nodes that are in the graph
+	for object in design.all_nodes():
+		var node = existing.get(object.object_id)
+		if node != null:
+			node.update_from(object)
+			existing.erase(object.object_id)
+		else:
+			create_node_from(object)
+	
+	# 3. Remove all orphaned nodes
+	for dead in existing.values():
+		diagram_objects.erase(dead.object_id)
+		dead.free()
+
+func sync_edges():
+	# 1. Get existing model connections
+	var existing: Dictionary = {}
+	
+	for edge in self.all_diagram_connections():
+		existing[edge.object_id] = edge
+
+	# 2. Update all connections that are in the design
+	for object in design.all_edges():
+		var conn = existing.get(object.object_id)
+		if conn != null:
+			conn.update_from(object)
+			existing.erase(object.object_id)
+		else:
+			create_edge_from(object)
+	
+	# 3. Remove all orphaned connections
+	for dead in existing.values():
+		diagram_objects.erase(dead.object_id)
+		dead.free()
+
+func create_node_from(object: DesignObject) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
-	counter += 1
-	node.name = "diagram_node" + str(counter)
-	node.type_name = type_name
-	node.position = new_position
-	node.label = label
-	nodes.append(node)
+	node.name = "diagram_node" + str(object.object_id)
+	node.type_name = object.type_name
+	node.object_id = object.object_id
+	diagram_objects[object.object_id] = node
 	add_child(node)
+	node.update_from(object)
 	return node
 
-func add_connection(origin: DiagramNode, target: DiagramNode):
-	if origin == null or target == null:
-		push_error("Trying to add a connection without origin or target")
+func create_edge_from(object: DesignObject) -> DiagramConnection:
+	if object.origin == null or object.target == null:
+		push_error("Trying to create connection from object without origin or target")
 		return
-	var conn = DiagramConnection.new()
-	counter += 1
-	conn.name = "diagram_connection" + str(counter)
-	add_child(conn)
+	var conn: DiagramConnection = DiagramConnection.new()
+	var origin: DiagramNode = get_diagram_node(object.origin)
+	var target: DiagramNode = get_diagram_node(object.target)
+	if object.origin == null or object.target == null:
+		push_error("Origin or target are not part of canvas")
+		return
 	conn.set_connection(origin, target)	
-	connections.append(conn)
+	conn.name = "diagram_connection" + str(object.object_id)
+	conn.type_name = object.type_name
+	conn.object_id = object.object_id
+	diagram_objects[object.object_id] = conn
+	add_child(conn)
+	return conn
 
 # Selection
 # ----------------------------------------------------------------
@@ -114,6 +211,8 @@ func drag_selection(move_delta: Vector2):
 	for node in selection.objects:
 		if node is DiagramNode:
 			node.position += move_delta
+			var object = design.get_object(node.object_id)
+			object.update_attribute("position", node.position)
 		elif node is DiagramConnection:
 			# For now, do nothing (and let the reader of the source know)
 			pass
@@ -124,34 +223,13 @@ func finish_drag_selection(final_position: Vector2) -> void:
 	for node in selection.objects:
 		if node is DiagramNode:
 			node.is_dragged = false
+			var object = design.get_object(node.object_id)
+			object.update_attribute("position", node.position)
 			# node.position = final_position
 		
 func delete_selection():
 	for object in selection.objects:
-		if object is DiagramNode:
-			delete_node(object)
-		elif object is DiagramConnection:
-			delete_connection(object)
-		else:
-			push_error("Trying to delete unknown object: ", object)
+		design.remove_object(object.object_id)
 
 	selection.clear()
-
-func delete_node(node: DiagramNode):
-	var conns = get_connections(node)
-	for conn in conns:
-		var index = connections.find(conn)
-		assert(index != -1)
-		connections.remove_at(index)
-		conn.free()
-
-	var index = nodes.find(node)
-	assert(index != -1)
-	nodes.remove_at(index)
-	node.free()
-
-func delete_connection(connection: DiagramConnection):
-	var index = connections.find(connection)
-	assert(index != -1)
-	connections.remove_at(index)
-	connection.free()
+	queue_sync()

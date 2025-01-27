@@ -8,6 +8,8 @@ var state: ConnectToolState
 
 var last_pointer_position = Vector2()
 
+var origin: DiagramNode
+
 var dragging_connection: DiagramConnection = null
 var dragging_target: Node2D = null
 
@@ -18,6 +20,7 @@ func input_began(_event: InputEvent, pointer_position: Vector2):
 	var candidate = canvas.object_at_position(pointer_position)
 	if candidate is DiagramNode:
 		create_drag_connection(candidate, pointer_position)
+		origin = candidate
 		state = ConnectToolState.CONNECT
 	else:
 		state = ConnectToolState.EMPTY
@@ -33,11 +36,10 @@ func input_ended(_event: InputEvent, pointer_position: Vector2):
 
 			var target = canvas.object_at_position(pointer_position)
 			if target is DiagramNode:
-				canvas.add_connection(dragging_connection.origin, target)
-			else:
-				print("Concluded with target: ", target)
+				create_connection(origin, target)
 			dragging_connection.free()
 			dragging_connection = null
+			origin = null
 	
 func input_moved(_event: InputEvent, move_delta: Vector2):
 	if state == ConnectToolState.CONNECT:
@@ -56,3 +58,10 @@ func create_drag_connection(origin: DiagramNode, pointer_position: Vector2):
 	dragging_connection.set_connection(origin, dragging_target)
 	
 	dragging_connection.update_arrow()
+
+func create_connection(origin: DiagramNode, target: DiagramNode):
+	var edge = DesignObject.new("Parameter")
+	edge.origin = origin.object_id
+	edge.target = target.object_id
+	Design.global.add_object(edge)
+	canvas.queue_sync()

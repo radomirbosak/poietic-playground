@@ -28,4 +28,3 @@ func _on_run_pressed():
 		GlobalSimulator.stop()
 	else:
 		GlobalSimulator.run()
-	pass # Replace with function body.

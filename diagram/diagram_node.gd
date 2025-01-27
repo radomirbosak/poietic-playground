@@ -4,23 +4,34 @@ class_name DiagramNode extends Node2D
 const default_radius = 50
 const highlight_padding = 5
 
+## Value to be displayed using a value indicator.
+##
+## Typically a computed simulation value of the node.
+##
+var display_value: float = 0.0:
+	set(value):
+		display_value = value
+		update_indicator()
+
+var object_id: int = 0
+
 # Node Components (Children)
 var pictogram: Node2D
 var shape: Shape2D
 var label_text: Label
-
+var value_indicator: ProgressBar
 # TODO: Physics
 var collision: CollisionShape2D = CollisionShape2D.new()
 
 @export var type_name: String = "unknown":
 	set(value):
 		type_name = value
-		update_children()
+		queue_layout()
 		
 @export var label: String = "(node)":
 	set(value):
 		label = value
-		update_children()
+		queue_layout()
 
 # Select Tool
 var touchable_outline: PackedVector2Array = []
@@ -53,22 +64,28 @@ func _init():
 func _ready():
 	# add_child(collision)
 	update_children()
-	
 
 var last_position: Vector2 = Vector2()
 var is_moved: bool
+var children_needs_update: bool = true
 
 func _process(_delta):
 	if position != last_position:
 		last_position = position
 		is_moved = true
+	if children_needs_update:
+		update_children()
+		children_needs_update = false
+
+func queue_layout():
+	children_needs_update = true
 
 func set_moved():
 	is_moved = false
 
 var force_strength = 1000
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	pass
 	# TODO: Physics
 	#if is_dragged:
@@ -80,9 +97,22 @@ func _physics_process(delta: float) -> void:
 
 func bounding_circle_radius() -> float:
 	return shape.radius
-	
+
+## Updates the diagram node based on a design object.
+##
+## This method should be called whenever the source of truth is changed.
+func update_from(object: DesignObject):
+	var position = object.attribute("position")
+	if position is Vector2:
+		self.position = position
+
+	self.label = object.get_name()
+	self.display_value = object.get_value()
+	queue_layout()
+
 func update_children() -> void:
 	update_pictogram()
+	update_indicator()
 	if label_text == null:
 		label_text = Label.new()
 		self.add_child(label_text)
@@ -96,12 +126,13 @@ func update_children() -> void:
 	var size = label_text.get_minimum_size()
 	label_text.position = -size * 0.5
 	update_highlight()
+	children_needs_update = false
 
 func update_pictogram():
 	if pictogram != null:
 		pictogram.free()
 	match type_name:
-		"stock":
+		"Stock":
 			var rect = ShapeCreator.rectangle_with_center(Vector2(), default_radius * 3, default_radius * 2)
 			var path = Line2D.new()
 			for point in ShapeCreator.rectangle_to_polygon(rect):
@@ -112,7 +143,7 @@ func update_pictogram():
 			shape = RectangleShape2D.new()
 			shape.size = Vector2(default_radius*3, default_radius*2)
 			add_child(pictogram)
-		"flow":
+		"Flow":
 			pictogram = Circle2D.new()
 			pictogram.radius = default_radius
 			pictogram.color = DiagramCanvas.default_pictogram_color
@@ -127,6 +158,33 @@ func update_pictogram():
 			shape.radius = default_radius
 			add_child(pictogram)
 	# collision.shape = shape
+
+func update_indicator():
+	if value_indicator == null:
+		var indicator = ProgressBar.new()
+		indicator.custom_minimum_size = Vector2(100,5)
+		indicator.size = Vector2(100,5)
+		indicator.position = Vector2(-indicator.size.x / 2, -100)
+		indicator.min_value = 0
+		indicator.max_value = 100
+		indicator.show_percentage = false
+		var fill_style = StyleBoxFlat.new()
+		fill_style.bg_color = Color.LIME_GREEN  # Background color
+		fill_style.border_color = Color.LIME_GREEN    # Border color
+		fill_style.set_border_width_all(2)
+		indicator.add_theme_stylebox_override("fill", fill_style)
+		var bg_style = StyleBoxFlat.new()
+		bg_style.bg_color = Color.BLACK  # Background color
+		bg_style.border_color = Color.LIME_GREEN    # Border color
+		bg_style.set_border_width_all(2)
+		indicator.add_theme_stylebox_override("background", bg_style)
+		add_child(indicator)
+		indicator.anchor_left = 0.5   # Center horizontally
+		indicator.anchor_top = 0      # Align to the top
+		indicator.anchor_right = 0.5  # Center horizontally
+		indicator.anchor_bottom = 0   # Align to the top
+		value_indicator = indicator
+	value_indicator.value = display_value
 
 func bounding_radius():
 	if shape is RectangleShape2D:

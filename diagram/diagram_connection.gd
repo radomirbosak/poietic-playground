@@ -2,8 +2,13 @@ class_name DiagramConnection extends Node2D
 
 # DampedSpringJoint2D
 # Diagram Properties
+var type_name: String
+var object_id: int
 var origin: DiagramNode
 var target: Node2D
+
+var label: String
+
 var arrow_origin: Vector2 = Vector2()
 var arrow_target: Vector2 = Vector2()
 var previous_origin_pos: Vector2
@@ -16,6 +21,11 @@ var previous_target_pos: Vector2
 var touchable_outline: PackedVector2Array = []
 var is_selected: bool = false
 
+var children_needs_update: bool = true
+
+func queue_layout():
+	children_needs_update = true
+
 func _process(_delta: float) -> void:
 	var new_origin_pos = to_local(origin.global_position)
 	var new_target_pos = to_local(target.global_position)
@@ -23,6 +33,19 @@ func _process(_delta: float) -> void:
 		previous_origin_pos = new_origin_pos
 		previous_target_pos = new_target_pos
 		update_arrow()
+
+## Updates the diagram node based on a design object.
+##
+## This method should be called whenever the source of truth is changed.
+func update_from(object: DesignObject):
+	var position = object.attribute("position")
+	if position is Vector2:
+		self.position = position
+
+	var text = object.attribute("name")
+	if text is String:
+		self.label = text
+	queue_layout()
 
 @warning_ignore("shadowed_variable")
 func set_connection(origin: DiagramNode, target: Node2D):

@@ -39,10 +39,8 @@ func _on_diagram_canvas_selection_changed(new_selection):
 		var type_name = distinct_type[0]
 		var id = get_type_id(type_name)
 		%TypeButton.select(%TypeButton.get_item_index(id))
-		%NameField.text = str(distinct_label[0])
 	else:
 		%TypeButton.select(%TypeButton.get_item_index(0))
-
 	
 	pass # Replace with function body.
 

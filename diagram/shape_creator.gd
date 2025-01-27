@@ -31,7 +31,6 @@ static func intersect_line_with_shape(point_a: Vector2, point_b: Vector2, shape:
 	return []
 
 static func intersect_line_with_rect(point_a: Vector2, point_b: Vector2, rect: Rect2, transform: Transform2D) -> PackedVector2Array:
-	var result:Array[Vector2] = []
 	var corners: PackedVector2Array = transform * rectangle_to_polygon(rect)
 	var popo = Geometry2D.clip_polyline_with_polygon([point_a, point_b], corners)
 	if len(popo) >= 1:

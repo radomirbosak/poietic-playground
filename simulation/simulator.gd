@@ -11,11 +11,16 @@ signal simulation_reset()
 
 var is_running: bool = false
 var time_to_step: float = 0
-var step_duration: float = 0.5
+var step_duration: float = 0.1
 
 var step: int = 1
 var time: float = 0.0
 var time_delta: float = 1.0
+
+var design: Design
+
+func _init():
+	design = Design.global
 	
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -32,7 +37,15 @@ func _process(delta):
 			# print("Remaining: ", time_to_step)
 	
 func run_step():
-	print("Step ", step)
+	for object in design.all_nodes():
+		var value = object.get_value()
+		if value != null:
+			if value > 50:
+				value += (randi() % 10) - 6
+			else:
+				value += (randi() % 10) - 4
+			value = min(max(0, value), 100)
+			object.set_value(value)
 	step += 1
 	simulation_step.emit()
 
