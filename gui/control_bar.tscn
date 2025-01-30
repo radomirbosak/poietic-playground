@@ -1,6 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://c3kn0jiqoe5fm"]
+[gd_scene load_steps=9 format=3 uid="uid://c3kn0jiqoe5fm"]
 
 [ext_resource type="Script" path="res://gui/control_bar.gd" id="1_bjxsy"]
+[ext_resource type="Texture2D" uid="uid://cgcn8jlmiv67k" path="res://resources/icons/restart.svg" id="2_6tnj3"]
+[ext_resource type="Script" path="res://gui/icon_button.gd" id="3_8fam1"]
+[ext_resource type="Texture2D" uid="uid://cjecfwdw41q6y" path="res://resources/icons/stop.svg" id="3_wlttv"]
+[ext_resource type="Texture2D" uid="uid://qdhfdmgne8hp" path="res://resources/icons/run.svg" id="4_vk26x"]
+[ext_resource type="Texture2D" uid="uid://dcfks0s5avdnr" path="res://resources/icons/loop.svg" id="5_pex4y"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7v4cc"]
 bg_color = Color(0.10862, 0.111979, 0.110691, 1)
@@ -17,9 +22,9 @@ bg_color = Color(0.171875, 0.171875, 0.171875, 1)
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -217.0
-offset_right = 217.0
-offset_bottom = 51.0
+offset_left = -231.0
+offset_right = 230.0
+offset_bottom = 60.0
 grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_7v4cc")
 script = ExtResource("1_bjxsy")
@@ -34,20 +39,44 @@ theme_override_constants/margin_bottom = 8
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="Reset" type="Button" parent="MarginContainer/HBoxContainer"]
+[node name="ResetButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-text = "Reset"
+texture_normal = ExtResource("2_6tnj3")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("3_8fam1")
 
-[node name="RunStopButton" type="Button" parent="MarginContainer/HBoxContainer"]
+[node name="StopButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-text = "Run"
+toggle_mode = true
+texture_normal = ExtResource("3_wlttv")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("3_8fam1")
 
-[node name="Loop" type="Button" parent="MarginContainer/HBoxContainer"]
+[node name="RunButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-text = "Loop"
+toggle_mode = true
+texture_normal = ExtResource("4_vk26x")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("3_8fam1")
+
+[node name="LoopButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+toggle_mode = true
+texture_normal = ExtResource("5_pex4y")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("3_8fam1")
 
 [node name="TimeLabel" type="Label" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
@@ -74,5 +103,7 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "10"
 
-[connection signal="pressed" from="MarginContainer/HBoxContainer/Reset" to="." method="_on_reset_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/RunStopButton" to="." method="_on_run_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ResetButton" to="." method="_on_reset_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/StopButton" to="." method="_on_stop_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/RunButton" to="." method="_on_run_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/LoopButton" to="." method="_on_loop_button_pressed"]
