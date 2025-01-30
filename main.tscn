@@ -19,8 +19,8 @@ script = ExtResource("2_lulh0")
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_right = 134.0
-offset_bottom = 35.0
+offset_right = 96.0
+offset_bottom = 52.0
 grow_horizontal = 1
 grow_vertical = 1
 
