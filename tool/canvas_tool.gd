@@ -17,7 +17,7 @@ func handle_intput(event: InputEvent):
 			input_ended(event, mouse_position)
 			initial_pointer_position = Vector2()
 	elif event is InputEventMouseMotion and event.button_mask == MOUSE_BUTTON_LEFT:
-		input_moved(event, event.relative)
+		input_moved(event, event.relative / canvas.zoom_level)
 	elif event.is_canceled():
 		input_cancelled(event)
 		initial_pointer_position = Vector2()

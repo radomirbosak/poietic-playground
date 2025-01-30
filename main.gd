@@ -30,9 +30,9 @@ func _ready():
 	%InspectorPanel.canvas = $DiagramCanvas
 
 func create_demo_design():
-	var a = DesignObject.new("Stock", "source", Vector2(200, 200), randi() % 100)
-	var b = DesignObject.new("Flow", "flow", Vector2(400, 200), randi() % 100)
-	var c = DesignObject.new("Stock", "sink", Vector2(600, 200), randi() % 100)
+	var a = DesignObject.new("Stock", "source", Vector2(200, 300), randi() % 100)
+	var b = DesignObject.new("Flow", "flow", Vector2(400, 300), randi() % 100)
+	var c = DesignObject.new("Stock", "sink", Vector2(600, 300), randi() % 100)
 	var ab = DesignObject.new("Drains")
 	ab.origin = a.object_id
 	ab.target = b.object_id

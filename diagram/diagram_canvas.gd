@@ -2,6 +2,9 @@ class_name DiagramCanvas extends Node2D
 
 var design: Design
 
+var zoom_level: float = 1.0
+var canvas_offset: Vector2 = Vector2.ZERO
+
 const default_pictogram_color = Color(1.0,0.8,0)
 const default_label_color = Color(1.0,0.8,0)
 const default_selection_color: Color = Color.WHITE
@@ -40,13 +43,6 @@ func get_diagram_node(id: int) -> DiagramNode:
 # Selection
 var selection: Selection = Selection.new()
 
-# Panning
-var pan_speed = 0          # Current speed of panning
-var max_speed = 2000       # Maximum speed
-var acceleration = 400     # Acceleration rate
-var deceleration = 600     # Deceleration rate
-var velocity = Vector2.ZERO  # Current velocity of the camera
-
 func _init():
 	design = Design.global
 
@@ -76,35 +72,22 @@ func _unhandled_input(event):
 func queue_sync():
 	sync_needed = true
 
+func _input(event):
+	if event is InputEventPanGesture:
+		canvas_offset += (-event.delta) * zoom_level * 10
+		update_canvas_position()
+	if event is InputEventMagnifyGesture:
+		zoom_level *= event.factor
+		update_canvas_position()
+		
+func update_canvas_position() -> void:
+	self.position = canvas_offset
+	self.scale = Vector2(zoom_level, zoom_level)
+	
 func _process(delta):
 	if sync_needed:
 		sync_design()
 		sync_needed = false
-		
-	var direction = Vector2.ZERO
-	# Check input for panning directions
-	if Input.is_action_pressed("pan-left"):
-		direction.x += 1
-	if Input.is_action_pressed("pan-right"):
-		direction.x -= 1
-	if Input.is_action_pressed("pan-up"):
-		direction.y += 1
-	if Input.is_action_pressed("pan-down"):
-		direction.y -= 1
-	
-	# Normalize direction vector to ensure uniform movement
-	if direction != Vector2.ZERO:
-		direction = direction.normalized()
-		# Accelerate while holding keys
-		velocity += direction * acceleration * delta
-		# Clamp velocity to maximum speed
-		velocity = velocity.limit_length(max_speed)
-	else:
-		# Decelerate if no keys are pressed
-		velocity = velocity.move_toward(Vector2.ZERO, deceleration * delta)
-	
-	# Update camera position based on velocity
-	position += velocity * delta
 	
 func object_at_position(test_position: Vector2):
 	for child in get_children():

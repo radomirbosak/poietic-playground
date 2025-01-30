@@ -54,7 +54,7 @@ func create_drag_connection(origin: DiagramNode, pointer_position: Vector2):
 	dragging_target = Node2D.new()
 	canvas.add_child(dragging_connection)
 	canvas.add_child(dragging_target)
-	dragging_target.position = pointer_position
+	dragging_target.position = canvas.to_local(pointer_position)
 	dragging_connection.set_connection(origin, dragging_target)
 	
 	dragging_connection.update_arrow()

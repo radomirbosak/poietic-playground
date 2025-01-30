@@ -23,7 +23,7 @@ static func arrow_points(tail: Vector2, head: Vector2, type: ArrowHeadType, size
 
 static func intersect_line_with_shape(point_a: Vector2, point_b: Vector2, shape: Shape2D, shape_transform: Transform2D = Transform2D()) -> PackedVector2Array:
 	if shape is CircleShape2D:
-		return intersect_line_with_circle(point_a, point_b, shape_transform.get_origin(), shape.radius)
+		return intersect_line_with_circle(point_a, point_b, shape_transform.get_origin(), shape.radius * shape_transform.get_scale().x)
 	elif shape is RectangleShape2D:
 		var rect = shape.get_rect()
 		var result = intersect_line_with_rect(point_a, point_b, rect, shape_transform)
