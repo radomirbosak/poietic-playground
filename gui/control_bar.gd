@@ -29,6 +29,9 @@ func update_simulator_state():
 		stop_button.update_shader()
 		run_button.disabled = false
 		stop_button.disabled = true
+		
+	loop_button.set_pressed_no_signal(GlobalSimulator.is_looping)
+	loop_button.update_shader()
 	time_label.text = str(GlobalSimulator.step)
 
 func _on_simulator_started():
@@ -57,4 +60,5 @@ func _on_stop_button_pressed():
 
 
 func _on_loop_button_pressed():
-	print("Loop button pressed (not implemented yet)")
+	GlobalSimulator.is_looping = loop_button.button_pressed
+	update_simulator_state()

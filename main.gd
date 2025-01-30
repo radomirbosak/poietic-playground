@@ -6,7 +6,6 @@ var design: Design
 func _init():
 	design = Design.global
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	get_viewport().connect("size_changed", _on_window_resized)
 	create_demo_design()
@@ -46,6 +45,8 @@ func create_demo_design():
 	design.add_object(c)
 	design.add_object(ab)
 	design.add_object(bc)
+	
+	GlobalSimulator.initialize_result()
 
 func _unhandled_input(event):
 	if event.is_action_pressed("selection-tool"):

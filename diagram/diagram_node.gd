@@ -169,22 +169,27 @@ func update_indicator():
 		indicator.max_value = 100
 		indicator.show_percentage = false
 		var fill_style = StyleBoxFlat.new()
-		fill_style.bg_color = Color.LIME_GREEN  # Background color
-		fill_style.border_color = Color.LIME_GREEN    # Border color
+		fill_style.bg_color = Color.LIME_GREEN
+		fill_style.border_color = Color.LIME_GREEN
 		fill_style.set_border_width_all(2)
 		indicator.add_theme_stylebox_override("fill", fill_style)
 		var bg_style = StyleBoxFlat.new()
-		bg_style.bg_color = Color.BLACK  # Background color
-		bg_style.border_color = Color.LIME_GREEN    # Border color
+		bg_style.bg_color = Color.BLACK
+		bg_style.border_color = Color.LIME_GREEN
 		bg_style.set_border_width_all(2)
 		indicator.add_theme_stylebox_override("background", bg_style)
 		add_child(indicator)
-		indicator.anchor_left = 0.5   # Center horizontally
-		indicator.anchor_top = 0      # Align to the top
-		indicator.anchor_right = 0.5  # Center horizontally
-		indicator.anchor_bottom = 0   # Align to the top
+		indicator.anchor_left = 0.5
+		indicator.anchor_top = 0
+		indicator.anchor_right = 0.5
+		indicator.anchor_bottom = 0
 		value_indicator = indicator
-	value_indicator.value = display_value
+		
+	var current_value = GlobalSimulator.current_object_value(object_id)
+	if current_value != null: 
+		value_indicator.value = current_value
+	else:
+		value_indicator.value = display_value
 
 func bounding_radius():
 	if shape is RectangleShape2D:
