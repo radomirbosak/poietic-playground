@@ -11,7 +11,11 @@ class SimulationState:
 		self.values = values
 	
 	func object_value(id: int) -> float:
-		return values[id] as float
+		var value = values.get(id)
+		if value != null:
+			return value as float
+		else:
+			return 0.0
 
 var states: Array[SimulationState] = []
 

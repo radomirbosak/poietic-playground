@@ -18,6 +18,8 @@ func input_began(event: InputEvent, pointer_position: Vector2):
 		else:
 			if canvas.selection.is_empty() or !canvas.selection.contains(candidate):
 				canvas.selection.replace([candidate])
+			else:
+				print("Context menu now? (not implemented)")
 
 		last_pointer_position = pointer_position
 		state = SelectToolState.HIT
