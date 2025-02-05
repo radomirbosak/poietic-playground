@@ -10,7 +10,6 @@ func _ready():
 	get_viewport().connect("size_changed", _on_window_resized)
 	create_demo_design()
 	update_status_text()
-	print("Objects: ", len(design.all_objects()), " nodes: ", len(design.all_nodes()), " edges: ", len(design.all_edges()))
 	canvas.sync_design()
 
 	var config = ConfigFile.new()

@@ -139,7 +139,7 @@ func update_pictogram():
 
 
 	var pinfo = Pictogram.get_pictogram(type_name)
-	image.texture = ImageTexture.create_from_image(pinfo.image)
+	image.texture = ImageTexture.create_from_image(pinfo.get_image())
 	shape = pinfo.shape
 	# TODO: Use offset shape, not grow shape.
 	selection_highlight_shape = DiagramGeometry.offset_shape(shape, 6)

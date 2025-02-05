@@ -17,6 +17,7 @@ script = ExtResource("2_lulh0")
 [node name="Gui" type="Node" parent="."]
 
 [node name="InventoryPalette" parent="Gui" instance=ExtResource("3_xlarl")]
+anchors_preset = -1
 anchor_top = 0.102
 anchor_bottom = 0.102
 offset_top = 0.399994

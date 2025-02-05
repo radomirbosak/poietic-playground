@@ -35,7 +35,6 @@ func all_objects() -> Array[DesignObject]:
 	return result
 
 func remove_object(id: int):
-	var object = design_objects[id]
 	design_objects.erase(id)
 	var edges: Array[int] = []
 	for edge in design_objects.values():

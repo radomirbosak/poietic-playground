@@ -88,7 +88,7 @@ func update_canvas_position() -> void:
 	self.position = canvas_offset
 	self.scale = Vector2(zoom_level, zoom_level)
 	
-func _process(delta):
+func _process(_delta):
 	if sync_needed:
 		sync_design()
 		sync_needed = false
@@ -189,7 +189,7 @@ func create_edge_from(object: DesignObject) -> DiagramConnection:
 
 # Selection
 # ----------------------------------------------------------------
-func begin_drag_selection(mouse_position: Vector2):
+func begin_drag_selection(_mouse_position: Vector2):
 	for node in selection.objects:
 		if node is DiagramNode:
 			node.is_dragged = true
@@ -206,7 +206,7 @@ func drag_selection(move_delta: Vector2):
 		else:
 			push_error("Trying to drag invalid node: ", node)
 
-func finish_drag_selection(final_position: Vector2) -> void:
+func finish_drag_selection(_final_position: Vector2) -> void:
 	for node in selection.objects:
 		if node is DiagramNode:
 			node.is_dragged = false

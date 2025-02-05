@@ -47,7 +47,6 @@ func update_from(object: DesignObject):
 		self.label = text
 	queue_layout()
 
-@warning_ignore("shadowed_variable")
 func set_connection(origin: DiagramNode, target: Node2D):
 	self.origin = origin
 	self.target = target
@@ -60,7 +59,6 @@ func set_connection(origin: DiagramNode, target: Node2D):
 		#joint.node_b = joint.get_path_to(target)
 	update_arrow()
 	
-@warning_ignore("shadowed_variable")
 func set_target(target: DiagramNode):
 	self.target = target
 	update_arrow()

@@ -7,6 +7,7 @@ signal simulation_started()
 signal simulation_stopped()
 
 signal simulation_step()
+@warning_ignore("unused_signal")
 signal simulation_reset()
 
 var is_running: bool = false

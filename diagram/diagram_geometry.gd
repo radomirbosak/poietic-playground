@@ -205,24 +205,24 @@ static func offset_polygon(polygon: PackedVector2Array, offset: float) -> Packed
 static func draw_shape(canvas: CanvasItem, shape: Shape2D, color: Color = Color.WHITE, width: float = -1):
 	if shape is RectangleShape2D:
 		var extents = shape.extents
-		canvas.draw_rect(Rect2(-extents, extents * 2), color, false)
+		canvas.draw_rect(Rect2(-extents, extents * 2), color, false, width)
 	elif shape is CircleShape2D:
-		canvas.draw_circle(Vector2.ZERO, shape.radius, color, false)
+		canvas.draw_circle(Vector2.ZERO, shape.radius, color, false, width)
 	elif shape is CapsuleShape2D:
 		var radius = shape.radius
 		var height = shape.height
-		draw_capsule(canvas, Vector2.ZERO, radius, height, color)
+		draw_capsule(canvas, Vector2.ZERO, radius, height, color, width)
 	elif shape is ConvexPolygonShape2D:
 		var points = shape.points
 		canvas.draw_polygon(points, [color])
 	else:
 		print("Unsupported shape type: ", shape.get_class())
 
-static func draw_capsule(canvas: CanvasItem, position: Vector2, radius: float, height: float, color: Color):
+static func draw_capsule(canvas: CanvasItem, position: Vector2, radius: float, height: float, color: Color, width: float = -1.0):
 	var half_height = height / 2
 	# Draw the two semicircles
-	canvas.draw_arc(position + Vector2(0, -half_height), radius, PI, 2 * PI, 32, color)
-	canvas.draw_arc(position + Vector2(0, half_height), radius, 0, PI, 32, color)
+	canvas.draw_arc(position + Vector2(0, -half_height), radius, PI, 2 * PI, 32, color, width)
+	canvas.draw_arc(position + Vector2(0, half_height), radius, 0, PI, 32, color, width)
 	# Draw the two lines connecting the semicircles
-	canvas.draw_line(position + Vector2(-radius, -half_height), position + Vector2(-radius, half_height), color)
-	canvas.draw_line(position + Vector2(radius, -half_height), position + Vector2(radius, half_height), color)
+	canvas.draw_line(position + Vector2(-radius, -half_height), position + Vector2(-radius, half_height), color, width)
+	canvas.draw_line(position + Vector2(radius, -half_height), position + Vector2(radius, half_height), color, width)

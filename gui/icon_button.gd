@@ -14,7 +14,7 @@ func _ready():
 func _pressed():
 	pass
 
-func _toggled(button_pressed: bool):
+func _toggled(_button_pressed: bool):
 	update_shader()
 
 func update_shader():
