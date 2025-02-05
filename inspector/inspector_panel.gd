@@ -52,7 +52,9 @@ func update_known_types():
 	%TypeButton.add_item("Auxiliary", 3)
 	%TypeButton.select(0)
 
-func _on_name_field_text_submitted(new_text):
+func _on_name_field_text_submitted(new_name):
 	for object in selection.objects:
-		object.label = new_text
-	# TODO: Call controller
+		var design_object = Design.global.get_object(object.object_id)
+		design_object.set_name(new_name)
+	# FIXME: This needs to be called from a change transaction
+	Design.global.design_changed.emit()

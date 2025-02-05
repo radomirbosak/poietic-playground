@@ -5,9 +5,9 @@ var design: Design
 var zoom_level: float = 1.0
 var canvas_offset: Vector2 = Vector2.ZERO
 
-const default_pictogram_color = Color(1.0,0.8,0)
-const default_label_color = Color(1.0,0.8,0)
-const default_selection_color: Color = Color.WHITE
+const default_pictogram_color = Color.WHITE
+const default_label_color = Color.WHITE
+const default_selection_color: Color = Color(1.0,0.8,0)
 
 signal selection_changed(selection: Selection)
 
@@ -49,6 +49,7 @@ func _init():
 func _ready():
 	selection.selection_changed.connect(_on_selection_changed)
 	GlobalSimulator.simulation_step.connect(_on_simulation_step)
+	Design.global.design_changed.connect(_on_design_changed)
 	
 func _exit_tree():
 	pass
@@ -62,6 +63,9 @@ func _on_simulation_step():
 	
 func _on_selection_changed(objects):
 	selection_changed.emit(objects)
+
+func _on_design_changed():
+	sync_needed = true
 
 func _unhandled_input(event):
 	var tool = Global.current_tool

@@ -1,6 +1,8 @@
 class_name DiagramNode extends Node2D
 # Physics: extends RigidBody2D
 
+const _DEBUG = false
+const label_offset = 10
 const default_radius = 50
 const highlight_padding = 5
 
@@ -16,7 +18,7 @@ var display_value: float = 0.0:
 var object_id: int = 0
 
 # Node Components (Children)
-var pictogram: Node2D
+var image: Sprite2D
 var shape: Shape2D
 var label_text: Label
 var value_indicator: ProgressBar
@@ -38,10 +40,10 @@ var touchable_outline: PackedVector2Array = []
 var is_selected: bool = false:
 	set(value):
 		is_selected = value
-		update_highlight()
+		queue_redraw()
 		
 var is_dragged: bool = false
-var selection_highlight: Node2D = null
+var selection_highlight_shape: Shape2D = null
 var target_position: Vector2 = Vector2():
 	set(value):
 		# TODO: Remove this for Physics
@@ -57,9 +59,6 @@ func _init():
 	shape = CircleShape2D.new()
 	shape.radius = default_radius
 
-	selection_highlight = Node2D.new()
-	selection_highlight.hide()
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# add_child(collision)
@@ -69,6 +68,12 @@ var last_position: Vector2 = Vector2()
 var is_moved: bool
 var children_needs_update: bool = true
 
+func _draw():
+	if shape and _DEBUG:
+		DiagramGeometry.draw_shape(self, shape, Color.HOT_PINK)
+	if is_selected and selection_highlight_shape:
+		DiagramGeometry.draw_shape(self, selection_highlight_shape, DiagramCanvas.default_selection_color, 2)
+		
 func _process(_delta):
 	if position != last_position:
 		last_position = position
@@ -123,40 +128,21 @@ func update_children() -> void:
 	else:
 		label_text.text = label
 		label_text.queue_redraw()
-	var size = label_text.get_minimum_size()
-	label_text.position = -size * 0.5
-	update_highlight()
+	var label_size = label_text.get_minimum_size()
+	label_text.position = Vector2(-label_size.x * 0.5, shape.get_rect().size.y / 2 + label_offset)
 	children_needs_update = false
 
 func update_pictogram():
-	if pictogram != null:
-		pictogram.free()
-	match type_name:
-		"Stock":
-			var rect = ShapeCreator.rectangle_with_center(Vector2(), default_radius * 3, default_radius * 2)
-			var path = Line2D.new()
-			for point in ShapeCreator.rectangle_to_polygon(rect):
-				path.add_point(point)
-			pictogram = path
-			path.width = 2
-			path.default_color = DiagramCanvas.default_pictogram_color
-			shape = RectangleShape2D.new()
-			shape.size = Vector2(default_radius*3, default_radius*2)
-			add_child(pictogram)
-		"Flow":
-			pictogram = Circle2D.new()
-			pictogram.radius = default_radius
-			pictogram.color = DiagramCanvas.default_pictogram_color
-			shape = CircleShape2D.new()
-			shape.radius = default_radius
-			add_child(pictogram)
-		_:
-			pictogram = Circle2D.new()
-			pictogram.radius = default_radius
-			pictogram.color = Color.RED
-			shape = CircleShape2D.new()
-			shape.radius = default_radius
-			add_child(pictogram)
+	if image == null:
+		image = Sprite2D.new()
+		add_child(image)
+
+
+	var pinfo = Pictogram.get_pictogram(type_name)
+	image.texture = ImageTexture.create_from_image(pinfo.image)
+	shape = pinfo.shape
+	# TODO: Use offset shape, not grow shape.
+	selection_highlight_shape = DiagramGeometry.offset_shape(shape, 6)
 	# collision.shape = shape
 
 func update_indicator():
@@ -201,40 +187,9 @@ func bounding_radius():
 		push_error("Shapes other than rect or circle are not supported")
 		return false
 
-func update_highlight():
-	if selection_highlight != null:
-		selection_highlight.free()
-		
-	if shape is RectangleShape2D:
-		var hlight = Line2D.new()
-		for point in ShapeCreator.rectangle_to_polygon(shape.get_rect().grow(highlight_padding)):
-			hlight.add_point(point)
-		hlight.width = 2
-		hlight.default_color = DiagramCanvas.default_selection_color
-		add_child(hlight)
-		selection_highlight = hlight
-	elif shape is CircleShape2D:
-		var hlight = Circle2D.new()
-		hlight.radius = shape.radius + highlight_padding
-		hlight.color = DiagramCanvas.default_selection_color
-		add_child(hlight)
-		selection_highlight = hlight
-	else:
-		var hlight = Line2D.new()
-		for point in ShapeCreator.rectangle_to_polygon(shape.get_rect().grow(highlight_padding)):
-			hlight.add_point(point)
-		hlight.width = 2
-		hlight.default_color = Color.RED
-		add_child(hlight)
-		selection_highlight = hlight
-	
-	if is_selected:
-		selection_highlight.show()
-	else:
-		selection_highlight.hide()
-	
 func set_selected(flag: bool):
 	self.is_selected = flag
+	queue_redraw()
 		
 func contains_point(point: Vector2):
 	var local_point = to_local(point)

@@ -72,25 +72,17 @@ func update_arrow():
 	if origin == null or target == null:
 		push_warning("Updating connector shape without origin or target")
 		return
-	var origin_center = origin.global_position
-	var target_center = target.global_position
 
-	var origin_inter = ShapeCreator.intersect_line_with_shape(origin_center, target_center, origin.shape, origin.global_transform)
-	
-	if len(origin_inter) >= 1:
-		arrow_origin = to_local(origin_inter[0])
-	else:
-		arrow_origin = to_local(origin_center)
-
+	var target_shape: Shape2D
 	if target is DiagramNode:
-		var target_inter = ShapeCreator.intersect_line_with_shape(target_center, origin_center, target.shape, target.global_transform)
-		if len(target_inter) >= 1:
-			arrow_target = to_local(target_inter[0])
-		else:
-			arrow_target = to_local(target_center)
+		target_shape = target.shape
 	else:
-		arrow_target = to_local(target_center)
-		
+		target_shape = CircleShape2D.new()
+		target_shape.radius = 10
+
+	var points = DiagramGeometry.shape_clipped_connection(origin.shape, origin.global_transform, target_shape, target.global_transform)
+	arrow_origin = to_local(points[0])
+	arrow_target = to_local(points[1])
 	var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
 	if len(polygons) >= 1:
 		touchable_outline = polygons[0]
@@ -102,7 +94,7 @@ func update_arrow():
 func draw_arrow():
 	draw_line(arrow_origin, arrow_target, DiagramCanvas.default_pictogram_color, 2.0)
 
-	var head_points = ShapeCreator.arrow_points(arrow_origin, arrow_target, ShapeCreator.ArrowHeadType.STICK, 30)
+	var head_points = DiagramGeometry.arrow_points(arrow_origin, arrow_target, DiagramGeometry.ArrowHeadType.STICK, 30)
 	if len(head_points) > 0:
 		draw_polyline(head_points, DiagramCanvas.default_pictogram_color, 2.0)
 		

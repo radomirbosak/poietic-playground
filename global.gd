@@ -9,6 +9,7 @@ signal tool_changed(tool: CanvasTool)
 
 func _ready():
 	# Initialize globals here
+	Pictogram.load_pictograms()
 	pass
 
 func change_tool(tool: CanvasTool) -> void:
