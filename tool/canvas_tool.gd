@@ -35,3 +35,8 @@ func input_moved(_event: InputEvent, _move_delta: Vector2) -> bool:
 	
 func input_cancelled(_event: InputEvent) -> bool:
 	return false
+
+## Release the tool.
+## Called when another tools is selected.
+func release():
+	pass

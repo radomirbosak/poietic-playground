@@ -60,8 +60,6 @@ func _unhandled_input(event):
 		toggle_inspector()
 	elif event.is_action_pressed("run"):
 		toggle_run()
-	elif event.is_action_pressed("add-node"):
-		add_node()
 	elif event.is_action_pressed("delete"):
 		delete_selection()
 
@@ -105,15 +103,6 @@ func toggle_run():
 		GlobalSimulator.stop()
 	else:
 		GlobalSimulator.run()
-
-func add_node():
-	var mouse_position = get_viewport().get_mouse_position()
-	var new_postion = canvas.to_local(mouse_position)
-
-	var object: DesignObject = DesignObject.new("Auxiliary", "node", new_postion, randi() % 100)
-	object.set_name("node" + str(object.object_id))
-	design.add_object(object)
-	canvas.queue_sync()
 	
 func delete_selection():
 	canvas.delete_selection()

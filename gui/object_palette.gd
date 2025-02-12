@@ -17,7 +17,7 @@ enum TriangleSide {
 @export var triangle_side: TriangleSide = TriangleSide.TOP  # Use the enum
 const corner_radius: float = 10.0
 const triangle_size: float = 20.0
-const triangle_height: float = sqrt(3.) / 2.0 * triangle_size
+const triangle_height: float = (sqrt(3.) / 2.0) * triangle_size
 const padding: float = 10.0
 
 class ObjectPaletteItem extends TextureButton:
@@ -75,13 +75,13 @@ func set_callout_position(callout_position: Vector2):
 	print("BEFORE: ", position, size)
 	match triangle_side:
 		TriangleSide.TOP:
-			position = callout_position + Vector2(-size.x / 2, +size.y/2 - triangle_height)
+			position = callout_position + Vector2(-size.x / 2, +size.y/2 - triangle_height * 2)
 		TriangleSide.BOTTOM:
-			position = callout_position + Vector2(-size.x / 2, -size.y - triangle_height)
+			position = callout_position + Vector2(-size.x / 2, -size.y - triangle_height * 2)
 		TriangleSide.LEFT:
-			position = callout_position + Vector2(0 + triangle_height, - size.y / 2)
+			position = callout_position + Vector2(0 + triangle_height * 2, - size.y / 2)
 		TriangleSide.RIGHT:
-			position = callout_position + Vector2(-size.x - triangle_height, -size.y / 2)
+			position = callout_position + Vector2(-size.x - triangle_height * 2, -size.y / 2)
 	print("AFTER: ", position, size)
 	queue_redraw()
 
