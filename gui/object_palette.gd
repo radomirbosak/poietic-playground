@@ -28,6 +28,7 @@ class ObjectPaletteItem extends TextureButton:
 		self.texture_normal = pictogram.get_texture()
 		self.ignore_texture_size = true
 		self.stretch_mode = StretchMode.STRETCH_KEEP_ASPECT_CENTERED
+		self.tooltip_text = pictogram.name
 
 func _ready():
 	call_deferred("update_items")
@@ -37,7 +38,7 @@ func update_items():
 	for child in item_grid.get_children():
 		item_grid.remove_child(child)
 		
-	for pictogram in Pictogram._internal_pictograms:
+	for pictogram in Metamodel.get_placeable_pictograms():
 		add_item(pictogram)
 
 func add_item(pictogram: Pictogram):
@@ -45,6 +46,8 @@ func add_item(pictogram: Pictogram):
 	item.custom_minimum_size = Vector2(60, 60)
 	item.pressed.connect(_on_item_selected.bind(item))
 	item_grid.add_child(item)
+	item_grid.queue_sort()
+	queue_sort()
 	queue_redraw()
 
 func _on_item_selected(item: ObjectPaletteItem):
@@ -69,7 +72,7 @@ func set_callout_position(callout_position: Vector2):
 		triangle_side = TriangleSide.RIGHT
 	else:
 		triangle_side = TriangleSide.TOP  # Default
-
+	print("BEFORE: ", position, size)
 	match triangle_side:
 		TriangleSide.TOP:
 			position = callout_position + Vector2(-size.x / 2, +size.y/2 - triangle_height)
@@ -79,6 +82,7 @@ func set_callout_position(callout_position: Vector2):
 			position = callout_position + Vector2(0 + triangle_height, - size.y / 2)
 		TriangleSide.RIGHT:
 			position = callout_position + Vector2(-size.x - triangle_height, -size.y / 2)
+	print("AFTER: ", position, size)
 	queue_redraw()
 
 func _draw():

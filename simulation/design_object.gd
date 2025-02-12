@@ -22,7 +22,8 @@ func _init(type: String, name: String = "unnamed", position: Vector2 = Vector2()
 	}
 	
 	match type_name:
-		"Stock", "Flow", "Auxiliary": structure = StructureType.NODE
+		"Stock", "Flow", "Auxiliary", "GraphicalFunction", "Delay", "Smooth":
+			structure = StructureType.NODE
 		"Fills", "Drains", "Parameter": structure = StructureType.EDGE
 		_: structure = StructureType.UNKNOWN
 

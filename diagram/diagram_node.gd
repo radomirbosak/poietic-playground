@@ -138,9 +138,9 @@ func update_pictogram():
 		add_child(image)
 
 
-	var pinfo = Pictogram.get_pictogram(type_name)
-	image.texture = ImageTexture.create_from_image(pinfo.get_image())
-	shape = pinfo.shape
+	var pictogram: Pictogram = Metamodel.get_pictogram(type_name)
+	image.texture = ImageTexture.create_from_image(pictogram.get_image())
+	shape = pictogram.shape
 	# TODO: Use offset shape, not grow shape.
 	selection_highlight_shape = DiagramGeometry.offset_shape(shape, 6)
 	# collision.shape = shape

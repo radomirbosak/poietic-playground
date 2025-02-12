@@ -131,7 +131,7 @@ func sync_nodes():
 
 	# 2. Update all nodes that are in the graph
 	for object in design.all_nodes():
-		var node = existing.get(object.object_id)
+		var node: DiagramNode = existing.get(object.object_id)
 		if node != null:
 			node.update_from(object)
 			existing.erase(object.object_id)

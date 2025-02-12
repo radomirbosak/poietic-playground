@@ -17,8 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Global="*res://global.gd"
+Metamodel="*res://simulation/metamodel.gd"
 GlobalSimulator="*res://simulation/simulator.gd"
+Global="*res://global.gd"
 
 [debug]
 
