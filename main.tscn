@@ -1,27 +1,15 @@
-[gd_scene load_steps=7 format=3 uid="uid://fhtvpa30rrel"]
+[gd_scene load_steps=6 format=3 uid="uid://fhtvpa30rrel"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_2q6io"]
 [ext_resource type="Script" path="res://diagram/diagram_canvas.gd" id="2_lulh0"]
 [ext_resource type="PackedScene" uid="uid://c3kn0jiqoe5fm" path="res://gui/control_bar.tscn" id="3_bgr8b"]
 [ext_resource type="PackedScene" uid="uid://l7uejktm712d" path="res://gui/tool_bar.tscn" id="3_qq1bh"]
-[ext_resource type="PackedScene" uid="uid://cvojo0ltwwkgp" path="res://gui/item_palette.tscn" id="3_xlarl"]
 [ext_resource type="PackedScene" uid="uid://dgupp2doqjm1a" path="res://inspector/inspector_panel.tscn" id="4_uq7uj"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_2q6io")
 
-[node name="DiagramCanvas" type="Node2D" parent="."]
-unique_name_in_owner = true
-script = ExtResource("2_lulh0")
-
 [node name="Gui" type="Node" parent="."]
-
-[node name="InventoryPalette" parent="Gui" instance=ExtResource("3_xlarl")]
-anchors_preset = -1
-anchor_top = 0.102
-anchor_bottom = 0.102
-offset_top = 0.399994
-offset_bottom = 0.399994
 
 [node name="ToolBar" parent="Gui" instance=ExtResource("3_qq1bh")]
 anchors_preset = 0
@@ -84,4 +72,8 @@ I - Show./Hide inspector
 H - Show/Hide this help
 "
 
-[connection signal="selection_changed" from="DiagramCanvas" to="Gui/InspectorPanel" method="_on_diagram_canvas_selection_changed"]
+[node name="Canvas" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_lulh0")
+
+[connection signal="selection_changed" from="Canvas" to="Gui/InspectorPanel" method="_on_diagram_canvas_selection_changed"]

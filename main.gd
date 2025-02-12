@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var canvas: DiagramCanvas = %DiagramCanvas
+@onready var canvas: DiagramCanvas = %Canvas
 var design: Design
 
 func _init():
@@ -25,8 +25,8 @@ func _ready():
 			$Gui/HelpPanel.hide()
 		DisplayServer.window_set_size(window_size)
 
-	%InspectorPanel.canvas = $DiagramCanvas
-
+	Global.canvas = $Canvas
+	
 func create_demo_design():
 	var a = DesignObject.new("Stock", "source", Vector2(400, 300), randi() % 100)
 	var b = DesignObject.new("Flow", "flow", Vector2(600, 300), randi() % 100)
@@ -50,6 +50,8 @@ func create_demo_design():
 func _unhandled_input(event):
 	if event.is_action_pressed("selection-tool"):
 		Global.change_tool(Global.selection_tool)
+	elif event.is_action_pressed("place-tool"):
+		Global.change_tool(Global.place_tool)
 	elif event.is_action_pressed("connect-tool"):
 		Global.change_tool(Global.connect_tool)
 	elif event.is_action_pressed("help-toggle"):
@@ -67,14 +69,8 @@ func _process(_delta):
 	update_status_text()
 
 func update_status_text():
-	var text = "Tool: "
-	var tool = Global.current_tool
-	if tool != null:
-		text += tool.tool_name()
-	else:
-		text += "(none)"
-		
-	text += " | Nodes: " + str(len(design.all_nodes())) + " Edges: " + str(len(design.all_edges()))
+	var text = ""
+	text += "Nodes: " + str(len(design.all_nodes())) + " Edges: " + str(len(design.all_edges()))
 	$Gui/StatusText.text = text
 
 func _on_window_resized():

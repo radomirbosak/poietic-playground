@@ -3,7 +3,6 @@ class_name InspectorPanel extends PanelContainer
 ## Panel for inspecting diagram elements.
 ##
 
-var canvas: DiagramCanvas
 var selection: Selection
 
 func get_type_id(type_name: String):

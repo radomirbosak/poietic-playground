@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://l7uejktm712d"]
+[gd_scene load_steps=8 format=3 uid="uid://l7uejktm712d"]
 
 [ext_resource type="Script" path="res://gui/tool_bar.gd" id="1_kmcp4"]
 [ext_resource type="Texture2D" uid="uid://d3lh7s2qhh7wv" path="res://resources/icons/select.svg" id="2_nolyo"]
 [ext_resource type="Script" path="res://gui/icon_button.gd" id="3_6uy1u"]
 [ext_resource type="Texture2D" uid="uid://bgi3rqbp27e8u" path="res://resources/icons/connect.svg" id="4_agou2"]
+[ext_resource type="Texture2D" uid="uid://thogai7sr7sg" path="res://resources/icons/place.svg" id="4_ut5w1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2vh0h"]
 bg_color = Color(0.130208, 0.130208, 0.130208, 1)
@@ -19,7 +20,7 @@ corner_radius_bottom_right = 12
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -1184.0
+offset_right = -1140.0
 offset_bottom = -748.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -41,9 +42,23 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_horizontal = 3
+tooltip_text = "Select Objects"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_phf6a")
 texture_normal = ExtResource("2_nolyo")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("3_6uy1u")
+
+[node name="PlaceToolButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Place Objects"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_phf6a")
+texture_normal = ExtResource("4_ut5w1")
 ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
@@ -53,6 +68,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_horizontal = 3
+tooltip_text = "Connect"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_phf6a")
 texture_normal = ExtResource("4_agou2")
@@ -61,4 +77,5 @@ stretch_mode = 5
 script = ExtResource("3_6uy1u")
 
 [connection signal="pressed" from="MarginContainer/HBoxContainer/SelectionToolButton" to="." method="_on_selection_tool_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/PlaceToolButton" to="." method="_on_place_tool_button_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/ConnectToolButton" to="." method="_on_connect_tool_button_pressed"]

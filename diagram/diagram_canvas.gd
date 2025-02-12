@@ -1,9 +1,12 @@
 class_name DiagramCanvas extends Node2D
 
 var design: Design
+# Diagram Content
+var diagram_objects: Dictionary = {} # int -> Node2
 
-var zoom_level: float = 1.0
-var canvas_offset: Vector2 = Vector2.ZERO
+@export var zoom_level: float = 1.0
+@export var canvas_offset: Vector2 = Vector2.ZERO
+@export var sync_needed: bool = true
 
 const default_pictogram_color = Color.WHITE
 const default_label_color = Color.WHITE
@@ -11,10 +14,6 @@ const default_selection_color: Color = Color(1.0,0.8,0)
 
 signal selection_changed(selection: Selection)
 
-var sync_needed: bool = true
-
-# Diagram Content
-var diagram_objects: Dictionary = {} # int -> Node2
 # var objects: Dictionary = {} # int -> DesignObject
 # var connections: Array[DiagramConnection] = []
 # var nodes: Array[DiagramNode] = []
@@ -47,12 +46,10 @@ func _init():
 	design = Design.global
 
 func _ready():
+	add_to_group("drag_drop_targets")
 	selection.selection_changed.connect(_on_selection_changed)
 	GlobalSimulator.simulation_step.connect(_on_simulation_step)
 	Design.global.design_changed.connect(_on_design_changed)
-	
-func _exit_tree():
-	pass
 	
 func _on_simulation_step():
 	for node in design.all_nodes():
@@ -67,23 +64,31 @@ func _on_selection_changed(objects):
 func _on_design_changed():
 	sync_needed = true
 
-func _unhandled_input(event):
-	var tool = Global.current_tool
-	if tool != null:
-		tool.canvas = self
-		tool.handle_intput(event)
-
 func queue_sync():
 	sync_needed = true
 
-func _input(event):
+var is_dragging: bool = false
+
+func _unhandled_input(event):
 	if event is InputEventPanGesture:
 		canvas_offset += (-event.delta) * zoom_level * 10
 		update_canvas_position()
-	if event is InputEventMagnifyGesture:
+	elif event is InputEventMagnifyGesture:
+		var mouse = get_global_mouse_position()
+		var new_trans = transform.scaled(Vector2(event.factor, event.factor))
+		var new_mouse = new_trans.affine_inverse() * mouse
 		zoom_level *= event.factor
+		# zoom_level = clamp(zoom_level, 0.1, 5.0)
+		canvas_offset += (get_local_mouse_position() - new_mouse) * zoom_level
 		update_canvas_position()
-		
+	else: # Regular tool use
+		var tool = Global.current_tool
+		if not tool:
+			return
+		tool.canvas = self
+		if tool.handle_intput(event):
+			get_viewport().set_input_as_handled()
+
 func update_canvas_position() -> void:
 	self.position = canvas_offset
 	self.scale = Vector2(zoom_level, zoom_level)
@@ -220,3 +225,47 @@ func delete_selection():
 
 	selection.clear()
 	queue_sync()
+
+# Dragging
+# ----------------------------------------------------------------
+
+
+func _can_drop_data(position, data):
+	print("Can drop at ", position, " Data: ", data)
+	return false
+
+func _drop_data(position, data):
+	print("Will drop at ", position, " Data: ", data)
+
+func _on_dragging_entered():
+	print("DRAGGING ENTERED")
+	pass
+	
+func _on_dragging_exited():
+	print("DRAGGING EXITED")
+	pass
+	
+func _on_dragging_updated():
+	print("DRAGGING UPDATED")
+	pass
+
+func _on_dragging_ended():
+	print("DRAGGING ENDED")
+	pass
+
+func _on_dragging_cancelled():
+	print("DRAGGING CANCELLED")
+	pass
+
+
+func _accepts_drag_drop(item: Variant, position: Vector2) -> bool:
+	return true
+
+func _handle_drag_drop(item: Variant, position: Vector2):
+	print("Item dropped:", item, "at", position)
+
+func _drag_entered(item: Variant, position: Vector2):
+	print("Drag entered:", item, "at", position)
+
+func _drag_exited():
+	print("Drag exited")

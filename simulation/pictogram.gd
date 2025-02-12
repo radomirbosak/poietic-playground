@@ -54,3 +54,6 @@ func get_image(scale: float = default_image_scale) -> Image:
 				var pixel = image.get_pixel(x, y)
 				image.set_pixel(x, y, pixel.inverted())
 	return image	
+
+func get_texture(scale: float = default_image_scale) -> ImageTexture:
+	return ImageTexture.create_from_image(get_image(scale))

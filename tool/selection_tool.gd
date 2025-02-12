@@ -10,7 +10,7 @@ var state: SelectToolState = SelectToolState.EMPTY
 func tool_name() -> String:
 	return "select"
 	
-func input_began(event: InputEvent, pointer_position: Vector2):
+func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 	var candidate = canvas.object_at_position(pointer_position)
 	if candidate:
 		if event.shift_pressed:
@@ -23,12 +23,14 @@ func input_began(event: InputEvent, pointer_position: Vector2):
 
 		last_pointer_position = pointer_position
 		state = SelectToolState.HIT
+		return true
 	else:
 		canvas.selection.clear()
 		state = SelectToolState.SELECT
+		return true
 		# TODO: Initiate rubber band here
 
-func input_moved(event: InputEvent, move_delta: Vector2):
+func input_moved(event: InputEvent, move_delta: Vector2) -> bool:
 	var mouse_position = event.global_position
 	last_pointer_position += move_delta
 	match state:
@@ -39,10 +41,9 @@ func input_moved(event: InputEvent, move_delta: Vector2):
 			state = SelectToolState.MOVE
 		SelectToolState.MOVE:
 			canvas.drag_selection(move_delta)
-
-func input_ended(_event: InputEvent, mouse_position: Vector2):
+	return true
+	
+func input_ended(_event: InputEvent, mouse_position: Vector2) -> bool:
 	state = SelectToolState.EMPTY
 	canvas.finish_drag_selection(mouse_position)
-
-func input_cancelled(_event: InputEvent):
-	pass
+	return true
