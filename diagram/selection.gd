@@ -2,6 +2,31 @@ class_name Selection extends Object
 
 signal selection_changed(selection: Selection)
 
+class OrderedSet:
+	var items: Array[Variant] = []
+	
+	func _init(new_items: Array[Variant] = []):
+		for item in new_items:
+			insert(item)
+	
+	func insert(item: Variant):
+		if not items.has(item):
+			items.append(item)
+
+	func intersection(other: OrderedSet) -> OrderedSet:
+		var result: OrderedSet = OrderedSet.new()
+		for item in items:
+			if not other.items.has(item):
+				result.insert(item)
+		return result
+
+	func form_intersection(other: OrderedSet) -> void:
+		var keep: Array[Variant] = []
+		for item in items:
+			if other.items.has(item):
+				keep.append(item)
+		self.items = keep
+
 ## List of objects in the selection.
 var objects: Array[Node2D] = []
 
@@ -91,11 +116,57 @@ func toggle(object: Node2D):
 func get_distinct_values(property: String) -> Array[Variant]:
 	var values: Array[Variant] = []
 
-	for object in objects:
-		var value = object.get(property)
+	for object in get_design_objects():
+		var value = object.attribute(property)
 		if value == null:
 			continue
 		if values.find(value) == -1:
 			values.append(value)
 	
 	return values
+
+func get_type_names() -> Array[String]:
+	var result: Array[String] = []
+	for item in objects:
+		var object = Design.global.get_object(item.object_id)
+		if not result.has(object.type_name):
+			result.append(object.type_name)
+
+	return result
+
+func get_design_objects() -> Array[DesignObject]:
+	var result: Array[DesignObject] = []
+	for item in objects:
+		if item is DiagramNode:
+			var object = Design.global.get_object(item.object_id)
+			result.append(object)
+		elif item is DiagramConnection:
+			var object = Design.global.get_object(item.object_id)
+			result.append(object)
+	return result
+
+const all_inspector_groups: Array[String] = [
+	"Name", "Formula", "Stock", "GraphicalFunction", "Delay", "Smooth"
+]
+
+## Get list of inspector group names that are available for this selection.
+func distinct_traits() -> Array[String]:
+	var groups: OrderedSet = OrderedSet.new(all_inspector_groups)
+
+	var objects = get_design_objects()
+	if len(objects) == 0:
+		return []
+
+	for object in objects:
+		var type = Metamodel.get_object_type(object.type_name)
+		var object_groups: OrderedSet = OrderedSet.new()
+		object_groups.insert("Name")
+		for trait_name in type.traits:
+			object_groups.insert(trait_name)
+
+		groups.form_intersection(object_groups)
+		
+	var result: Array[String] = []
+	for item in groups.items:
+		result.append(item as String)
+	return result

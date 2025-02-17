@@ -11,9 +11,8 @@ var canvas: DiagramCanvas = null
 signal tool_changed(tool: CanvasTool)
 
 func _ready():
-	# Initialize globals here
-	# Pictogram.load_pictograms()
-	pass
+	Metamodel._initialize_object_types()
+	InspectorTraitPanel._initialize_panels()
 
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")
@@ -39,3 +38,14 @@ func change_tool(tool: CanvasTool) -> void:
 		current_tool.release()
 	current_tool = tool
 	tool_changed.emit(tool)
+
+func open_object_context_menu(object: Variant, position: Vector2):
+	var menu = CallOut.new()
+	var box = HBoxContainer.new()
+	menu.add_child(box)
+	var b1 = Button.new()
+	b1.text = "one"
+	box.add_child(b1)
+	menu.set_callout_point(position)
+	# canvas.add_child(palette)
+	Global.set_modal(menu)

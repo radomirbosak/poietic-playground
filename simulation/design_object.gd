@@ -41,8 +41,8 @@ func get_value() -> float:
 func set_value(new_value: float) -> void:
 	attributes["value"] = new_value
 
-func update_attribute(key: String, value: Variant) -> void:
+func set_attribute(key: String, value: Variant) -> void:
 	attributes[key] = value
 
 func attribute(key: String) -> Variant:
-	return attributes[key]
+	return attributes.get(key)

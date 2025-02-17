@@ -4,13 +4,37 @@ const placeable_nodes = ["Stock", "Flow", "Auxiliary", "GraphicalFunction", "Smo
 
 var thing: int = 10
 
+var _object_types: Array[ObjectType]
+
 static var _all_pictograms: Dictionary = {}
 static var default_pictogram: Pictogram
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	_load_pictograms()
+	_initialize_object_types()
 	
+func _initialize_object_types():
+	_object_types = [
+		ObjectType.new("Stock", ["Formula"], ObjectType.Structure.NODE),
+		ObjectType.new("Flow", ["Formula"], ObjectType.Structure.NODE),
+		ObjectType.new("Auxiliary", ["Formula"], ObjectType.Structure.NODE),
+		ObjectType.new("GraphicalFunction", [], ObjectType.Structure.NODE),
+		ObjectType.new("Delay", [], ObjectType.Structure.NODE),
+		ObjectType.new("Smooth", [], ObjectType.Structure.NODE),
+
+		ObjectType.new("Fills", [], ObjectType.Structure.EDGE),
+		ObjectType.new("Drains", [], ObjectType.Structure.EDGE),
+		ObjectType.new("Parameter", [], ObjectType.Structure.EDGE),
+	]
+	
+
+func get_object_type(name: String) -> ObjectType:
+	for type in _object_types:
+		if type.name == name:
+			return type
+	return null
+
 func _load_pictograms():
 	# TODO: Adjust the scales based on the rules for the pictogram sizes (not yet defined)
 	var circle = CircleShape2D.new()

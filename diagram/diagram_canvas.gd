@@ -216,7 +216,7 @@ func finish_drag_selection(_final_position: Vector2) -> void:
 		if node is DiagramNode:
 			node.is_dragged = false
 			var object = design.get_object(node.object_id)
-			object.update_attribute("position", node.position)
+			object.set_attribute("position", node.position)
 			# node.position = final_position
 		
 func delete_selection():
