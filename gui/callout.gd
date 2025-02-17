@@ -25,7 +25,6 @@ func _ready():
 
 func _notification(notif):
 	if notif == NOTIFICATION_RESIZED:
-		print("RESIZED TO: ", size)
 		_update_size()
 
 func _update_size():
@@ -47,7 +46,6 @@ func _update_size():
 			child_rect.position.x += triangle_height
 
 		fit_child_in_rect(_child, child_rect)
-		print("CallOut: Updated size: ", size, " min: ", custom_minimum_size)
 		queue_redraw()
 		
 func _draw():

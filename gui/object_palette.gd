@@ -30,7 +30,6 @@ func update_items():
 		add_item(pictogram)
 
 func add_item(pictogram: Pictogram):
-	print("Adding item: ", pictogram.name)
 	var item: ObjectPaletteItem = ObjectPaletteItem.new(pictogram)
 	item.custom_minimum_size = Vector2(60, 60)
 	item.pressed.connect(_on_item_selected.bind(item))

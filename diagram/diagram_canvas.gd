@@ -204,7 +204,7 @@ func drag_selection(move_delta: Vector2):
 		if node is DiagramNode:
 			node.position += move_delta
 			var object = design.get_object(node.object_id)
-			object.update_attribute("position", node.position)
+			object.set_attribute("position", node.position)
 		elif node is DiagramConnection:
 			# For now, do nothing (and let the reader of the source know)
 			pass
