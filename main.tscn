@@ -33,7 +33,6 @@ text = "Text"
 
 [node name="InspectorPanel" parent="Gui" instance=ExtResource("4_uq7uj")]
 unique_name_in_owner = true
-visible = false
 offset_left = -201.0
 offset_right = -1.0
 
