@@ -26,7 +26,7 @@ func update_items():
 	for child in item_grid.get_children():
 		item_grid.remove_child(child)
 		
-	for pictogram in Metamodel.get_placeable_pictograms():
+	for pictogram in Pictogram.get_placeable_pictograms():
 		add_item(pictogram)
 
 func add_item(pictogram: Pictogram):

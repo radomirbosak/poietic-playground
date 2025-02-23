@@ -1,8 +1,25 @@
 extends Node
 
+# Constants
+
+const icon_scale: float = 1.0
+const all_icon_names: Array[String] = ["select", "place", "connect", "run", "stop", "restart", "loop"]
+
+# Tools
+
 var selection_tool = SelectionTool.new()
 var place_tool = PlaceTool.new()
 var connect_tool = ConnectTool.new()
+
+# Poietic
+
+var metamodel: PoieticMetamodel
+
+# Resources
+
+var icons: Array[Icon] = []
+
+# State
 
 var modal_node: Node = null
 var current_tool: CanvasTool = selection_tool
@@ -10,10 +27,36 @@ var canvas: DiagramCanvas = null
 
 signal tool_changed(tool: CanvasTool)
 
-func _ready():
-	Metamodel._initialize_object_types()
+func initialize():
+	print("Initializing globals ...")
 	InspectorTraitPanel._initialize_panels()
+	_initialize_icons()
+	Pictogram._load_pictograms()
 
+	metamodel = PoieticMetamodel.new()
+	print("Metamodel types: ", metamodel.get_type_list())
+	print("Metamodel traits: ", metamodel.get_trait_list())
+	print("Done initializing.")
+	
+func _initialize_icons():
+	for name in all_icon_names:
+		var icon = Icon.new(name)
+		var path = "res://resources/icons/" + name + ".svg"
+		icon.load_from_path(path)
+		icons.append(icon)
+
+func get_icon(name: String) -> Icon:
+	for icon in icons:
+		if icon.name == name:
+			return icon
+	return null
+
+
+func _initialize_toolbar_icons():
+	pass
+
+
+	# "res://resources/icons/connect.svg"
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")
 	

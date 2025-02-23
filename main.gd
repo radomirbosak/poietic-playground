@@ -15,6 +15,7 @@ func _init():
 func _ready():
 	load_settings()
 
+	Global.initialize()
 	Global.canvas = canvas
 
 	get_viewport().connect("size_changed", _on_window_resized)

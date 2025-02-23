@@ -158,10 +158,10 @@ func distinct_traits() -> Array[String]:
 		return []
 
 	for object in objects:
-		var type = Metamodel.get_object_type(object.type_name)
+		var traits = Global.metamodel.type_get_traits(object.type_name)
 		var object_groups: OrderedSet = OrderedSet.new()
 		object_groups.insert("Name")
-		for trait_name in type.traits:
+		for trait_name in traits:
 			object_groups.insert(trait_name)
 
 		groups.form_intersection(object_groups)
@@ -169,4 +169,5 @@ func distinct_traits() -> Array[String]:
 	var result: Array[String] = []
 	for item in groups.items:
 		result.append(item as String)
+	print("Distinct traits: ", result)
 	return result

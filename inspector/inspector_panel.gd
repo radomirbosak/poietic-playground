@@ -47,7 +47,6 @@ func set_traits(traits: Array[String]):
 	for trait_name in traits:
 		var panel = InspectorTraitPanel.panel_for_trait(trait_name)
 		if not panel:
-			push_error("Unknown inspector trait panel: ", trait_name)
 			continue
 		traits_container.add_child(panel)
 

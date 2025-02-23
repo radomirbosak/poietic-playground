@@ -34,10 +34,10 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="ToolContainer" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="SelectionToolButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="SelectionToolButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -50,7 +50,7 @@ ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
 
-[node name="PlaceToolButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="PlaceToolButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -63,7 +63,7 @@ ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
 
-[node name="ConnectToolButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="ConnectToolButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -76,6 +76,6 @@ ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
 
-[connection signal="pressed" from="MarginContainer/HBoxContainer/SelectionToolButton" to="." method="_on_selection_tool_button_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/PlaceToolButton" to="." method="_on_place_tool_button_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/ConnectToolButton" to="." method="_on_connect_tool_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ToolContainer/SelectionToolButton" to="." method="_on_selection_tool_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ToolContainer/PlaceToolButton" to="." method="_on_place_tool_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ToolContainer/ConnectToolButton" to="." method="_on_connect_tool_button_pressed"]
