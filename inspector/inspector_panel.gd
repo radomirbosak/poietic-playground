@@ -6,7 +6,7 @@ class_name InspectorPanel extends PanelContainer
 ## Panel for inspecting diagram elements.
 ##
 
-var selection: Selection
+var selection: PoieticSelection
 
 func get_type_id(type_name: String):
 	match type_name:

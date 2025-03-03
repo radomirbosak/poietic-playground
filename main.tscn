@@ -74,5 +74,3 @@ H - Show/Hide this help
 [node name="Canvas" type="Node2D" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_lulh0")
-
-[connection signal="selection_changed" from="Canvas" to="Gui/InspectorPanel" method="_on_diagram_canvas_selection_changed"]

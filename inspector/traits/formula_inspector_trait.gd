@@ -26,10 +26,10 @@ func _on_formula_field_text_set():
 func update_formula():
 	var text = formula_field.text
 	for object in selection.objects:
-		var design_object = Design.global.get_object(object.object_id)
+		var design_object = Global.design.get_object(object.object_id)
 		design_object.set_attribute("formula", text)
 	# FIXME: This needs to be called from a change transaction
-	Design.global.design_changed.emit()
+	Global.design.design_changed.emit()
 
 func _on_formula_field_gui_input(event):
 	if event is InputEventKey:

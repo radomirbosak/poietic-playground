@@ -106,13 +106,13 @@ func bounding_circle_radius() -> float:
 ## Updates the diagram node based on a design object.
 ##
 ## This method should be called whenever the source of truth is changed.
-func update_from(object: DesignObject):
-	var position = object.attribute("position")
+func update_from(object: PoieticObject):
+	var position = object.get_position()
 	if position is Vector2:
 		self.position = position
 
-	self.label = object.get_name()
-	self.display_value = object.get_value()
+	self.label = object.name
+	self.display_value = GlobalSimulator.current_object_value(object.object_id)
 	queue_layout()
 
 func update_children() -> void:

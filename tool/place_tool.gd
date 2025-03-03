@@ -24,11 +24,12 @@ func close_panel():
 		palette.place_object.disconnect(_on_place_object)
 
 func _on_place_object(position: Vector2, name: String):
-	var local_position = canvas.to_local(position)
-	var object = DesignObject.new(name, "unnamed", local_position)
-	object.set_name(name.to_lower() + "_" + str(object.object_id))
-	Design.global.add_object(object)
-	close_panel()
+	push_error("Place object not implemented")
+	#var local_position = canvas.to_local(position)
+	#var object = DesignObject.new(name, "unnamed", local_position)
+	#object.set_name(name.to_lower() + "_" + str(object.object_id))
+	#Design.global.add_object(object)
+	#close_panel()
 
 func input_began(_event: InputEvent, pointer_position: Vector2):
 	open_panel(pointer_position)

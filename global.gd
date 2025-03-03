@@ -14,6 +14,7 @@ var connect_tool = ConnectTool.new()
 # Poietic
 
 var metamodel: PoieticMetamodel
+var design: PoieticDesignController
 
 # Resources
 
@@ -33,9 +34,15 @@ func initialize():
 	_initialize_icons()
 	Pictogram._load_pictograms()
 
+	print("Initializing design ...")
+
 	metamodel = PoieticMetamodel.new()
 	print("Metamodel types: ", metamodel.get_type_list())
 	print("Metamodel traits: ", metamodel.get_trait_list())
+
+	design = PoieticDesignController.new()
+	_create_demo_design()
+	
 	print("Done initializing.")
 	
 func _initialize_icons():
@@ -45,15 +52,27 @@ func _initialize_icons():
 		icon.load_from_path(path)
 		icons.append(icon)
 
+func _create_demo_design():
+	var trans = design.new_transaction()
+	var a = trans.create_node("Stock", "source", {"position": Vector2(400, 300), "formula": str(randi() % 100)})
+	var b = trans.create_node("FlowRate", "flow", {"position": Vector2(600, 300), "formula": str(randi() % 100)})
+	var c = trans.create_node("Stock", "target", {"position": Vector2(800, 300), "formula": str(randi() % 100)})
+	var ab = trans.create_edge("Flow", a, b)
+	var bc = trans.create_edge("Flow", b, c)
+	design.accept(trans)
+	print("Created demo nodes: ", design.get_diagram_nodes(), " edges: ", design.get_diagram_edges())
+	# TODO: Emit Design changed signal to compile and init simulation
+	GlobalSimulator.initialize_result()
+
+
+func _initialize_toolbar_icons():
+	pass
+
 func get_icon(name: String) -> Icon:
 	for icon in icons:
 		if icon.name == name:
 			return icon
 	return null
-
-
-func _initialize_toolbar_icons():
-	pass
 
 
 	# "res://resources/icons/connect.svg"

@@ -7,41 +7,26 @@ const default_window_size = Vector2(1280, 720)
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
 @onready var help_panel: Panel = $Gui/HelpPanel
 
-var design: Design
-
 func _init():
-	design = Design.global
+	pass
 
 func _ready():
 	load_settings()
-
-	Global.initialize()
-	Global.canvas = canvas
-
 	get_viewport().connect("size_changed", _on_window_resized)
-	create_demo_design()
+	
+	Global.initialize()
+
+	Global.canvas = canvas
+	Global.design.design_changed.connect(canvas._on_design_changed)
+	GlobalSimulator.simulation_step.connect(canvas._on_simulation_step)
 	canvas.sync_design()
+
+	Global.design.design_changed.connect(_on_design_changed)
 	update_status_text()
-	
-func create_demo_design():
-	var a = DesignObject.new("Stock", "source", Vector2(400, 300), randi() % 100)
-	var b = DesignObject.new("Flow", "flow", Vector2(600, 300), randi() % 100)
-	var c = DesignObject.new("Stock", "sink", Vector2(800, 300), randi() % 100)
-	var ab = DesignObject.new("Drains")
-	ab.origin = a.object_id
-	ab.target = b.object_id
-	
-	var bc = DesignObject.new("Fills")
-	bc.origin = b.object_id
-	bc.target = c.object_id
-	
-	design.add_object(a)
-	design.add_object(b)
-	design.add_object(c)
-	design.add_object(ab)
-	design.add_object(bc)
-	
-	GlobalSimulator.initialize_result()
+
+func _on_design_changed():
+	print("SIGNAL: Design changed!")
+	canvas.sync_design()
 
 func _unhandled_input(event):
 	if event.is_action_pressed("selection-tool"):
@@ -54,6 +39,22 @@ func _unhandled_input(event):
 		toggle_help()
 	elif event.is_action_pressed("inspector-toggle"):
 		toggle_inspector()
+
+	elif event.is_action_pressed("redo"):
+		print("Redo? ", Global.design.can_redo())
+		if Global.design.can_redo():
+			Global.design.redo()
+		else:
+			print("Trying to redo while having nothing to redo")
+
+	elif event.is_action_pressed("undo"):
+		print("Undo? ", Global.design.can_undo())
+		if Global.design.can_undo():
+			Global.design.undo()
+		else:
+			print("Trying to undo while having nothing to undo")
+			
+
 	elif event.is_action_pressed("run"):
 		toggle_run()
 	elif event.is_action_pressed("delete"):
@@ -64,7 +65,7 @@ func _process(_delta):
 
 func update_status_text():
 	var text = ""
-	text += "Nodes: " + str(len(design.all_nodes())) + " Edges: " + str(len(design.all_edges()))
+	text += "Nodes: " + str(len(Global.design.get_diagram_nodes())) + " Edges: " + str(len(Global.design.get_diagram_edges()))
 	$Gui/StatusText.text = text
 
 func _on_window_resized():

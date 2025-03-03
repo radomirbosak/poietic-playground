@@ -37,12 +37,12 @@ func _process(_delta: float) -> void:
 ## Updates the diagram node based on a design object.
 ##
 ## This method should be called whenever the source of truth is changed.
-func update_from(object: DesignObject):
-	var position = object.attribute("position")
+func update_from(object: PoieticObject):
+	var position = object.get_position()
 	if position is Vector2:
 		self.position = position
 
-	var text = object.attribute("name")
+	var text = object.name
 	if text is String:
 		self.label = text
 	queue_layout()

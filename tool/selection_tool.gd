@@ -14,10 +14,10 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 	var candidate = canvas.object_at_position(pointer_position)
 	if candidate:
 		if event.shift_pressed:
-			canvas.selection.toggle(candidate)
+			canvas.selection.toggle(candidate.object_id)
 		else:
-			if canvas.selection.is_empty() or !canvas.selection.contains(candidate):
-				canvas.selection.replace([candidate])
+			if canvas.selection.is_empty() or !canvas.selection.contains(candidate.object_id):
+				canvas.selection.replace(PackedInt64Array([candidate.object_id]))
 			else:
 				print("Context menu now? (not implemented)")
 
@@ -44,6 +44,13 @@ func input_moved(event: InputEvent, move_delta: Vector2) -> bool:
 	return true
 	
 func input_ended(_event: InputEvent, mouse_position: Vector2) -> bool:
+	match state:
+		SelectToolState.SELECT:
+			pass
+		SelectToolState.HIT:
+			pass
+		SelectToolState.MOVE:
+			canvas.finish_drag_selection(mouse_position)
+
 	state = SelectToolState.EMPTY
-	canvas.finish_drag_selection(mouse_position)
 	return true

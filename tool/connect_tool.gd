@@ -60,8 +60,9 @@ func create_drag_connection(origin: DiagramNode, pointer_position: Vector2):
 	dragging_connection.update_arrow()
 
 func create_connection(origin: DiagramNode, target: DiagramNode):
-	var edge = DesignObject.new("Parameter")
-	edge.origin = origin.object_id
-	edge.target = target.object_id
-	Design.global.add_object(edge)
-	canvas.queue_sync()
+	push_error("Create connection not implemented")
+	#var edge = DesignObject.new("Parameter")
+	#edge.origin = origin.object_id
+	#edge.target = target.object_id
+	#Design.global.add_object(edge)
+	#canvas.queue_sync()

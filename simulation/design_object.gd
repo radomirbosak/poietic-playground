@@ -1,4 +1,4 @@
-class_name DesignObject extends Object
+class_name DEPRECATED_DesignObject extends Object
 
 enum StructureType { NODE, EDGE, UNSTRUCTURED, UNKNOWN }
 
