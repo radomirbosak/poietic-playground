@@ -48,7 +48,7 @@ func _on_simulation_step():
 	for id in Global.design.get_diagram_nodes():
 		var object = Global.design.get_object(id)
 		var diagram_node = get_diagram_node(id)
-		# We might get null node when sync is queued and we do not have a canvas node yeta
+		# We might get null node when sync is queued and we do not have a canvas node yet
 		if diagram_node != null:
 			diagram_node.update_value()
 	

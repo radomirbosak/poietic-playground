@@ -12,13 +12,8 @@ script = ExtResource("1_2q6io")
 [node name="Gui" type="Node" parent="."]
 
 [node name="MainToolbar" parent="Gui" instance=ExtResource("3_qq1bh")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_right = 140.0
-offset_bottom = 52.0
-grow_horizontal = 1
-grow_vertical = 1
+offset_top = -72.0
+offset_bottom = 72.0
 
 [node name="ControlBar" parent="Gui" instance=ExtResource("3_bgr8b")]
 

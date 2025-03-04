@@ -1,29 +1,34 @@
-[gd_scene load_steps=8 format=3 uid="uid://l7uejktm712d"]
+[gd_scene load_steps=10 format=3 uid="uid://l7uejktm712d"]
 
 [ext_resource type="Script" path="res://gui/tool_bar.gd" id="1_kmcp4"]
+[ext_resource type="Texture2D" uid="uid://g5du4rc5o6ij" path="res://resources/icons/undo.svg" id="2_m0nx6"]
 [ext_resource type="Texture2D" uid="uid://d3lh7s2qhh7wv" path="res://resources/icons/select.svg" id="2_nolyo"]
 [ext_resource type="Script" path="res://gui/icon_button.gd" id="3_6uy1u"]
+[ext_resource type="Texture2D" uid="uid://c3ubpne57r0cv" path="res://resources/icons/redo.svg" id="3_6y83e"]
 [ext_resource type="Texture2D" uid="uid://bgi3rqbp27e8u" path="res://resources/icons/connect.svg" id="4_agou2"]
 [ext_resource type="Texture2D" uid="uid://thogai7sr7sg" path="res://resources/icons/place.svg" id="4_ut5w1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2vh0h"]
 bg_color = Color(0.130208, 0.130208, 0.130208, 1)
+border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
 border_color = Color(1, 1, 1, 1)
 border_blend = true
+corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_phf6a"]
 
 [node name="ToolBar" type="PanelContainer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -1140.0
-offset_bottom = -748.0
-grow_horizontal = 2
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -132.0
+offset_right = 52.0
+offset_bottom = 108.0
 grow_vertical = 2
+size_flags_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_2vh0h")
 script = ExtResource("1_kmcp4")
 
@@ -34,7 +39,26 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="ToolContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="ToolContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="UndoButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("2_m0nx6")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="RedoButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("3_6y83e")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/ToolContainer"]
 layout_mode = 2
 
 [node name="SelectionToolButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
@@ -76,6 +100,8 @@ ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
 
+[connection signal="pressed" from="MarginContainer/ToolContainer/UndoButton" to="." method="_on_undo_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ToolContainer/RedoButton" to="." method="_on_redo_button_pressed"]
 [connection signal="pressed" from="MarginContainer/ToolContainer/SelectionToolButton" to="." method="_on_selection_tool_button_pressed"]
 [connection signal="pressed" from="MarginContainer/ToolContainer/PlaceToolButton" to="." method="_on_place_tool_button_pressed"]
 [connection signal="pressed" from="MarginContainer/ToolContainer/ConnectToolButton" to="." method="_on_connect_tool_button_pressed"]

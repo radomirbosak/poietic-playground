@@ -1,5 +1,8 @@
 class_name ToolBar extends PanelContainer
 
+@onready var undo_button: TextureButton = %UndoButton
+@onready var redo_button: TextureButton = %RedoButton
+
 @onready var selection_tool_button: IconButton = %SelectionToolButton
 @onready var place_tool_button: IconButton = %PlaceToolButton
 @onready var connection_tool_button: IconButton = %ConnectToolButton
@@ -15,13 +18,6 @@ class Item:
 		self.tag = tag
 		self.label = label
 		self.icon = icon
-
-func _main_toolbar():
-	self.items = [
-		Item.new(1, "Select Objects", Global.get_icon("select")),
-		Item.new(2, "Place Objects", Global.get_icon("place")),
-		Item.new(3, "Connect", Global.get_icon("connect")),
-	]
 
 func _ready():
 	Global.tool_changed.connect(_on_tool_changed)
@@ -54,3 +50,16 @@ func _on_place_tool_button_pressed():
 
 func _on_connect_tool_button_pressed():
 	Global.change_tool(Global.connect_tool)
+
+
+func _on_undo_button_pressed():
+	if Global.design.can_undo():
+		Global.design.undo()
+	else:
+		printerr("Trying to undo while having nothing to undo")
+
+func _on_redo_button_pressed():
+	if Global.design.can_redo():
+		Global.design.redo()
+	else:
+		printerr("Trying to redo while having nothing to redo")
