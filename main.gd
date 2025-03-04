@@ -6,7 +6,6 @@ const default_window_size = Vector2(1280, 720)
 
 @onready var canvas: DiagramCanvas = %Canvas
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
-@onready var help_panel: Panel = $Gui/HelpPanel
 
 func _init():
 	pass
@@ -36,8 +35,6 @@ func _unhandled_input(event):
 		Global.change_tool(Global.place_tool)
 	elif event.is_action_pressed("connect-tool"):
 		Global.change_tool(Global.connect_tool)
-	elif event.is_action_pressed("help-toggle"):
-		toggle_help()
 	elif event.is_action_pressed("inspector-toggle"):
 		toggle_inspector()
 
@@ -78,13 +75,6 @@ func update_status_text():
 func _on_window_resized():
 	save_settings()
 
-func toggle_help():
-	if help_panel.visible:
-		help_panel.hide()
-	else:
-		help_panel.show()
-	save_settings()
-
 func toggle_inspector():
 	if inspector_panel.visible:
 		inspector_panel.hide()
@@ -112,10 +102,6 @@ func load_settings():
 		config.get_value("window", "width", default_window_size.x),
 		config.get_value("window", "height", default_window_size.y)
 		)
-	if config.get_value("help", "visible", true):
-		help_panel.show()
-	else:
-		help_panel.hide()
 
 	if config.get_value("inspector", "visible", true):
 		inspector_panel.show()
@@ -132,7 +118,6 @@ func save_settings():
 	
 	config.set_value("window", "width", window_size.x)
 	config.set_value("window", "height", window_size.y)
-	config.set_value("help", "visible", help_panel.visible)
 	config.set_value("inspector", "visible", inspector_panel.visible)
 	config.save(SETTINGS_FILE)
 
