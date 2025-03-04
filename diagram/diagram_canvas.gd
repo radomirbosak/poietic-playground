@@ -50,7 +50,7 @@ func _on_simulation_step():
 		var diagram_node = get_diagram_node(id)
 		# We might get null node when sync is queued and we do not have a canvas node yeta
 		if diagram_node != null:
-			diagram_node.update_from(object)
+			diagram_node.update_value()
 	
 func _on_selection_changed(objects):
 	sync_selection()

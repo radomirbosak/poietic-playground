@@ -1,5 +1,6 @@
 extends Node2D
 
+const DEFAULT_SAVE_PATH = "user://design.poietic"
 const SETTINGS_FILE = "user://settings.cfg"
 const default_window_size = Vector2(1280, 720)
 
@@ -40,6 +41,14 @@ func _unhandled_input(event):
 	elif event.is_action_pressed("inspector-toggle"):
 		toggle_inspector()
 
+	# File
+	elif event.is_action_pressed("save-design"):
+		save_design()
+	elif event.is_action_pressed("open-design"):
+		open_design()
+
+
+	# Edit
 	elif event.is_action_pressed("redo"):
 		if Global.design.can_redo():
 			Global.design.redo()
@@ -126,3 +135,13 @@ func save_settings():
 	config.set_value("help", "visible", help_panel.visible)
 	config.set_value("inspector", "visible", inspector_panel.visible)
 	config.save(SETTINGS_FILE)
+
+func open_design():
+	var path = ProjectSettings.globalize_path(DEFAULT_SAVE_PATH)
+	print("Loading design from: ", path)
+	Global.design.load_from_path(path)
+
+func save_design():
+	var path = ProjectSettings.globalize_path(DEFAULT_SAVE_PATH)
+	print("Saving design to: ", path)
+	Global.design.save_to_path(path)

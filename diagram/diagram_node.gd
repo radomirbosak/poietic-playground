@@ -112,8 +112,13 @@ func update_from(object: PoieticObject):
 		self.position = position
 
 	self.label = object.name
-	self.display_value = GlobalSimulator.current_object_value(object.object_id)
+	update_value()
 	queue_layout()
+
+func update_value():
+	self.display_value = GlobalSimulator.current_object_value(object_id)
+	# TODO: This is called twice on update_from()
+	update_indicator()
 
 func update_children() -> void:
 	update_pictogram()
