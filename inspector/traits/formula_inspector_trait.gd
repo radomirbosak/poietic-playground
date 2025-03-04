@@ -10,7 +10,7 @@ func _ready():
 	pass # Replace with function body.
 
 func on_selection_changed():
-	var distinct_values = selection.get_distinct_values("formula")
+	var distinct_values = Global.design.get_distinct_values(selection, "formula")
 
 	if len(distinct_values) == 0:
 		formula_field.text = ""
@@ -25,11 +25,12 @@ func _on_formula_field_text_set():
 	
 func update_formula():
 	var text = formula_field.text
-	for object in selection.objects:
-		var design_object = Global.design.get_object(object.object_id)
-		design_object.set_attribute("formula", text)
-	# FIXME: This needs to be called from a change transaction
-	Global.design.design_changed.emit()
+	var trans = Global.design.new_transaction()
+	
+	for id in selection.get_ids():
+		trans.set_attribute(id, "formula", text)
+
+	Global.design.accept(trans)
 
 func _on_formula_field_gui_input(event):
 	if event is InputEventKey:

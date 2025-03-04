@@ -15,14 +15,14 @@ func get_type_id(type_name: String):
 		"auxiliary": return 3
 		_: return 0
 		
-func _on_diagram_canvas_selection_changed(new_selection):
+func _on_selection_changed(new_selection):
 	set_selection(new_selection)
 	
 func set_selection(new_selection):
 	self.selection = new_selection
 	print("Selection changed: ", selection.count(), " nodes selected")
 	
-	var type_names = selection.get_type_names()
+	var type_names = Global.design.get_distinct_types(selection)
 
 	if len(type_names) == 0:
 		inspector_title_label.text = "nothing selected"
@@ -34,8 +34,9 @@ func set_selection(new_selection):
 	else:
 		var text = "Multiple types (" + str(selection.count()) + " selected)"
 		inspector_title_label.text = text
-		
-	set_traits(selection.distinct_traits())
+	
+	var traits = Global.design.get_shared_traits(selection)
+	set_traits(traits)
 	
 	for panel in traits_container.get_children():
 		panel.set_selection(new_selection)

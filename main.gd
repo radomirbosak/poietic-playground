@@ -19,14 +19,14 @@ func _ready():
 	Global.canvas = canvas
 	Global.design.design_changed.connect(canvas._on_design_changed)
 	GlobalSimulator.simulation_step.connect(canvas._on_simulation_step)
+	canvas.selection.selection_changed.connect(inspector_panel._on_selection_changed)
 	canvas.sync_design()
 
 	Global.design.design_changed.connect(_on_design_changed)
 	update_status_text()
 
 func _on_design_changed():
-	print("SIGNAL: Design changed!")
-	canvas.sync_design()
+	pass
 
 func _unhandled_input(event):
 	if event.is_action_pressed("selection-tool"):
@@ -41,18 +41,16 @@ func _unhandled_input(event):
 		toggle_inspector()
 
 	elif event.is_action_pressed("redo"):
-		print("Redo? ", Global.design.can_redo())
 		if Global.design.can_redo():
 			Global.design.redo()
 		else:
-			print("Trying to redo while having nothing to redo")
+			printerr("Trying to redo while having nothing to redo")
 
 	elif event.is_action_pressed("undo"):
-		print("Undo? ", Global.design.can_undo())
 		if Global.design.can_undo():
 			Global.design.undo()
 		else:
-			print("Trying to undo while having nothing to undo")
+			printerr("Trying to undo while having nothing to undo")
 			
 
 	elif event.is_action_pressed("run"):

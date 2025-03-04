@@ -8,7 +8,7 @@ func _ready():
 	pass # Replace with function body.
 
 func on_selection_changed():
-	var distinct_label = selection.get_distinct_values("name")
+	var distinct_label = Global.design.get_distinct_values(selection, "name")
 
 	if len(distinct_label) == 0:
 		name_field.text = ""
@@ -18,8 +18,9 @@ func on_selection_changed():
 		name_field.text = "(multiple)"
 
 func _on_name_field_text_submitted(new_name):
-	for object in selection.objects:
-		var design_object = Global.design.get_object(object.object_id)
-		design_object.set_name(new_name)
-	# FIXME: This needs to be called from a change transaction
-	Global.design.design_changed.emit()
+	var trans = Global.design.new_transaction()
+	
+	for id in selection.get_ids():
+		trans.set_attribute(id, "name", new_name)
+
+	Global.design.accept(trans)

@@ -56,7 +56,7 @@ func _on_selection_changed(objects):
 	sync_selection()
 
 func _on_design_changed():
-	sync_needed = true
+	queue_sync()
 
 func queue_sync():
 	sync_needed = true
@@ -104,6 +104,7 @@ func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
 	return children
 
 func sync_design():
+	print("Sync design with canvas")
 	sync_nodes()
 	sync_edges()
 	sync_selection()
@@ -194,7 +195,8 @@ func get_selected_nodes() -> Array[DiagramNode]:
 	var result: Array[DiagramNode] = []
 	for id in selection.get_ids():
 		var node = self.get_diagram_node(id)
-		result.append(node)
+		if node:
+			result.append(node)
 	return result
 
 func begin_drag_selection(_mouse_position: Vector2):
@@ -226,46 +228,3 @@ func delete_selection():
 
 	selection.clear()
 	queue_sync()
-
-# Dragging
-# ----------------------------------------------------------------
-
-func _can_drop_data(position, data):
-	print("Can drop at ", position, " Data: ", data)
-	return false
-
-func _drop_data(position, data):
-	print("Will drop at ", position, " Data: ", data)
-
-func _on_dragging_entered():
-	print("DRAGGING ENTERED")
-	pass
-	
-func _on_dragging_exited():
-	print("DRAGGING EXITED")
-	pass
-	
-func _on_dragging_updated():
-	print("DRAGGING UPDATED")
-	pass
-
-func _on_dragging_ended():
-	print("DRAGGING ENDED")
-	pass
-
-func _on_dragging_cancelled():
-	print("DRAGGING CANCELLED")
-	pass
-
-
-func _accepts_drag_drop(item: Variant, position: Vector2) -> bool:
-	return true
-
-func _handle_drag_drop(item: Variant, position: Vector2):
-	print("Item dropped:", item, "at", position)
-
-func _drag_entered(item: Variant, position: Vector2):
-	print("Drag entered:", item, "at", position)
-
-func _drag_exited():
-	print("Drag exited")
