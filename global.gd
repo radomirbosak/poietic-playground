@@ -57,8 +57,10 @@ func _create_demo_design():
 	var a = trans.create_node("Stock", "source", {"position": Vector2(400, 300), "formula": str(randi() % 100)})
 	var b = trans.create_node("FlowRate", "flow", {"position": Vector2(600, 300), "formula": str(randi() % 100)})
 	var c = trans.create_node("Stock", "target", {"position": Vector2(800, 300), "formula": str(randi() % 100)})
+	var d = trans.create_node("Auxiliary", "x", {"position": Vector2(400, 500), "formula": str(randi() % 100)})
 	var ab = trans.create_edge("Flow", a, b)
 	var bc = trans.create_edge("Flow", b, c)
+	var db = trans.create_edge("Parameter", d, b)
 	design.accept(trans)
 	print("Created demo nodes: ", design.get_diagram_nodes(), " edges: ", design.get_diagram_edges())
 	# TODO: Emit Design changed signal to compile and init simulation
@@ -97,8 +99,9 @@ func close_modal(node: Node):
 
 func change_tool(tool: CanvasTool) -> void:
 	if current_tool:
-		current_tool.release()
+		current_tool.tool_released()
 	current_tool = tool
+	current_tool.tool_selected()
 	tool_changed.emit(tool)
 
 func open_object_context_menu(object: Variant, position: Vector2):

@@ -132,8 +132,10 @@ func sync_nodes():
 			node.update_from(object)
 			existing.erase(object.object_id)
 		else:
-			create_node_from(object)
-	
+			node = create_node_from(object)
+		var issues = Global.design.issues_for_object(id)
+		node.has_errors = !issues.is_empty()
+		
 	# 3. Remove all orphaned nodes
 	for dead in existing.values():
 		diagram_objects.erase(dead.object_id)
@@ -215,7 +217,7 @@ func finish_drag_selection(_final_position: Vector2) -> void:
 		var object = Global.design.get_object(node.object_id)
 		trans.set_attribute(node.object_id, "position", node.position)
 	# TODO: Send signal that frame has been changed
-	var result = Global.design.accept(trans)
+	Global.design.accept(trans)
 	# FIXME: Proper change handling
 		
 func delete_selection():
@@ -224,7 +226,7 @@ func delete_selection():
 	for id in selection.get_ids():
 		trans.remove_object(id)
 
-	var result = Global.design.accept(trans)
+	Global.design.accept(trans)
 
 	selection.clear()
 	queue_sync()

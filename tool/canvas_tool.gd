@@ -24,6 +24,9 @@ func handle_intput(event: InputEvent) -> bool:
 		initial_pointer_position = Vector2()
 	return is_consumed
 
+func tool_selected():
+	pass
+
 func input_began(_event: InputEvent, _pointer_position: Vector2) -> bool:
 	return false
 	
@@ -38,5 +41,5 @@ func input_cancelled(_event: InputEvent) -> bool:
 
 ## Release the tool.
 ## Called when another tools is selected.
-func release():
+func tool_released():
 	pass

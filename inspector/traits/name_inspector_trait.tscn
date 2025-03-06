@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cpsog8sdusql0"]
 
-[ext_resource type="Script" path="res://inspector/traits/name_inspector_trait.gd" id="1_3o1li"]
+[ext_resource type="Script" uid="uid://elvnt3hf7hsq" path="res://inspector/traits/name_inspector_trait.gd" id="1_3o1li"]
 
 [node name="NameInspectorTrait" type="PanelContainer"]
 offset_right = 67.0

@@ -1,12 +1,15 @@
-[gd_scene load_steps=10 format=3 uid="uid://l7uejktm712d"]
+[gd_scene load_steps=13 format=3 uid="uid://l7uejktm712d"]
 
-[ext_resource type="Script" path="res://gui/tool_bar.gd" id="1_kmcp4"]
+[ext_resource type="Script" uid="uid://b4ejxps4pdjfo" path="res://gui/tool_bar.gd" id="1_kmcp4"]
+[ext_resource type="Texture2D" uid="uid://bcjim5bcfchm6" path="res://resources/icons/chevrons-right.svg" id="2_j3x83"]
 [ext_resource type="Texture2D" uid="uid://g5du4rc5o6ij" path="res://resources/icons/undo.svg" id="2_m0nx6"]
 [ext_resource type="Texture2D" uid="uid://d3lh7s2qhh7wv" path="res://resources/icons/select.svg" id="2_nolyo"]
-[ext_resource type="Script" path="res://gui/icon_button.gd" id="3_6uy1u"]
+[ext_resource type="Script" uid="uid://dacwotscya1ub" path="res://gui/icon_button.gd" id="3_6uy1u"]
 [ext_resource type="Texture2D" uid="uid://c3ubpne57r0cv" path="res://resources/icons/redo.svg" id="3_6y83e"]
+[ext_resource type="Texture2D" uid="uid://b2imn6aqdven6" path="res://resources/icons/chevrons-left.svg" id="3_rbx31"]
 [ext_resource type="Texture2D" uid="uid://bgi3rqbp27e8u" path="res://resources/icons/connect.svg" id="4_agou2"]
 [ext_resource type="Texture2D" uid="uid://thogai7sr7sg" path="res://resources/icons/place.svg" id="4_ut5w1"]
+[ext_resource type="Texture2D" uid="uid://33fmllbpw8th" path="res://resources/icons/empty.svg" id="10_en3mt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2vh0h"]
 bg_color = Color(0.130208, 0.130208, 0.130208, 1)
@@ -39,10 +42,13 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="ToolContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="UndoButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
+[node name="ToolContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="UndoButton" type="TextureButton" parent="MarginContainer/HBoxContainer/ToolContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -50,7 +56,7 @@ texture_normal = ExtResource("2_m0nx6")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="RedoButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
+[node name="RedoButton" type="TextureButton" parent="MarginContainer/HBoxContainer/ToolContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -58,10 +64,10 @@ texture_normal = ExtResource("3_6y83e")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/ToolContainer"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/HBoxContainer/ToolContainer"]
 layout_mode = 2
 
-[node name="SelectionToolButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
+[node name="SelectionToolButton" type="TextureButton" parent="MarginContainer/HBoxContainer/ToolContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -74,7 +80,7 @@ ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
 
-[node name="PlaceToolButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
+[node name="PlaceToolButton" type="TextureButton" parent="MarginContainer/HBoxContainer/ToolContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -87,7 +93,7 @@ ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
 
-[node name="ConnectToolButton" type="TextureButton" parent="MarginContainer/ToolContainer"]
+[node name="ConnectToolButton" type="TextureButton" parent="MarginContainer/HBoxContainer/ToolContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -100,8 +106,65 @@ ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
 
-[connection signal="pressed" from="MarginContainer/ToolContainer/UndoButton" to="." method="_on_undo_button_pressed"]
-[connection signal="pressed" from="MarginContainer/ToolContainer/RedoButton" to="." method="_on_redo_button_pressed"]
-[connection signal="pressed" from="MarginContainer/ToolContainer/SelectionToolButton" to="." method="_on_selection_tool_button_pressed"]
-[connection signal="pressed" from="MarginContainer/ToolContainer/PlaceToolButton" to="." method="_on_place_tool_button_pressed"]
-[connection signal="pressed" from="MarginContainer/ToolContainer/ConnectToolButton" to="." method="_on_connect_tool_button_pressed"]
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/HBoxContainer/ToolContainer"]
+layout_mode = 2
+
+[node name="ToolOptionsButton" type="TextureButton" parent="MarginContainer/HBoxContainer/ToolContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+toggle_mode = true
+texture_normal = ExtResource("2_j3x83")
+texture_pressed = ExtResource("3_rbx31")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="OptionsSeparator" type="VSeparator" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="ToolOptions" type="TabContainer" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+current_tab = 0
+tabs_visible = false
+
+[node name="EmptyOptions" type="VBoxContainer" parent="MarginContainer/HBoxContainer/ToolOptions"]
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 0
+
+[node name="EmptyIcon" type="TextureRect" parent="MarginContainer/HBoxContainer/ToolOptions/EmptyOptions"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("10_en3mt")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ConnectOptions" type="VBoxContainer" parent="MarginContainer/HBoxContainer/ToolOptions"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 1
+
+[node name="FlowConnectionTypeButton" type="Button" parent="MarginContainer/HBoxContainer/ToolOptions/ConnectOptions"]
+layout_mode = 2
+toggle_mode = true
+text = "Flw"
+
+[node name="ParameterConnectionTypeButton" type="Button" parent="MarginContainer/HBoxContainer/ToolOptions/ConnectOptions"]
+layout_mode = 2
+toggle_mode = true
+text = "Par"
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ToolContainer/UndoButton" to="." method="_on_undo_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ToolContainer/RedoButton" to="." method="_on_redo_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ToolContainer/SelectionToolButton" to="." method="_on_selection_tool_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ToolContainer/PlaceToolButton" to="." method="_on_place_tool_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ToolContainer/ConnectToolButton" to="." method="_on_connect_tool_button_pressed"]
+[connection signal="toggled" from="MarginContainer/HBoxContainer/ToolContainer/ToolOptionsButton" to="." method="_on_tool_options_button_toggled"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ToolOptions/ConnectOptions/FlowConnectionTypeButton" to="." method="_on_flow_connection_type_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ToolOptions/ConnectOptions/ParameterConnectionTypeButton" to="." method="_on_parameter_connection_type_button_pressed"]

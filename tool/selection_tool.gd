@@ -1,7 +1,6 @@
 class_name SelectionTool extends CanvasTool
 
 var last_pointer_position = Vector2()
-
 enum SelectToolState {
 	EMPTY, HIT, SELECT, MOVE
 }

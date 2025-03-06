@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://leijiinw1oiv"]
+
+[ext_resource type="Texture2D" uid="uid://33fmllbpw8th" path="res://resources/icons/empty.svg" id="1_217pv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_quksv"]
+bg_color = Color(0.12103, 0.12103, 0.12103, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="ToolOptions" type="PanelContainer"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_quksv")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="EmptyIcon" type="TextureRect" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("1_217pv")
+expand_mode = 1
+stretch_mode = 5

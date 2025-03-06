@@ -90,16 +90,54 @@ func update_arrow():
 	queue_redraw()
 
 func draw_arrow():
-	draw_line(arrow_origin, arrow_target, DiagramCanvas.default_pictogram_color, 2.0)
+	# TODO: Rewrite nicely
+	const arrow_size: float = 30
+	var normal = (arrow_target - arrow_origin).normalized()
+	match type_name:
+		"Flow":
+			var head_points = DiagramGeometry.arrow_points(arrow_origin, arrow_target, DiagramGeometry.ArrowHeadType.STICK, arrow_size, 30)
+			var l_origin = arrow_origin + normal.rotated(-90)*5
+			var l_target = arrow_target + normal.rotated(-90)*5
+			var r_origin = arrow_origin + normal.rotated(+90)*5
+			var r_target = arrow_target + normal.rotated(+90)*5
+			var loffset = normal.rotated(-90)*5
+			var roffset = normal.rotated(+90)*5
+			var points = PackedVector2Array()
+			var lhead = l_target-(head_points[1]-head_points[0]).project(l_target - l_origin)
+			var rhead = r_target-(head_points[1]-head_points[2]).project(r_target - r_origin)
+			points = [
+				l_origin,
+				# arrow_target+loffset,
+				lhead,
+				head_points[0],
+				head_points[1],
+				head_points[2],
+				rhead,
+				r_origin,
+				l_origin
+			]
+			draw_polyline(points, DiagramCanvas.default_pictogram_color, 2.0)
 
-	var head_points = DiagramGeometry.arrow_points(arrow_origin, arrow_target, DiagramGeometry.ArrowHeadType.STICK, 30)
-	if len(head_points) > 0:
-		draw_polyline(head_points, DiagramCanvas.default_pictogram_color, 2.0)
-		
-	if is_selected:
-		var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
-		if len(polygons) >= 1:
-			draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
+			if len(head_points) > 0:
+				draw_polyline(head_points, DiagramCanvas.default_pictogram_color, 2.0)
+				
+			if is_selected:
+				var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 15, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+				if len(polygons) >= 1:
+					draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
+		_:
+			var head_points = DiagramGeometry.arrow_points(arrow_origin, arrow_target, DiagramGeometry.ArrowHeadType.STICK, arrow_size, 15)
+			draw_line(arrow_origin, arrow_target, DiagramCanvas.default_pictogram_color, 2.0)
+
+			if len(head_points) > 0:
+				draw_polyline(head_points, DiagramCanvas.default_pictogram_color, 2.0)
+				
+			if is_selected:
+				var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+				if len(polygons) >= 1:
+					draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
+
+
 
 func set_selected(flag: bool):
 	self.is_selected = flag

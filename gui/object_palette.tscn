@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cvojo0ltwwkgp"]
 
-[ext_resource type="Script" path="res://gui/object_palette.gd" id="1_vbv3r"]
+[ext_resource type="Script" uid="uid://cbdgrisy6lg8p" path="res://gui/object_palette.gd" id="1_vbv3r"]
 
 [node name="ObjectPalette" type="Container"]
 offset_right = 44.0

@@ -42,6 +42,12 @@ var is_selected: bool = false:
 		is_selected = value
 		queue_redraw()
 		
+var has_errors: bool = false:
+	set(value):
+		has_errors = value
+		if error_indicator:
+			error_indicator.visible = has_errors
+
 var is_dragged: bool = false
 var selection_highlight_shape: Shape2D = null
 var target_position: Vector2 = Vector2():
@@ -128,20 +134,41 @@ func update_children() -> void:
 		self.add_child(label_text)
 		label_text.add_theme_color_override("font_color", DiagramCanvas.default_label_color)
 
+	var shape_rect = shape.get_rect()
+
 	if label == null:
 		label_text.text = ""
 	else:
 		label_text.text = label
 		label_text.queue_redraw()
 	var label_size = label_text.get_minimum_size()
-	label_text.position = Vector2(-label_size.x * 0.5, shape.get_rect().size.y / 2 + label_offset)
+	label_text.position = Vector2(-label_size.x * 0.5, shape_rect.size.y / 2 + label_offset)
 	children_needs_update = false
+	
+	if error_indicator == null:
+		var height: float = (sqrt(3.0) / 2.0) * error_indicator_size
+		error_indicator = Polygon2D.new()
+		var polygon: PackedVector2Array = [
+			Vector2(-error_indicator_size, -height),
+			Vector2(+error_indicator_size, -height),
+			Vector2(0, height),
+			Vector2(-error_indicator_size, -height),
+		]
+		error_indicator.polygon = polygon
+		error_indicator.color = Color.RED
+		error_indicator.position = Vector2(0, -shape_rect.size.y/2) + error_indicator_offset
+		error_indicator.visible = false
+		self.add_child(error_indicator)
+		# 	var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+
+var error_indicator_size: float = 10.0
+var error_indicator: Polygon2D
+var error_indicator_offset: Vector2 = Vector2(0, -10)
 
 func update_pictogram():
 	if image == null:
 		image = Sprite2D.new()
 		add_child(image)
-
 
 	var pictogram: Pictogram = Pictogram.get_pictogram(type_name)
 	image.texture = ImageTexture.create_from_image(pictogram.get_image())

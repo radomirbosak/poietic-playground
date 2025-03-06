@@ -1,6 +1,6 @@
 class_name Pictogram extends Object
 
-const placeable_nodes = ["Stock", "Flow", "Auxiliary", "GraphicalFunction", "Smooth", "Delay"]
+const placeable_nodes = ["Stock", "FlowRate", "Auxiliary", "GraphicalFunction", "Smooth", "Delay"]
 
 const tile_size = 50
 const default_image_scale = 1.7
@@ -40,7 +40,7 @@ static func _load_pictograms():
 	_all_pictograms["default"] = default_pictogram
 	var pictograms: Array[Pictogram]= [
 		Pictogram.new("Stock", rectangle),
-		Pictogram.new("Flow", flow_shape),
+		Pictogram.new("FlowRate", flow_shape),
 		Pictogram.new("Auxiliary", circle),
 		Pictogram.new("GraphicalFunction", circle),
 		Pictogram.new("Smooth", square),
@@ -50,7 +50,7 @@ static func _load_pictograms():
 		_all_pictograms[pictogram.name] = pictogram
 		
 	# TODO: Aliases
-	_all_pictograms["FlowRate"] = _all_pictograms["Flow"]
+	# _all_pictograms["FlowRate"] = _all_pictograms["Flow"]
 	
 
 static func get_pictogram(name: String) -> Pictogram:

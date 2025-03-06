@@ -23,13 +23,20 @@ func close_panel():
 		Global.close_modal(palette)
 		palette.place_object.disconnect(_on_place_object)
 
-func _on_place_object(position: Vector2, name: String):
-	push_error("Place object not implemented")
-	#var local_position = canvas.to_local(position)
-	#var object = DesignObject.new(name, "unnamed", local_position)
-	#object.set_name(name.to_lower() + "_" + str(object.object_id))
-	#Design.global.add_object(object)
-	#close_panel()
+func _on_place_object(position: Vector2, type_name: String):
+	if !Global.metamodel.has_type(type_name):
+		push_error("Unknown design object type: ", type_name)
+		return
+	var trans = Global.design.new_transaction()
+	var count = len(Global.design.get_diagram_nodes())
+	var name = type_name.to_snake_case() + str(count)
+	var local_position = canvas.to_local(position)
+	print("Create object of type: ", type_name, " name: ", name, " at: ", position, )
+	var node = trans.create_node(type_name, name, {"position": local_position})
+	print("Object created: ", node)
+	Global.design.accept(trans)
+	close_panel()
+
 
 func input_began(_event: InputEvent, pointer_position: Vector2):
 	open_panel(pointer_position)
@@ -41,5 +48,5 @@ func input_ended(_event: InputEvent, pointer_position: Vector2):
 func input_moved(_event: InputEvent, move_delta: Vector2):
 	pass
 
-func release():
+func tool_released():
 	close_panel()

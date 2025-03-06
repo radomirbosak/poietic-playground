@@ -6,12 +6,12 @@ enum ArrowHeadType {
 	NONE, STICK
 }
 
-static func arrow_points(tail: Vector2, head: Vector2, type: ArrowHeadType, size: float) -> Array[Vector2]:
+static func arrow_points(tail: Vector2, head: Vector2, type: ArrowHeadType, size: float, head_angle: float = 15) -> Array[Vector2]:
 	match type:
 		ArrowHeadType.NONE:
 			return []
 		ArrowHeadType.STICK:
-			const angle = (TAU / 360.0) * 15
+			var angle = (TAU / 360.0) * head_angle
 			var length = size
 			var line_vector = head - tail
 			var left = line_vector.rotated(angle).normalized() * length

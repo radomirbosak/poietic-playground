@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://t8hyfhyvbpqq"]
 
-[ext_resource type="Script" path="res://inspector/traits/formula_inspector_trait.gd" id="1_q5abd"]
+[ext_resource type="Script" uid="uid://bb8cusgsc8d4w" path="res://inspector/traits/formula_inspector_trait.gd" id="1_q5abd"]
 
 [node name="FormulaInspectorTrait" type="PanelContainer"]
 offset_right = 67.0

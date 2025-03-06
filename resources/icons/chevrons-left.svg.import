@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmrtfu8hcxo1m"
-path="res://.godot/imported/Flow.svg-ef7cfcea26ac1026d112bf2d66869112.ctex"
+uid="uid://b2imn6aqdven6"
+path="res://.godot/imported/chevrons-left.svg-7ca2a7d22b0ab9272ade2f155ba17f78.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/pictograms/Flow.svg"
-dest_files=["res://.godot/imported/Flow.svg-ef7cfcea26ac1026d112bf2d66869112.ctex"]
+source_file="res://resources/icons/chevrons-left.svg"
+dest_files=["res://.godot/imported/chevrons-left.svg-7ca2a7d22b0ab9272ade2f155ba17f78.ctex"]
 
 [params]
 
