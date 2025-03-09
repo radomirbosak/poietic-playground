@@ -36,9 +36,11 @@ func input_moved(event: InputEvent, move_delta: Vector2) -> bool:
 		SelectToolState.SELECT:
 			pass
 		SelectToolState.HIT:
+			Input.set_default_cursor_shape(Input.CURSOR_DRAG)
 			canvas.begin_drag_selection(mouse_position)
 			state = SelectToolState.MOVE
 		SelectToolState.MOVE:
+			Input.set_default_cursor_shape(Input.CURSOR_DRAG)
 			canvas.drag_selection(move_delta)
 	return true
 	
@@ -49,6 +51,7 @@ func input_ended(_event: InputEvent, mouse_position: Vector2) -> bool:
 		SelectToolState.HIT:
 			pass
 		SelectToolState.MOVE:
+			Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 			canvas.finish_drag_selection(mouse_position)
 
 	state = SelectToolState.EMPTY

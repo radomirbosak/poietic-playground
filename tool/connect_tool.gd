@@ -39,8 +39,24 @@ func input_began(_event: InputEvent, pointer_position: Vector2):
 		create_drag_connection(candidate, pointer_position)
 		origin = candidate
 		state = ConnectToolState.CONNECT
+		Input.set_default_cursor_shape(Input.CURSOR_DRAG)
 	else:
 		state = ConnectToolState.EMPTY
+	
+	
+func input_moved(_event: InputEvent, move_delta: Vector2):
+	if state == ConnectToolState.CONNECT:
+		dragging_target.position += move_delta
+		var target = canvas.object_at_position(dragging_target.position)
+		if target and target is DiagramNode:
+			if can_connect(target):
+				Input.set_default_cursor_shape(Input.CURSOR_CAN_DROP)
+			else:
+				Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+		else:
+			Input.set_default_cursor_shape(Input.CURSOR_DRAG)
+
+		dragging_connection.update_arrow()
 	
 func input_ended(_event: InputEvent, pointer_position: Vector2):
 	match state:
@@ -53,16 +69,16 @@ func input_ended(_event: InputEvent, pointer_position: Vector2):
 
 			var target = canvas.object_at_position(pointer_position)
 			if target is DiagramNode:
-				create_connection(origin, target)
+				if can_connect(target):
+					create_connection(origin, target)
+				else:
+					# Do some "poofffffff" animation here
+					pass
 			dragging_connection.free()
 			dragging_connection = null
 			origin = null
-	
-func input_moved(_event: InputEvent, move_delta: Vector2):
-	if state == ConnectToolState.CONNECT:
-		dragging_target.position += move_delta
-		dragging_connection.update_arrow()
-	
+	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+
 func create_drag_connection(origin: DiagramNode, pointer_position: Vector2):
 	print("Drag connection of type ", type_name)
 	assert(canvas != null)
@@ -76,6 +92,12 @@ func create_drag_connection(origin: DiagramNode, pointer_position: Vector2):
 	dragging_connection.set_connection(origin, dragging_target)
 	dragging_connection.type_name = type_name
 	dragging_connection.update_arrow()
+
+func can_connect(target: DiagramNode) -> bool:
+	if target == origin:
+		return false
+	else:
+		return Global.design.can_connect(type_name, origin.object_id, target.object_id)
 
 
 func create_connection(origin: DiagramNode, target: DiagramNode):
