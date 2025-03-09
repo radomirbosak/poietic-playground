@@ -16,12 +16,19 @@ func _ready():
 	
 	Global.initialize()
 
+	# Initialize and connect canvas
 	Global.canvas = canvas
 	Global.design.design_changed.connect(canvas._on_design_changed)
 	GlobalSimulator.simulation_step.connect(canvas._on_simulation_step)
-	canvas.selection.selection_changed.connect(inspector_panel._on_selection_changed)
-	canvas.sync_design()
 
+	# Connect inspector
+	Global.design.design_changed.connect(inspector_panel._on_design_changed)
+	canvas.selection.selection_changed.connect(inspector_panel._on_selection_changed)
+	# TODO: See inspector panel source comment about selection
+	inspector_panel.selection = canvas.selection
+	
+	# Finalize initalisation
+	canvas.sync_design()
 	Global.design.design_changed.connect(_on_design_changed)
 	update_status_text()
 

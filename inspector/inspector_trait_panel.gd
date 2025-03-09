@@ -10,6 +10,7 @@ static func _initialize_panels():
 	_trait_panels = {
 		"Name": preload("res://inspector/traits/name_inspector_trait.tscn").instantiate(),
 		"Formula": preload("res://inspector/traits/formula_inspector_trait.tscn").instantiate(),
+		"Errors": preload("res://inspector/traits/errors_inspector_trait.tscn").instantiate(),
 	}
 
 static func panel_for_trait(name: String) -> InspectorTraitPanel:

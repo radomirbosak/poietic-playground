@@ -35,6 +35,7 @@ func _on_place_object(position: Vector2, type_name: String):
 	var node = trans.create_node(type_name, name, {"position": local_position})
 	print("Object created: ", node)
 	Global.design.accept(trans)
+	canvas.selection.replace(PackedInt64Array([node]))
 	close_panel()
 
 

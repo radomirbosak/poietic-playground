@@ -6,6 +6,7 @@ class_name InspectorPanel extends PanelContainer
 ## Panel for inspecting diagram elements.
 ##
 
+# TODO: Do we need new selection? We should query the canvas one.
 var selection: PoieticSelection
 
 func get_type_id(type_name: String):
@@ -16,8 +17,13 @@ func get_type_id(type_name: String):
 		_: return 0
 		
 func _on_selection_changed(new_selection):
+	# TODO: Do we need new selection? We should query the canvas one.
 	set_selection(new_selection)
 	
+func _on_design_changed():
+	# Just re-apply current selection
+	set_selection(selection)
+
 func set_selection(new_selection):
 	self.selection = new_selection
 	print("Selection changed: ", selection.count(), " nodes selected")
@@ -50,6 +56,11 @@ func set_traits(traits: Array[String]):
 		if not panel:
 			continue
 		traits_container.add_child(panel)
+		
+	if Global.design.has_issues():
+		var panel = InspectorTraitPanel.panel_for_trait("Errors")
+		if panel:
+			traits_container.add_child(panel)
 
 static func group_with_name(name: String) -> Container:
 	match name:
