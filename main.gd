@@ -33,23 +33,24 @@ func _ready():
 	update_status_text()
 
 func _on_design_changed():
-	pass
+	update_status_text()
 
 func _unhandled_input(event):
+	# TODO: Document inputs
 	if event.is_action_pressed("selection-tool"):
 		Global.change_tool(Global.selection_tool)
 	elif event.is_action_pressed("place-tool"):
 		Global.change_tool(Global.place_tool)
 	elif event.is_action_pressed("connect-tool"):
 		Global.change_tool(Global.connect_tool)
-	elif event.is_action_pressed("inspector-toggle"):
-		toggle_inspector()
 
 	# File
 	elif event.is_action_pressed("save-design"):
 		save_design()
 	elif event.is_action_pressed("open-design"):
 		open_design()
+	elif event.is_action_pressed("import"):
+		import_foreign_frame()
 
 
 	# Edit
@@ -65,18 +66,32 @@ func _unhandled_input(event):
 		else:
 			printerr("Trying to undo while having nothing to undo")
 			
+	elif event.is_action_pressed("auto-connec-parameters"):
+		auto_connect_parameters()
 
+	elif event.is_action_pressed("inspector-toggle"):
+		toggle_inspector()
 	elif event.is_action_pressed("run"):
 		toggle_run()
 	elif event.is_action_pressed("delete"):
 		delete_selection()
 
-func _process(_delta):
-	update_status_text()
-
 func update_status_text():
+	var stats = Global.design.debugStats
+	
 	var text = ""
-	text += "Nodes: " + str(len(Global.design.get_diagram_nodes())) + " Edges: " + str(len(Global.design.get_diagram_edges()))
+	text += "Frames: " + str(stats["frames"])
+	text += " undo: " + str(stats["undo_frames"])
+	text += " redo: " + str(stats["redo_frames"])
+	text += "\n"
+	text += "Frame: " + str(stats["current_frame"])
+	if stats["diagram_nodes"] == stats["nodes"]:
+		text += " nodes: " + str(stats["nodes"])
+	else:
+		text += " nodes: " + str(stats["diagram_nodes"]) + "/" + str(stats["nodes"])
+	text += " edges: " + str(stats["edges"])
+	text += " | design issues: " + str(stats["design_issues"])
+	text += " object issues: " + str(stats["object_issues"])
 	$Gui/StatusText.text = text
 
 func _on_window_resized():
@@ -137,3 +152,31 @@ func save_design():
 	var path = ProjectSettings.globalize_path(DEFAULT_SAVE_PATH)
 	print("Saving design to: ", path)
 	Global.design.save_to_path(path)
+
+func auto_connect_parameters():
+	Global.design.auto_connect_parameters()
+
+func import_foreign_frame():
+	var path = "/Users/stefan/Developer/Projects/poietic-examples/ThinkingInSystems/Capital.poieticframe"
+	_on_file_dialog_dir_selected(path)
+	return
+	
+	$FileDialog.use_native_dialog = false
+	$FileDialog.current_path = "/Users/stefan/Developer/Projects/poietic-examples/ThinkingInSystems/"
+	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
+	$FileDialog.file_mode = FileDialog.FileMode.FILE_MODE_OPEN_ANY
+	$FileDialog.title = "Import Poietic Frame"
+	$FileDialog.ok_button_text = "Import"
+	
+	$FileDialog.filters = ["*.poieticframe"]
+	$FileDialog.show()
+
+func _on_file_dialog_files_selected(paths):
+	print("Files selected: ", paths)
+
+func _on_file_dialog_dir_selected(dir):
+	print("Importing: ", dir)
+	Global.design.import_from_path(dir)
+
+func _on_file_dialog_file_selected(path):
+	print("File selected: ", path) 

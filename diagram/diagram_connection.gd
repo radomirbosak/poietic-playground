@@ -27,6 +27,13 @@ func queue_layout():
 	children_needs_update = true
 
 func _process(_delta: float) -> void:
+	if not origin:
+		push_error("Connection ", self, " has no origin")
+		return
+	if not target:
+		push_error("Connection ", self, " has no target")
+		return
+		
 	var new_origin_pos = to_local(origin.global_position)
 	var new_target_pos = to_local(target.global_position)
 	if new_origin_pos != previous_origin_pos or new_target_pos != previous_target_pos:
@@ -39,12 +46,16 @@ func _process(_delta: float) -> void:
 ## This method should be called whenever the source of truth is changed.
 func update_from(object: PoieticObject):
 	var position = object.get_position()
+	
 	if position is Vector2:
 		self.position = position
-
+	else:
+		self.position = Vector2()
+		
 	var text = object.name
 	if text is String:
 		self.label = text
+
 	queue_layout()
 
 func set_connection(origin: DiagramNode, target: Node2D):

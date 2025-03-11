@@ -143,7 +143,7 @@ func sync_nodes():
 
 func sync_edges():
 	# 1. Get existing model connections
-	var existing: Dictionary = {}
+	var existing: Dictionary[int, DiagramConnection] = {}
 	
 	for edge in self.all_diagram_connections():
 		existing[edge.object_id] = edge
@@ -151,8 +151,16 @@ func sync_edges():
 	# 2. Update all connections that are in the design
 	for id in Global.design.get_diagram_edges():
 		var object = Global.design.get_object(id)
-		var conn = existing.get(id)
+		var conn: DiagramConnection = existing.get(id)
 		if conn != null:
+			var origin: DiagramNode = get_diagram_node(object.origin)
+			var target: DiagramNode = get_diagram_node(object.target)
+			if object.origin == null or object.target == null:
+				push_error("Origin or target are not part of canvas")
+			else:
+				conn.origin = origin
+				conn.target = target
+
 			conn.update_from(object)
 			existing.erase(id)
 		else:
@@ -162,6 +170,7 @@ func sync_edges():
 	for dead in existing.values():
 		diagram_objects.erase(dead.object_id)
 		dead.free()
+		
 
 func create_node_from(object: PoieticObject) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()

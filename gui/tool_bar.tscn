@@ -1,15 +1,17 @@
-[gd_scene load_steps=13 format=3 uid="uid://l7uejktm712d"]
+[gd_scene load_steps=15 format=3 uid="uid://l7uejktm712d"]
 
 [ext_resource type="Script" uid="uid://b4ejxps4pdjfo" path="res://gui/tool_bar.gd" id="1_kmcp4"]
-[ext_resource type="Texture2D" uid="uid://bcjim5bcfchm6" path="res://resources/icons/chevrons-right.svg" id="2_j3x83"]
-[ext_resource type="Texture2D" uid="uid://g5du4rc5o6ij" path="res://resources/icons/undo.svg" id="2_m0nx6"]
-[ext_resource type="Texture2D" uid="uid://d3lh7s2qhh7wv" path="res://resources/icons/select.svg" id="2_nolyo"]
+[ext_resource type="Texture2D" uid="uid://tiwkeckjacwk" path="res://resources/icons/white/undo.png" id="2_avt31"]
 [ext_resource type="Script" uid="uid://dacwotscya1ub" path="res://gui/icon_button.gd" id="3_6uy1u"]
-[ext_resource type="Texture2D" uid="uid://c3ubpne57r0cv" path="res://resources/icons/redo.svg" id="3_6y83e"]
-[ext_resource type="Texture2D" uid="uid://b2imn6aqdven6" path="res://resources/icons/chevrons-left.svg" id="3_rbx31"]
-[ext_resource type="Texture2D" uid="uid://bgi3rqbp27e8u" path="res://resources/icons/connect.svg" id="4_agou2"]
-[ext_resource type="Texture2D" uid="uid://thogai7sr7sg" path="res://resources/icons/place.svg" id="4_ut5w1"]
-[ext_resource type="Texture2D" uid="uid://33fmllbpw8th" path="res://resources/icons/empty.svg" id="10_en3mt"]
+[ext_resource type="Texture2D" uid="uid://cjoesvfct835e" path="res://resources/icons/white/redo.png" id="3_jivju"]
+[ext_resource type="Texture2D" uid="uid://dkstlplra76ek" path="res://resources/icons/white/select.png" id="4_sgvfb"]
+[ext_resource type="Texture2D" uid="uid://dyo6l5ny3ler4" path="res://resources/icons/white/place.png" id="6_ac1f5"]
+[ext_resource type="Texture2D" uid="uid://x0r31pdutv1s" path="res://resources/icons/white/connect.png" id="7_bicm0"]
+[ext_resource type="Texture2D" uid="uid://bqd7e7mfokqrf" path="res://resources/icons/white/chevrons-right.png" id="8_pbwjw"]
+[ext_resource type="Texture2D" uid="uid://b8yu18r76gf05" path="res://resources/icons/white/chevrons-left.png" id="9_g8a7s"]
+[ext_resource type="Texture2D" uid="uid://djo4algr8qr4t" path="res://resources/icons/white/empty.png" id="10_avt31"]
+[ext_resource type="Texture2D" uid="uid://cfn4muit32jjv" path="res://resources/icons/white/arrow-outlined.png" id="11_sgvfb"]
+[ext_resource type="Texture2D" uid="uid://cqcw6y6b1tm27" path="res://resources/icons/white/arrow-parameter.png" id="12_ac1f5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2vh0h"]
 bg_color = Color(0.130208, 0.130208, 0.130208, 1)
@@ -52,7 +54,7 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture_normal = ExtResource("2_m0nx6")
+texture_normal = ExtResource("2_avt31")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -60,7 +62,7 @@ stretch_mode = 5
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture_normal = ExtResource("3_6y83e")
+texture_normal = ExtResource("3_jivju")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -75,7 +77,7 @@ size_flags_horizontal = 3
 tooltip_text = "Select Objects"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_phf6a")
-texture_normal = ExtResource("2_nolyo")
+texture_normal = ExtResource("4_sgvfb")
 ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
@@ -88,7 +90,7 @@ size_flags_horizontal = 3
 tooltip_text = "Place Objects"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_phf6a")
-texture_normal = ExtResource("4_ut5w1")
+texture_normal = ExtResource("6_ac1f5")
 ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
@@ -101,7 +103,7 @@ size_flags_horizontal = 3
 tooltip_text = "Connect"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_phf6a")
-texture_normal = ExtResource("4_agou2")
+texture_normal = ExtResource("7_bicm0")
 ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_6uy1u")
@@ -114,8 +116,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 toggle_mode = true
-texture_normal = ExtResource("2_j3x83")
-texture_pressed = ExtResource("3_rbx31")
+texture_normal = ExtResource("8_pbwjw")
+texture_pressed = ExtResource("9_g8a7s")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -126,12 +128,12 @@ layout_mode = 2
 
 [node name="ToolOptions" type="TabContainer" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
-current_tab = 0
+current_tab = 1
 tabs_visible = false
 
 [node name="EmptyOptions" type="VBoxContainer" parent="MarginContainer/HBoxContainer/ToolOptions"]
+visible = false
 layout_mode = 2
 alignment = 1
 metadata/_tab_index = 0
@@ -139,26 +141,31 @@ metadata/_tab_index = 0
 [node name="EmptyIcon" type="TextureRect" parent="MarginContainer/HBoxContainer/ToolOptions/EmptyOptions"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture = ExtResource("10_en3mt")
+texture = ExtResource("10_avt31")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="ConnectOptions" type="VBoxContainer" parent="MarginContainer/HBoxContainer/ToolOptions"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 alignment = 1
 metadata/_tab_index = 1
 
-[node name="FlowConnectionTypeButton" type="Button" parent="MarginContainer/HBoxContainer/ToolOptions/ConnectOptions"]
+[node name="FlowConnectionTypeButton" type="TextureButton" parent="MarginContainer/HBoxContainer/ToolOptions/ConnectOptions"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 toggle_mode = true
-text = "Flw"
+texture_normal = ExtResource("11_sgvfb")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="ParameterConnectionTypeButton" type="Button" parent="MarginContainer/HBoxContainer/ToolOptions/ConnectOptions"]
+[node name="ParameterConnectionTypeButton" type="TextureButton" parent="MarginContainer/HBoxContainer/ToolOptions/ConnectOptions"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 toggle_mode = true
-text = "Par"
+texture_normal = ExtResource("12_ac1f5")
+ignore_texture_size = true
+stretch_mode = 5
 
 [connection signal="pressed" from="MarginContainer/HBoxContainer/ToolContainer/UndoButton" to="." method="_on_undo_button_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/ToolContainer/RedoButton" to="." method="_on_redo_button_pressed"]

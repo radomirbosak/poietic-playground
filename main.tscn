@@ -40,3 +40,9 @@ grow_vertical = 2
 [node name="Canvas" type="Node2D" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_lulh0")
+
+[node name="FileDialog" type="FileDialog" parent="."]
+
+[connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
