@@ -1,5 +1,7 @@
 class_name DiagramCanvas extends Node2D
 
+# TODO: Add error indicators at the canvas edges if there are objects with errors at that direction
+
 var diagram_objects: Dictionary = {} # int -> Node2
 var selection: PoieticSelection = PoieticSelection.new()
 
@@ -128,7 +130,7 @@ func sync_nodes():
 	for id in Global.design.get_diagram_nodes():
 		var object: PoieticObject = Global.design.get_object(id)
 		var node: DiagramNode = existing.get(object.object_id)
-		if node != null:
+		if node:
 			node.update_from(object)
 			existing.erase(object.object_id)
 		else:
@@ -152,11 +154,13 @@ func sync_edges():
 	for id in Global.design.get_diagram_edges():
 		var object = Global.design.get_object(id)
 		var conn: DiagramConnection = existing.get(id)
-		if conn != null:
+		if conn:
 			var origin: DiagramNode = get_diagram_node(object.origin)
 			var target: DiagramNode = get_diagram_node(object.target)
-			if object.origin == null or object.target == null:
-				push_error("Origin or target are not part of canvas")
+			if origin == null:
+				push_error("Edge origin is not part of canvas.")
+			if target == null:
+				push_error("Edge target is not part of canvas.")
 			else:
 				conn.origin = origin
 				conn.target = target
@@ -164,13 +168,26 @@ func sync_edges():
 			conn.update_from(object)
 			existing.erase(id)
 		else:
-			create_edge_from(object)
+			var new_conn = create_edge_from(object)
+			if not new_conn:
+				# We might be trying to create a non-diagram connection. The metamodel is lying to us.
+				var type_name = object.type_name
+				if not type_name:
+					type_name = "(unknown type)"
+				printerr("Connection ", id, " of type ", type_name, " not created")
 	
 	# 3. Remove all orphaned connections
 	for dead in existing.values():
 		diagram_objects.erase(dead.object_id)
 		dead.free()
-		
+	
+	# Validate
+	for edge in self.all_diagram_connections():
+		if not edge.origin:
+			printerr("Edge ", edge, " has no origin. ID: ", edge.object_id)
+		if not edge.target:
+			printerr("Edge ", edge, " has no target. ID: ", edge.object_id)
+
 
 func create_node_from(object: PoieticObject) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
@@ -184,14 +201,21 @@ func create_node_from(object: PoieticObject) -> DiagramNode:
 
 func create_edge_from(object: PoieticObject) -> DiagramConnection:
 	if object.origin == null or object.target == null:
-		push_error("Trying to create connection from object without origin or target")
-		return
-	var conn: DiagramConnection = DiagramConnection.new()
+		push_error("Trying to create connection from object without origin or target.")
+		return null
 	var origin: DiagramNode = get_diagram_node(object.origin)
 	var target: DiagramNode = get_diagram_node(object.target)
-	if object.origin == null or object.target == null:
-		push_error("Origin or target are not part of canvas")
-		return
+
+	if origin == null:
+		# This might be because we are trying to create a non-diagram connection.
+		push_error("Origin ", object.origin, " is not part of canvas. Connection not created.")
+		return null
+	if target == null:
+		# This might be because we are trying to create a non-diagram connection.
+		push_error("Target ", object.target, " is not part of canvas. Connection not created.")
+		return null
+
+	var conn: DiagramConnection = DiagramConnection.new()
 	conn.set_connection(origin, target)	
 	conn.name = "diagram_connection" + str(object.object_id)
 	conn.type_name = object.type_name

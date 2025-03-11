@@ -5,6 +5,10 @@ extends Node
 const icon_scale: float = 1.0
 const all_icon_names: Array[String] = ["select", "place", "connect", "run", "stop", "restart", "loop"]
 
+# View Preferences
+
+var show_value_indicators: bool = false
+
 # Tools
 
 var selection_tool = SelectionTool.new()
@@ -54,15 +58,14 @@ func _initialize_icons():
 
 func _create_demo_design():
 	var trans = design.new_transaction()
-	var a = trans.create_node("Stock", "source", {"position": Vector2(400, 300), "formula": str(randi() % 100)})
-	var b = trans.create_node("FlowRate", "flow", {"position": Vector2(600, 300), "formula": str(randi() % 100)})
-	var c = trans.create_node("Stock", "target", {"position": Vector2(800, 300), "formula": str(randi() % 100)})
-	var d = trans.create_node("Auxiliary", "x", {"position": Vector2(400, 500), "formula": str(randi() % 100)})
+	var a = trans.create_node("Stock", "source", {"position": Vector2(400, 300), "formula": 5})
+	var b = trans.create_node("FlowRate", "flow", {"position": Vector2(600, 300), "formula": "x * 0.01"})
+	var c = trans.create_node("Stock", "target", {"position": Vector2(800, 300), "formula": 0})
+	var d = trans.create_node("Auxiliary", "x", {"position": Vector2(400, 500), "formula": 10})
 	var ab = trans.create_edge("Flow", a, b)
 	var bc = trans.create_edge("Flow", b, c)
 	var db = trans.create_edge("Parameter", d, b)
 	design.accept(trans)
-	print("Created demo nodes: ", design.get_diagram_nodes(), " edges: ", design.get_diagram_edges())
 	# TODO: Emit Design changed signal to compile and init simulation
 	GlobalSimulator.initialize_result()
 
@@ -76,8 +79,6 @@ func get_icon(name: String) -> Icon:
 			return icon
 	return null
 
-
-	# "res://resources/icons/connect.svg"
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")
 	

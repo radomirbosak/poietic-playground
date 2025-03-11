@@ -28,10 +28,10 @@ func queue_layout():
 
 func _process(_delta: float) -> void:
 	if not origin:
-		push_error("Connection ", self, " has no origin")
+		# push_error("Connection ", self, " has no origin")
 		return
 	if not target:
-		push_error("Connection ", self, " has no target")
+		# push_error("Connection ", self, " has no target")
 		return
 		
 	var new_origin_pos = to_local(origin.global_position)

@@ -87,6 +87,7 @@ func _process(_delta):
 	if children_needs_update:
 		update_children()
 		children_needs_update = false
+	value_indicator.visible = Global.show_value_indicators
 
 func queue_layout():
 	children_needs_update = true

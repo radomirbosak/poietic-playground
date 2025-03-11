@@ -55,16 +55,9 @@ func _unhandled_input(event):
 
 	# Edit
 	elif event.is_action_pressed("redo"):
-		if Global.design.can_redo():
-			Global.design.redo()
-		else:
-			printerr("Trying to redo while having nothing to redo")
-
+		redo()
 	elif event.is_action_pressed("undo"):
-		if Global.design.can_undo():
-			Global.design.undo()
-		else:
-			printerr("Trying to undo while having nothing to undo")
+		undo()
 			
 	elif event.is_action_pressed("auto-connec-parameters"):
 		auto_connect_parameters()
@@ -75,6 +68,18 @@ func _unhandled_input(event):
 		toggle_run()
 	elif event.is_action_pressed("delete"):
 		delete_selection()
+
+func redo():
+	if Global.design.can_redo():
+		Global.design.redo()
+	else:
+		printerr("Trying to redo while having nothing to redo")
+
+func undo():
+	if Global.design.can_undo():
+		Global.design.undo()
+	else:
+		printerr("Trying to undo while having nothing to undo")
 
 func update_status_text():
 	var stats = Global.design.debugStats
@@ -100,8 +105,19 @@ func _on_window_resized():
 func toggle_inspector():
 	if inspector_panel.visible:
 		inspector_panel.hide()
+		$MenuBar/ViewMenu.set_item_checked(0, false)
 	else:
+		$MenuBar/ViewMenu.set_item_checked(0, true)
 		inspector_panel.show()
+	save_settings()
+
+func toggle_value_indicators():
+	if Global.show_value_indicators:
+		Global.show_value_indicators = false
+		$MenuBar/ViewMenu.set_item_checked(2, false)
+	else:
+		Global.show_value_indicators = true
+		$MenuBar/ViewMenu.set_item_checked(2, true)
 	save_settings()
 
 func toggle_run():
@@ -126,8 +142,10 @@ func load_settings():
 		)
 
 	if config.get_value("inspector", "visible", true):
+		$MenuBar/ViewMenu.set_item_checked(0, true)
 		inspector_panel.show()
 	else:
+		$MenuBar/ViewMenu.set_item_checked(0, false)
 		inspector_panel.hide()
 	DisplayServer.window_set_size(window_size)
 
@@ -142,6 +160,9 @@ func save_settings():
 	config.set_value("window", "height", window_size.y)
 	config.set_value("inspector", "visible", inspector_panel.visible)
 	config.save(SETTINGS_FILE)
+
+func new_design():
+	Global.design.new_design()
 
 func open_design():
 	var path = ProjectSettings.globalize_path(DEFAULT_SAVE_PATH)
@@ -180,3 +201,33 @@ func _on_file_dialog_dir_selected(dir):
 
 func _on_file_dialog_file_selected(path):
 	print("File selected: ", path) 
+
+# Menu
+
+func _on_file_menu_id_pressed(id):
+	match id:
+		0: new_design()
+		1: open_design()
+		2: save_design()
+		4: import_foreign_frame()
+		_: printerr("Unknown File menu id: ", id)
+
+func _on_edit_menu_id_pressed(id):
+	match id:
+		0: undo()
+		1: redo()
+		2: pass # separator
+		3: delete_selection()
+		_: printerr("Unknown Edit menu id: ", id)
+
+func _on_diagram_menu_id_pressed(id):
+	match id:
+		0: auto_connect_parameters()
+		_: printerr("Unknown Diagram menu id: ", id)
+
+func _on_view_menu_id_pressed(id):
+	match id:
+		0: toggle_inspector()
+		1: pass # separator
+		2: toggle_value_indicators()
+		_: printerr("Unknown View menu id: ", id)

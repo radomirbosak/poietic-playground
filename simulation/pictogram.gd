@@ -54,7 +54,7 @@ static func _load_pictograms():
 	
 
 static func get_pictogram(name: String) -> Pictogram:
-	var pictogram = _all_pictograms[name]
+	var pictogram = _all_pictograms.get(name)
 	if pictogram:
 		return pictogram
 	else:

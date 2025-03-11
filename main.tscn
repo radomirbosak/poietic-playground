@@ -43,6 +43,76 @@ script = ExtResource("2_lulh0")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 
+[node name="MenuBar" type="MenuBar" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FileMenu" type="PopupMenu" parent="MenuBar"]
+title = "File"
+item_count = 5
+item_0/text = "New"
+item_0/id = 0
+item_1/text = "Open"
+item_1/id = 1
+item_2/text = "Save"
+item_2/id = 2
+item_3/id = 3
+item_3/separator = true
+item_4/text = "Import..."
+item_4/id = 4
+
+[node name="EditMenu" type="PopupMenu" parent="MenuBar"]
+title = "Edit"
+item_count = 4
+item_0/text = "Undo"
+item_0/id = 0
+item_1/text = "Redo"
+item_1/id = 1
+item_2/id = 2
+item_2/separator = true
+item_3/text = "Delete"
+item_3/id = 3
+
+[node name="DiagramMenu" type="PopupMenu" parent="MenuBar"]
+title = "Diagram"
+item_count = 1
+item_0/text = "Auto-connect Parameters"
+item_0/id = 0
+
+[node name="SimulationMenu" type="PopupMenu" parent="MenuBar"]
+auto_translate_mode = 1
+title = "Simulation"
+item_count = 5
+item_0/text = "Run"
+item_0/id = 0
+item_1/text = "Stop"
+item_1/id = 1
+item_2/text = "Restart"
+item_2/id = 2
+item_3/id = 4
+item_3/separator = true
+item_4/text = "Loop"
+item_4/checkable = 1
+item_4/id = 3
+
+[node name="ViewMenu" type="PopupMenu" parent="MenuBar"]
+auto_translate_mode = 1
+title = "View"
+item_count = 3
+item_0/text = "Show inspector"
+item_0/checkable = 1
+item_0/checked = true
+item_0/id = 0
+item_1/id = 1
+item_1/separator = true
+item_2/text = "Show value indicators"
+item_2/checkable = 1
+item_2/id = 2
+
 [connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
+[connection signal="id_pressed" from="MenuBar/FileMenu" to="." method="_on_file_menu_id_pressed"]
+[connection signal="id_pressed" from="MenuBar/EditMenu" to="." method="_on_edit_menu_id_pressed"]
+[connection signal="id_pressed" from="MenuBar/DiagramMenu" to="." method="_on_diagram_menu_id_pressed"]
+[connection signal="id_pressed" from="MenuBar/ViewMenu" to="." method="_on_view_menu_id_pressed"]
