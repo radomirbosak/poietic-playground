@@ -178,12 +178,7 @@ func auto_connect_parameters():
 	Global.design.auto_connect_parameters()
 
 func import_foreign_frame():
-	var path = "/Users/stefan/Developer/Projects/poietic-examples/ThinkingInSystems/Capital.poieticframe"
-	_on_file_dialog_dir_selected(path)
-	return
-	
-	$FileDialog.use_native_dialog = false
-	$FileDialog.current_path = "/Users/stefan/Developer/Projects/poietic-examples/ThinkingInSystems/"
+	$FileDialog.use_native_dialog = true
 	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
 	$FileDialog.file_mode = FileDialog.FileMode.FILE_MODE_OPEN_ANY
 	$FileDialog.title = "Import Poietic Frame"
