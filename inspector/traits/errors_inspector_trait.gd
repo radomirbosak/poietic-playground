@@ -1,7 +1,5 @@
 extends InspectorTraitPanel
 
-var _is_updating: bool = false
-
 @onready var error_list: ItemList = %ErrorList
 @onready var tab_container: TabContainer = $VBoxContainer/TabContainer
 

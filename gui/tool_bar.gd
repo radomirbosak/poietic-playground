@@ -12,24 +12,10 @@ const connect_options_tab = 1
 
 @onready var tool_options: TabContainer = %ToolOptions
 @onready var options_separator: VSeparator = %OptionsSeparator
-# var tool_options: PanelContainer
-
-var items: Array[Item] = []
-
-class Item:
-	var tag: int
-	var label: String
-	var icon: Icon
-	
-	func _init(tag: int, label: String, icon: Icon):
-		self.tag = tag
-		self.label = label
-		self.icon = icon
 
 func _ready():
 	_initialize_connection_types()
 	tool_options.visible = false
-	Global.get_gui().add_child.call_deferred(tool_options)
 
 	Global.tool_changed.connect(_on_tool_changed)
 	Global.change_tool(Global.selection_tool)
