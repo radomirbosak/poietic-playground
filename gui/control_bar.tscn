@@ -1,11 +1,11 @@
 [gd_scene load_steps=9 format=3 uid="uid://c3kn0jiqoe5fm"]
 
 [ext_resource type="Script" uid="uid://fn2607eaa17" path="res://gui/control_bar.gd" id="1_bjxsy"]
-[ext_resource type="Texture2D" uid="uid://cgcn8jlmiv67k" path="res://resources/icons/restart.svg" id="2_6tnj3"]
+[ext_resource type="Texture2D" uid="uid://cmcv8bhmmjv" path="res://resources/icons/white/restart.png" id="2_tgswo"]
 [ext_resource type="Script" uid="uid://dacwotscya1ub" path="res://gui/icon_button.gd" id="3_8fam1"]
-[ext_resource type="Texture2D" uid="uid://cjecfwdw41q6y" path="res://resources/icons/stop.svg" id="3_wlttv"]
-[ext_resource type="Texture2D" uid="uid://qdhfdmgne8hp" path="res://resources/icons/run.svg" id="4_vk26x"]
-[ext_resource type="Texture2D" uid="uid://dcfks0s5avdnr" path="res://resources/icons/loop.svg" id="5_pex4y"]
+[ext_resource type="Texture2D" uid="uid://blyuxdonhje62" path="res://resources/icons/white/stop.png" id="4_bs54y"]
+[ext_resource type="Texture2D" uid="uid://b50sv6fav5owi" path="res://resources/icons/white/run.png" id="5_4wq8j"]
+[ext_resource type="Texture2D" uid="uid://d2qqq8u8a1pho" path="res://resources/icons/white/loop.png" id="6_6btlt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7v4cc"]
 bg_color = Color(0.10862, 0.111979, 0.110691, 1)
@@ -44,7 +44,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Reset"
-texture_normal = ExtResource("2_6tnj3")
+texture_normal = ExtResource("2_tgswo")
 ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_8fam1")
@@ -55,7 +55,7 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Stop"
 toggle_mode = true
-texture_normal = ExtResource("3_wlttv")
+texture_normal = ExtResource("4_bs54y")
 ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_8fam1")
@@ -66,7 +66,7 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Run"
 toggle_mode = true
-texture_normal = ExtResource("4_vk26x")
+texture_normal = ExtResource("5_4wq8j")
 ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_8fam1")
@@ -77,7 +77,7 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Loop"
 toggle_mode = true
-texture_normal = ExtResource("5_pex4y")
+texture_normal = ExtResource("6_6btlt")
 ignore_texture_size = true
 stretch_mode = 5
 script = ExtResource("3_8fam1")

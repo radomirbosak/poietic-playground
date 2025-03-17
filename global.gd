@@ -1,10 +1,5 @@
 extends Node
 
-# Constants
-
-const icon_scale: float = 1.0
-const all_icon_names: Array[String] = ["select", "place", "connect", "run", "stop", "restart", "loop"]
-
 # View Preferences
 
 var show_value_indicators: bool = false
@@ -20,10 +15,6 @@ var connect_tool = ConnectTool.new()
 var metamodel: PoieticMetamodel
 var design: PoieticDesignController
 
-# Resources
-
-var icons: Array[Icon] = []
-
 # State
 
 var modal_node: Node = null
@@ -35,7 +26,6 @@ signal tool_changed(tool: CanvasTool)
 func initialize():
 	print("Initializing globals ...")
 	InspectorTraitPanel._initialize_panels()
-	_initialize_icons()
 	Pictogram._load_pictograms()
 
 	print("Initializing design ...")
@@ -49,13 +39,6 @@ func initialize():
 	
 	print("Done initializing.")
 	
-func _initialize_icons():
-	for name in all_icon_names:
-		var icon = Icon.new(name)
-		var path = "res://resources/icons/" + name + ".svg"
-		icon.load_from_path(path)
-		icons.append(icon)
-
 func _create_demo_design():
 	var trans = design.new_transaction()
 	var a = trans.create_node("Stock", "source", {"position": Vector2(400, 300), "formula": 5})
@@ -72,12 +55,6 @@ func _create_demo_design():
 
 func _initialize_toolbar_icons():
 	pass
-
-func get_icon(name: String) -> Icon:
-	for icon in icons:
-		if icon.name == name:
-			return icon
-	return null
 
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")

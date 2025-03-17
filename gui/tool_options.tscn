@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://leijiinw1oiv"]
 
-[ext_resource type="Texture2D" uid="uid://33fmllbpw8th" path="res://resources/icons/empty.svg" id="1_217pv"]
+[ext_resource type="Texture2D" uid="uid://djo4algr8qr4t" path="res://resources/icons/white/empty.png" id="1_6tbf6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_quksv"]
 bg_color = Color(0.12103, 0.12103, 0.12103, 1)
@@ -26,6 +26,6 @@ size_flags_horizontal = 0
 [node name="EmptyIcon" type="TextureRect" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture = ExtResource("1_217pv")
+texture = ExtResource("1_6tbf6")
 expand_mode = 1
 stretch_mode = 5
