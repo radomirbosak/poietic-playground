@@ -128,13 +128,58 @@ func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
 	return children
 
 func sync_design():
-	print("Sync design with canvas")
-	prints("=== PREPARE: ", Global.design.get_diagram_nodes(), Global.design.get_diagram_edges())
-	
-	prints("=== GET DIFF: ", all_diagram_node_ids(), all_diagram_edge_ids())
 	var diff = Global.design.get_difference(all_diagram_node_ids(), all_diagram_edge_ids())
-	sync_nodes(diff.current_nodes, diff.added_nodes, diff.removed_nodes)
-	sync_edges(diff.current_edges, diff.added_edges, diff.removed_edges)
+	
+	# We need to remove both nodes and edges first, just in case the design contains objects where
+	# structure type has changed. Same ID, previously Node, now Edge.
+	for id in diff.removed_nodes:
+		var object = diagram_objects[id]
+		diagram_objects.erase(id)
+		object.queue_free()
+		
+	for id in diff.removed_edges:
+		var object = diagram_objects[id]
+		diagram_objects.erase(id)
+		object.queue_free()
+
+	# Current Nodes
+	for node in all_diagram_nodes():
+		var object: PoieticObject = Global.design.get_object(node.object_id)
+		node.update_from(object)
+		var issues = Global.design.issues_for_object(node.object_id)
+		node.has_errors = !issues.is_empty()
+
+	# Added Nodes
+	for id in diff.added_nodes:
+		var object: PoieticObject = Global.design.get_object(id)
+		var node = create_node_from(object)
+		var issues = Global.design.issues_for_object(id)
+		node.has_errors = !issues.is_empty()
+
+	# Current edges
+	for conn in all_diagram_connections():
+		var object: PoieticObject = Global.design.get_object(conn.object_id)
+		
+		var origin: DiagramNode = get_diagram_node(object.origin)
+		assert(origin)
+		conn.origin = origin
+		var target: DiagramNode = get_diagram_node(object.target)
+		assert(target)
+		conn.target = target
+
+		conn.update_from(object)
+		var issues = Global.design.issues_for_object(conn.object_id)
+		conn.has_errors = !issues.is_empty()
+	
+	# Added Edges
+	for id in diff.added_edges:
+		var object: PoieticObject = Global.design.get_object(id)
+		var new_conn = create_edge_from(object)
+		assert(new_conn)
+		var issues = Global.design.issues_for_object(id)
+		new_conn.has_errors = !issues.is_empty()
+
+	# Finalize
 	sync_selection()
 	
 func sync_selection():
@@ -145,53 +190,7 @@ func sync_selection():
 		elif child is DiagramConnection:
 			child.set_selected(selected_ids.has(child.object_id))
 	
-func sync_nodes(current: PackedInt64Array, added: PackedInt64Array, removed: PackedInt64Array):
-	for id in added:
-		var object: PoieticObject = Global.design.get_object(id)
-		var node = create_node_from(object)
-		var issues = Global.design.issues_for_object(id)
-		node.has_errors = !issues.is_empty()
-
-	for id in current:
-		var object: PoieticObject = Global.design.get_object(id)
-		var node: DiagramNode = get_diagram_node(id)
-		node.update_from(object)
-		var issues = Global.design.issues_for_object(id)
-		node.has_errors = !issues.is_empty()
 		
-	for id in removed:
-		var object = diagram_objects[id]
-		diagram_objects.erase(object)
-		object.queue_free()
-		
-func sync_edges(current: PackedInt64Array, added: PackedInt64Array, removed: PackedInt64Array):
-	for id in added:
-		var object: PoieticObject = Global.design.get_object(id)
-		var new_conn = create_edge_from(object)
-		assert(new_conn)
-		var issues = Global.design.issues_for_object(id)
-		new_conn.has_errors = !issues.is_empty()
-
-	for id in current:
-		var object: PoieticObject = Global.design.get_object(id)
-		var conn: DiagramConnection = get_diagram_connection(id)
-		
-		var origin: DiagramNode = get_diagram_node(object.origin)
-		assert(origin)
-		conn.origin = origin
-		var target: DiagramNode = get_diagram_node(object.target)
-		assert(target)
-		conn.target = target
-
-		conn.update_from(object)
-		var issues = Global.design.issues_for_object(id)
-		conn.has_errors = !issues.is_empty()
-		
-	for id in removed:
-		var object = diagram_objects[id]
-		diagram_objects.erase(object)
-		object.queue_free()
-
 func create_node_from(object: PoieticObject) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
 	node.name = "diagram_node" + str(object.object_id)

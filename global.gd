@@ -25,15 +25,13 @@ signal tool_changed(tool: CanvasTool)
 
 func initialize():
 	print("Initializing globals ...")
+
 	InspectorTraitPanel._initialize_panels()
 	Pictogram._load_pictograms()
 
 	print("Initializing design ...")
 
 	metamodel = PoieticMetamodel.new()
-	print("Metamodel types: ", metamodel.get_type_list())
-	print("Metamodel traits: ", metamodel.get_trait_list())
-
 	design = PoieticDesignController.new()
 	_create_demo_design()
 	
