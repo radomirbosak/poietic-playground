@@ -2,7 +2,7 @@ class_name DiagramCanvas extends Node2D
 
 # TODO: Add error indicators at the canvas edges if there are objects with errors at that direction
 
-var diagram_objects: Dictionary = {} # int -> Node2
+var diagram_objects: Dictionary[int, Node2D] = {} 
 var selection: PoieticSelection = PoieticSelection.new()
 
 @export var zoom_level: float = 1.0
@@ -12,6 +12,20 @@ var selection: PoieticSelection = PoieticSelection.new()
 const default_pictogram_color = Color.WHITE
 const default_label_color = Color.WHITE
 const default_selection_color: Color = Color(1.0,0.8,0)
+
+func all_diagram_node_ids() -> PackedInt64Array:
+	var result = PackedInt64Array()
+	for object in diagram_objects.values():
+		if object is DiagramNode:
+			result.append(object.object_id)
+	return result
+
+func all_diagram_edge_ids() -> PackedInt64Array:
+	var result = PackedInt64Array()
+	for object in diagram_objects.values():
+		if object is DiagramConnection:
+			result.append(object.object_id)
+	return result
 
 func all_diagram_nodes() -> Array[DiagramNode]:
 	var result: Array[DiagramNode]
@@ -33,6 +47,14 @@ func get_diagram_node(id: int) -> DiagramNode:
 		return object
 	else:
 		return null
+
+func get_diagram_connection(id: int) -> DiagramConnection:
+	var object = diagram_objects.get(id)
+	if object is DiagramConnection:
+		return object
+	else:
+		return null
+
 
 func _init():
 	pass
@@ -107,8 +129,12 @@ func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
 
 func sync_design():
 	print("Sync design with canvas")
-	sync_nodes()
-	sync_edges()
+	prints("=== PREPARE: ", Global.design.get_diagram_nodes(), Global.design.get_diagram_edges())
+	
+	prints("=== GET DIFF: ", all_diagram_node_ids(), all_diagram_edge_ids())
+	var diff = Global.design.get_difference(all_diagram_node_ids(), all_diagram_edge_ids())
+	sync_nodes(diff.current_nodes, diff.added_nodes, diff.removed_nodes)
+	sync_edges(diff.current_edges, diff.added_edges, diff.removed_edges)
 	sync_selection()
 	
 func sync_selection():
@@ -119,81 +145,59 @@ func sync_selection():
 		elif child is DiagramConnection:
 			child.set_selected(selected_ids.has(child.object_id))
 	
-func sync_nodes():
-	# 1. Get existing model node solids
-	var existing: Dictionary = {}
-	
-	for node in self.all_diagram_nodes():
-		existing[node.object_id] = node
-
-	# 2. Update all nodes that are in the graph
-	for id in Global.design.get_diagram_nodes():
+func sync_nodes(current: PackedInt64Array, added: PackedInt64Array, removed: PackedInt64Array):
+	for id in added:
 		var object: PoieticObject = Global.design.get_object(id)
-		var node: DiagramNode = existing.get(object.object_id)
-		if node:
-			node.update_from(object)
-			existing.erase(object.object_id)
-		else:
-			node = create_node_from(object)
+		var node = create_node_from(object)
+		var issues = Global.design.issues_for_object(id)
+		node.has_errors = !issues.is_empty()
+
+	for id in current:
+		var object: PoieticObject = Global.design.get_object(id)
+		var node: DiagramNode = get_diagram_node(id)
+		node.update_from(object)
 		var issues = Global.design.issues_for_object(id)
 		node.has_errors = !issues.is_empty()
 		
-	# 3. Remove all orphaned nodes
-	for dead in existing.values():
-		diagram_objects.erase(dead.object_id)
-		dead.free()
+	for id in removed:
+		var object = diagram_objects[id]
+		diagram_objects.erase(object)
+		object.queue_free()
+		
+func sync_edges(current: PackedInt64Array, added: PackedInt64Array, removed: PackedInt64Array):
+	for id in added:
+		var object: PoieticObject = Global.design.get_object(id)
+		var new_conn = create_edge_from(object)
+		assert(new_conn)
+		var issues = Global.design.issues_for_object(id)
+		new_conn.has_errors = !issues.is_empty()
 
-func sync_edges():
-	# 1. Get existing model connections
-	var existing: Dictionary[int, DiagramConnection] = {}
-	
-	for edge in self.all_diagram_connections():
-		existing[edge.object_id] = edge
+	for id in current:
+		var object: PoieticObject = Global.design.get_object(id)
+		var conn: DiagramConnection = get_diagram_connection(id)
+		
+		var origin: DiagramNode = get_diagram_node(object.origin)
+		assert(origin)
+		conn.origin = origin
+		var target: DiagramNode = get_diagram_node(object.target)
+		assert(target)
+		conn.target = target
 
-	# 2. Update all connections that are in the design
-	for id in Global.design.get_diagram_edges():
-		var object = Global.design.get_object(id)
-		var conn: DiagramConnection = existing.get(id)
-		if conn:
-			var origin: DiagramNode = get_diagram_node(object.origin)
-			var target: DiagramNode = get_diagram_node(object.target)
-			if origin == null:
-				push_error("Edge origin is not part of canvas.")
-			if target == null:
-				push_error("Edge target is not part of canvas.")
-			else:
-				conn.origin = origin
-				conn.target = target
-
-			conn.update_from(object)
-			existing.erase(id)
-		else:
-			var new_conn = create_edge_from(object)
-			if not new_conn:
-				# We might be trying to create a non-diagram connection. The metamodel is lying to us.
-				var type_name = object.type_name
-				if not type_name:
-					type_name = "(unknown type)"
-				printerr("Connection ", id, " of type ", type_name, " not created")
-	
-	# 3. Remove all orphaned connections
-	for dead in existing.values():
-		diagram_objects.erase(dead.object_id)
-		dead.free()
-	
-	# Validate
-	for edge in self.all_diagram_connections():
-		if not edge.origin:
-			printerr("Edge ", edge, " has no origin. ID: ", edge.object_id)
-		if not edge.target:
-			printerr("Edge ", edge, " has no target. ID: ", edge.object_id)
-
+		conn.update_from(object)
+		var issues = Global.design.issues_for_object(id)
+		conn.has_errors = !issues.is_empty()
+		
+	for id in removed:
+		var object = diagram_objects[id]
+		diagram_objects.erase(object)
+		object.queue_free()
 
 func create_node_from(object: PoieticObject) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
 	node.name = "diagram_node" + str(object.object_id)
 	node.type_name = object.type_name
 	node.object_id = object.object_id
+
 	diagram_objects[object.object_id] = node
 	add_child(node)
 	node.update_from(object)

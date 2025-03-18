@@ -14,6 +14,14 @@ var arrow_target: Vector2 = Vector2()
 var previous_origin_pos: Vector2
 var previous_target_pos: Vector2
 
+var error_indicator: Node2D
+
+var has_errors: bool = false:
+	set(value):
+		has_errors = value
+		if error_indicator:
+			error_indicator.visible = has_errors
+
 # Physics
 # var joint: DampedSpringJoint2D
 

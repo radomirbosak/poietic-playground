@@ -50,6 +50,9 @@ func _DEBUG_update_chart():
 			print("Charting ", id)
 			var series = Chart.TimeSeries.new()
 			var data = Global.design.result_time_series(id)
+			if not data:
+				printerr("No data for ID ", id)
+				continue
 			series.time_min = 0.0
 			series.time_delta = 1.0
 			series.data = data
