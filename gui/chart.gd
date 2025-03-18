@@ -81,6 +81,7 @@ func clear_series():
 
 func append_series(series: TimeSeries):
 	if self.data.is_empty():
+		# Layout according to the first series in the list
 		self.series_offset = series.get_offset()
 		self.data_rect = series.get_bounding_box()
 
@@ -121,7 +122,8 @@ func _draw():
 	# draw_rect(_plot_rect, Color.ORANGE, false)
 	_draw_grid()
 	_draw_axes()
-	_draw_line_plot()
+	for plot_series in data:
+		_draw_line_plot(plot_series)
 
 func _draw_axes():
 	var bbox = self.get_rect()
@@ -145,13 +147,11 @@ func _draw_grid():
 	var y_ticks = tick_marks(series.data_min, series.data_max, (series.data_max - series.data_min) / 10)
 	for tick in y_ticks:
 		var ptick = to_plot(Vector2(series.time_min, tick), _plot_rect.size)
-		print(series.data_min, " ", series.data_max, " ", ptick)
 		draw_line(ptick, ptick - Vector2(+10, 0), y_axis.line_color)
 	pass
 	
-func _draw_line_plot():
-	var series = data[0]
-	var curve = screen_curve_for_series(series, _plot_rect.size)
+func _draw_line_plot(plot_series: TimeSeries):
+	var curve = screen_curve_for_series(plot_series, _plot_rect.size)
 	var points = curve.tessellate()
 	for index in range(0, len(points)):
 		points[index] = points[index]
@@ -162,8 +162,6 @@ func _draw_line_plot():
 # Flips Y axis
 func screen_curve_for_series(series: TimeSeries, size: Vector2) -> Curve2D:
 	var curve: Curve2D = Curve2D.new()
-	var scale = series.get_scale(size)
-	var offset = series.get_offset()
 	var time = series.time_min
 	for value in series.data:
 		var plot_point = to_plot(Vector2(time, value), size)
@@ -180,6 +178,7 @@ func to_plot(data_point: Vector2, size: Vector2) -> Vector2:
 	var series_scale = self.data[0].get_scale(size)
 	var point = (data_point - series_offset) * series_scale 
 	var flipped_point = Vector2(point.x, size.y - point.y)
+	# print("TO plot: ", series_scale, " xset: ", series_offset)
 	return flipped_point + plot_offset
 
 func tick_marks(min: float, max: float, step: float) -> PackedFloat32Array:

@@ -29,11 +29,31 @@ func _ready():
 	
 	# Finalize initalisation
 	canvas.sync_design()
+	canvas.selection.selection_changed.connect(_on_selection_changed)
 	Global.design.design_changed.connect(_on_design_changed)
 	update_status_text()
 
+func _on_selection_changed(selection):
+	_DEBUG_update_chart()
+	
+
 func _on_design_changed():
 	update_status_text()
+	_DEBUG_update_chart()
+
+func _DEBUG_update_chart():
+	var chart: Chart = $Gui/MakeshiftChart/Chart
+	var ids = canvas.selection.get_ids()
+	chart.clear_series()
+	if ids and not ids.is_empty():
+		for id in ids:
+			print("Charting ", id)
+			var series = Chart.TimeSeries.new()
+			var data = Global.design.result_time_series(id)
+			series.time_min = 0.0
+			series.time_delta = 1.0
+			series.data = data
+			chart.append_series(series)
 
 func _unhandled_input(event):
 	# TODO: Document inputs
