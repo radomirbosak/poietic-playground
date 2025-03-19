@@ -41,6 +41,9 @@ func _on_design_changed():
 	initialize_result()
 
 func run_step():
+	if not Global.player.result:
+		push_error("No player result")
+		return
 	if step >= max_steps:
 		if is_looping:
 			step = 0
@@ -48,7 +51,7 @@ func run_step():
 			stop()
 			return
 
-	if step >= result.steps_computed - 1:
+	if step >= Global.player.result.steps_computed - 1:
 		compute_next_step()
 
 	step += 1
@@ -100,4 +103,4 @@ func initialize_result():
 	result.append_state(state)
 
 func current_object_value(id: int) -> float:
-	return result.object_value(step, id)
+	return 0

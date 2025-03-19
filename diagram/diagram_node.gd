@@ -123,7 +123,14 @@ func update_from(object: PoieticObject):
 	queue_layout()
 
 func update_value():
-	self.display_value = GlobalSimulator.current_object_value(object_id)
+	if not Global.player:
+		push_error("No player")
+		return
+	var value = Global.player.numeric_value(object_id)
+	if not value:
+		push_warning("Unhandled empty player object value")
+		value = 0
+	self.display_value = value
 	# TODO: This is called twice on update_from()
 	update_indicator()
 
@@ -204,11 +211,12 @@ func update_indicator():
 		indicator.anchor_bottom = 0
 		value_indicator = indicator
 		
-	var current_value = GlobalSimulator.current_object_value(object_id)
-	if current_value != null: 
-		value_indicator.value = current_value
+	# TODO: Make indicator display some "unknown status" when the value is null
+	if self.display_value: 
+		value_indicator.value = self.display_value
 	else:
-		value_indicator.value = display_value
+		push_warning("No display value")
+		value_indicator.value = 0
 
 func bounding_radius():
 	if shape is RectangleShape2D:

@@ -6,6 +6,7 @@ const default_window_size = Vector2(1280, 720)
 
 @onready var canvas: DiagramCanvas = %Canvas
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
+@onready var control_bar: ControlBar = $Gui/ControlBar
 
 func _init():
 	pass
@@ -19,7 +20,8 @@ func _ready():
 	# Initialize and connect canvas
 	Global.canvas = canvas
 	Global.design.design_changed.connect(canvas._on_design_changed)
-	GlobalSimulator.simulation_step.connect(canvas._on_simulation_step)
+	# HERE 1
+	Global.player.simulation_player_step.connect(canvas._on_simulation_step)
 
 	# Connect inspector
 	Global.design.design_changed.connect(inspector_panel._on_design_changed)
@@ -27,10 +29,20 @@ func _ready():
 	# TODO: See inspector panel source comment about selection
 	inspector_panel.selection = canvas.selection
 	
+	# Connect control bar
+	Global.player.simulation_player_started.connect(control_bar._on_simulator_started)
+	Global.player.simulation_player_stopped.connect(control_bar._on_simulator_stopped)
+	Global.player.simulation_player_step.connect(control_bar._on_simulator_step)
+	Global.player.simulation_player_restarted.connect(control_bar._on_simulator_step)
+	control_bar.update_simulator_state()
+	
 	# Finalize initalisation
 	canvas.sync_design()
 	canvas.selection.selection_changed.connect(_on_selection_changed)
 	Global.design.design_changed.connect(_on_design_changed)
+	Global.design.simulation_started.connect(_on_simulation_started)
+	Global.design.simulation_finished.connect(_on_simulation_finished)
+	Global.design.simulation_failed.connect(_on_simulation_failed)
 	update_status_text()
 
 func _on_selection_changed(selection):
@@ -40,6 +52,15 @@ func _on_selection_changed(selection):
 func _on_design_changed():
 	update_status_text()
 	_DEBUG_update_chart()
+
+func _on_simulation_started():
+	print("Simulating")
+
+func _on_simulation_finished(result):
+	prints("TODO: Simulation done. Steps: ", result.count,  " Should update values and the player now.")
+
+func _on_simulation_failed():
+	print("TODO: Simulation failed. Should reset player.")
 
 func _DEBUG_update_chart():
 	var chart: Chart = $Gui/MakeshiftChart/Chart
@@ -105,7 +126,7 @@ func undo():
 		printerr("Trying to undo while having nothing to undo")
 
 func update_status_text():
-	var stats = Global.design.debugStats
+	var stats = Global.design.debug_stats
 	
 	var text = ""
 	text += "Frames: " + str(stats["frames"])
@@ -144,10 +165,10 @@ func toggle_value_indicators():
 	save_settings()
 
 func toggle_run():
-	if GlobalSimulator.is_running:
-		GlobalSimulator.stop()
+	if Global.player.is_running:
+		Global.player.stop()
 	else:
-		GlobalSimulator.run()
+		Global.player.run()
 	
 func delete_selection():
 	canvas.delete_selection()

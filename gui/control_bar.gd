@@ -7,15 +7,8 @@ class_name ControlBar extends PanelContainer
 @onready var time_label: Label = %Time
 @onready var steps_label: Label = %StepsLabel
 
-func _ready():
-	GlobalSimulator.simulation_started.connect(_on_simulator_started)
-	GlobalSimulator.simulation_stopped.connect(_on_simulator_stopped)
-	GlobalSimulator.simulation_step.connect(_on_simulator_step)
-	GlobalSimulator.simulation_reset.connect(_on_simulator_step)
-	update_simulator_state()
-
 func update_simulator_state():
-	if GlobalSimulator.is_running:
+	if Global.player.is_running:
 		run_button.set_pressed_no_signal(true)
 		run_button.update_shader()
 		run_button.disabled = true
@@ -30,9 +23,9 @@ func update_simulator_state():
 		run_button.disabled = false
 		stop_button.disabled = true
 		
-	loop_button.set_pressed_no_signal(GlobalSimulator.is_looping)
+	loop_button.set_pressed_no_signal(Global.player.is_looping)
 	loop_button.update_shader()
-	time_label.text = str(GlobalSimulator.step)
+	time_label.text = str(Global.player.current_step)
 
 func _on_simulator_started():
 	update_simulator_state()
@@ -44,21 +37,21 @@ func _on_simulator_stopped():
 	update_simulator_state()
 
 func _on_reset_pressed():
-	GlobalSimulator.stop()
-	GlobalSimulator.reset()
+	Global.player.stop()
+	Global.player.restart()
 	update_simulator_state()
 
 func _on_run_pressed():
-	if GlobalSimulator.is_running:
+	if Global.player.is_running:
 		return
-	GlobalSimulator.run()
+	Global.player.run()
 
 func _on_stop_button_pressed():
-	if !GlobalSimulator.is_running:
+	if !Global.player.is_running:
 		return
-	GlobalSimulator.stop()
+	Global.player.stop()
 
 
 func _on_loop_button_pressed():
-	GlobalSimulator.is_looping = loop_button.button_pressed
+	Global.player.is_looping = loop_button.button_pressed
 	update_simulator_state()

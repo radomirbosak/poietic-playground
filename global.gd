@@ -4,19 +4,20 @@ extends Node
 
 var show_value_indicators: bool = false
 
-# Tools
-
+# Canvas Tools
 var selection_tool = SelectionTool.new()
 var place_tool = PlaceTool.new()
 var connect_tool = ConnectTool.new()
 
-# Poietic
-
+# Poietic: Data
 var metamodel: PoieticMetamodel
+var result: PoieticResult
+
+# Poietic: Controllers/Managers/Functioning components
 var design: PoieticDesignController
+var player: PoieticPlayer
 
-# State
-
+# Application State
 var modal_node: Node = null
 var current_tool: CanvasTool = selection_tool
 var canvas: DiagramCanvas = null
@@ -33,6 +34,7 @@ func initialize():
 
 	metamodel = PoieticMetamodel.new()
 	design = PoieticDesignController.new()
+	player = PoieticPlayer.new()
 	_create_demo_design()
 	
 	print("Done initializing.")
@@ -47,12 +49,7 @@ func _create_demo_design():
 	var bc = trans.create_edge("Flow", b, c)
 	var db = trans.create_edge("Parameter", d, b)
 	design.accept(trans)
-	# TODO: Emit Design changed signal to compile and init simulation
-	GlobalSimulator.initialize_result()
 
-
-func _initialize_toolbar_icons():
-	pass
 
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")
