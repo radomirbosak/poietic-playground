@@ -57,10 +57,13 @@ func _on_simulation_started():
 	print("Simulating")
 
 func _on_simulation_finished(result):
-	prints("TODO: Simulation done. Steps: ", result.count,  " Should update values and the player now.")
+	# TODO: Send signal: result changed
+	Global.result = result
+	Global.player.result = result
 
 func _on_simulation_failed():
-	print("TODO: Simulation failed. Should reset player.")
+	# TODO: Handle this
+	push_warning("Simulation failed. Signal not handled.")
 
 func _DEBUG_update_chart():
 	var chart: Chart = $Gui/MakeshiftChart/Chart
@@ -95,7 +98,6 @@ func _unhandled_input(event):
 		open_design()
 	elif event.is_action_pressed("import"):
 		import_foreign_frame()
-
 
 	# Edit
 	elif event.is_action_pressed("redo"):
