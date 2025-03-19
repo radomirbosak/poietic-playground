@@ -5,6 +5,7 @@ const SETTINGS_FILE = "user://settings.cfg"
 const default_window_size = Vector2(1280, 720)
 
 @onready var canvas: DiagramCanvas = %Canvas
+@onready var player: PoieticPlayer = $SimulationPlayer
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
 @onready var control_bar: ControlBar = $Gui/ControlBar
 
@@ -16,12 +17,10 @@ func _ready():
 	get_viewport().connect("size_changed", _on_window_resized)
 	
 	Global.initialize()
-
+	
 	# Initialize and connect canvas
 	Global.canvas = canvas
 	Global.design.design_changed.connect(canvas._on_design_changed)
-	# HERE 1
-	Global.player.simulation_player_step.connect(canvas._on_simulation_step)
 
 	# Connect inspector
 	Global.design.design_changed.connect(inspector_panel._on_design_changed)
@@ -29,20 +28,31 @@ func _ready():
 	# TODO: See inspector panel source comment about selection
 	inspector_panel.selection = canvas.selection
 	
-	# Connect control bar
-	Global.player.simulation_player_started.connect(control_bar._on_simulator_started)
-	Global.player.simulation_player_stopped.connect(control_bar._on_simulator_stopped)
-	Global.player.simulation_player_step.connect(control_bar._on_simulator_step)
-	Global.player.simulation_player_restarted.connect(control_bar._on_simulator_step)
+	# Simulation Player and Control Bar
+	Global.player = player
 	control_bar.update_simulator_state()
 	
 	# Finalize initalisation
-	canvas.sync_design()
 	canvas.selection.selection_changed.connect(_on_selection_changed)
 	Global.design.design_changed.connect(_on_design_changed)
 	Global.design.simulation_started.connect(_on_simulation_started)
-	Global.design.simulation_finished.connect(_on_simulation_finished)
-	Global.design.simulation_failed.connect(_on_simulation_failed)
+
+	Global.design.simulation_finished.connect(_on_simulation_success)
+	Global.design.simulation_finished.connect(control_bar._on_simulation_success)
+
+	Global.design.simulation_failed.connect(_on_simulation_failure)
+	Global.design.simulation_failed.connect(control_bar._on_simulation_failure)
+
+	# Load demo design
+	var path = ""
+	if OS.has_feature("editor"):
+		path = ProjectSettings.globalize_path("res://resources/new_canvas_demo_design.json")
+	else:
+		path = OS.get_executable_path().get_base_dir().path_join("resources").path_join("new_canvas_demo_design.json")
+	import_foreign_frame_from(path)
+	
+	# Tell everyone about demo design
+	Global.design.design_changed.emit()
 	update_status_text()
 
 func _on_selection_changed(selection):
@@ -54,15 +64,16 @@ func _on_design_changed():
 	_DEBUG_update_chart()
 
 func _on_simulation_started():
-	print("Simulating")
+	# TODO: Show some indicator
+	pass
 
-func _on_simulation_finished(result):
+func _on_simulation_success(result):
 	# TODO: Send signal: result changed
 	Global.result = result
 	Global.player.result = result
 
-func _on_simulation_failed():
-	# TODO: Handle this
+func _on_simulation_failure():
+	# TODO: Handle this, display some error somewhere, big, red or something
 	push_warning("Simulation failed. Signal not handled.")
 
 func _DEBUG_update_chart():
@@ -232,6 +243,9 @@ func import_foreign_frame():
 	
 	$FileDialog.filters = ["*.poieticframe"]
 	$FileDialog.show()
+
+func import_foreign_frame_from(path: String):
+	Global.design.import_from_path(path)
 
 func _on_file_dialog_files_selected(paths):
 	print("Files selected: ", paths)

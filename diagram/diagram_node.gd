@@ -119,20 +119,7 @@ func update_from(object: PoieticObject):
 		self.position = position
 
 	self.label = object.name
-	update_value()
 	queue_layout()
-
-func update_value():
-	if not Global.player:
-		push_error("No player")
-		return
-	var value = Global.player.numeric_value(object_id)
-	if not value:
-		push_warning("Unhandled empty player object value")
-		value = 0
-	self.display_value = value
-	# TODO: This is called twice on update_from()
-	update_indicator()
 
 func update_children() -> void:
 	update_pictogram()
@@ -215,7 +202,7 @@ func update_indicator():
 	if self.display_value: 
 		value_indicator.value = self.display_value
 	else:
-		push_warning("No display value")
+		# push_warning("No display value")
 		value_indicator.value = 0
 
 func bounding_radius():

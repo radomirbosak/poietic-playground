@@ -5,7 +5,7 @@ class_name ControlBar extends PanelContainer
 @onready var run_button: TextureButton = %RunButton
 @onready var loop_button: TextureButton = %LoopButton
 @onready var time_label: Label = %Time
-@onready var steps_label: Label = %StepsLabel
+@onready var end_time_field: LineEdit = %EndTimeField
 
 func update_simulator_state():
 	if Global.player.is_running:
@@ -26,6 +26,12 @@ func update_simulator_state():
 	loop_button.set_pressed_no_signal(Global.player.is_looping)
 	loop_button.update_shader()
 	time_label.text = str(Global.player.current_step)
+
+func _on_simulation_success(result: PoieticResult):
+	end_time_field.text = str(result.end_time)
+	
+func _on_simulation_failure():
+	pass
 
 func _on_simulator_started():
 	update_simulator_state()

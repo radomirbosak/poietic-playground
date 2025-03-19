@@ -67,14 +67,25 @@ func _process(_delta):
 	if sync_needed:
 		sync_design()
 		sync_needed = false
-	
-func _on_simulation_step():
+
+func _on_simulator_success(result: PoieticResult):
+	# Update indicator ranges
+	update_indicator_values()
+
+func _on_simulation_player_step():
+	update_indicator_values()
+
+func update_indicator_values():
 	for id in Global.design.get_diagram_nodes():
 		var object = Global.design.get_object(id)
 		var diagram_node = get_diagram_node(id)
 		# We might get null node when sync is queued and we do not have a canvas node yet
-		if diagram_node != null:
-			diagram_node.update_value()
+		if diagram_node:
+			var value = Global.player.numeric_value(id)
+			if not value:
+				push_warning("Empty player value for ", id)
+				value = 0
+			diagram_node.display_value = value
 	
 func _on_selection_changed(objects):
 	sync_selection()

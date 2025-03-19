@@ -34,23 +34,10 @@ func initialize():
 
 	metamodel = PoieticMetamodel.new()
 	design = PoieticDesignController.new()
-	player = PoieticPlayer.new()
-	_create_demo_design()
+	# player = PoieticPlayer.new()
 	
 	print("Done initializing.")
 	
-func _create_demo_design():
-	var trans = design.new_transaction()
-	var a = trans.create_node("Stock", "source", {"position": Vector2(400, 300), "formula": 5})
-	var b = trans.create_node("FlowRate", "flow", {"position": Vector2(600, 300), "formula": "x * 0.01"})
-	var c = trans.create_node("Stock", "target", {"position": Vector2(800, 300), "formula": 0})
-	var d = trans.create_node("Auxiliary", "x", {"position": Vector2(400, 500), "formula": 10})
-	var ab = trans.create_edge("Flow", a, b)
-	var bc = trans.create_edge("Flow", b, c)
-	var db = trans.create_edge("Parameter", d, b)
-	design.accept(trans)
-
-
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")
 	

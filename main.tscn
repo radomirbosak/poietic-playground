@@ -127,6 +127,8 @@ item_2/text = "Show value indicators"
 item_2/checkable = 1
 item_2/id = 2
 
+[node name="SimulationPlayer" type="PoieticPlayer" parent="."]
+
 [connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
@@ -134,3 +136,8 @@ item_2/id = 2
 [connection signal="id_pressed" from="MenuBar/EditMenu" to="." method="_on_edit_menu_id_pressed"]
 [connection signal="id_pressed" from="MenuBar/DiagramMenu" to="." method="_on_diagram_menu_id_pressed"]
 [connection signal="id_pressed" from="MenuBar/ViewMenu" to="." method="_on_view_menu_id_pressed"]
+[connection signal="simulation_player_restarted" from="SimulationPlayer" to="Gui/ControlBar" method="_on_simulator_step"]
+[connection signal="simulation_player_started" from="SimulationPlayer" to="Gui/ControlBar" method="_on_simulator_started"]
+[connection signal="simulation_player_step" from="SimulationPlayer" to="Gui/ControlBar" method="_on_simulator_step"]
+[connection signal="simulation_player_step" from="SimulationPlayer" to="Canvas" method="_on_simulation_player_step"]
+[connection signal="simulation_player_stopped" from="SimulationPlayer" to="Gui/ControlBar" method="_on_simulator_stopped"]

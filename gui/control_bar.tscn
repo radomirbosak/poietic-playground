@@ -97,12 +97,12 @@ text = "0
 "
 horizontal_alignment = 2
 
-[node name="StepsLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+[node name="EndTimeLabel" type="Label" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Steps"
 
-[node name="StepsField" type="LineEdit" parent="MarginContainer/HBoxContainer"]
+[node name="EndTimeField" type="LineEdit" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "10"
