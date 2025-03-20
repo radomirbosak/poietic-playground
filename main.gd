@@ -20,7 +20,6 @@ func _ready():
 	
 	# Initialize and connect canvas
 	Global.canvas = canvas
-	Global.design.design_changed.connect(canvas._on_design_changed)
 
 	# Connect inspector
 	Global.design.design_changed.connect(inspector_panel._on_design_changed)
@@ -33,15 +32,14 @@ func _ready():
 	control_bar.update_simulator_state()
 	
 	# Finalize initalisation
-	canvas.selection.selection_changed.connect(_on_selection_changed)
-	Global.design.design_changed.connect(_on_design_changed)
-	Global.design.simulation_started.connect(_on_simulation_started)
+	Global.design.design_changed.connect(self._on_design_changed)
+	canvas.selection.selection_changed.connect(self._on_selection_changed)
+	Global.design.simulation_started.connect(self._on_simulation_started)
 
-	Global.design.simulation_finished.connect(_on_simulation_success)
+	Global.design.simulation_finished.connect(self._on_simulation_success)
 	Global.design.simulation_finished.connect(control_bar._on_simulation_success)
-	Global.design.simulation_finished.connect(canvas._on_simulation_success)
 
-	Global.design.simulation_failed.connect(_on_simulation_failure)
+	Global.design.simulation_failed.connect(self._on_simulation_failure)
 	Global.design.simulation_failed.connect(control_bar._on_simulation_failure)
 
 	# Load demo design
@@ -60,25 +58,42 @@ func _ready():
 
 func _on_selection_changed(selection):
 	_DEBUG_update_chart()
-	
 
-func _on_design_changed():
+func _on_design_changed(has_issues: bool):
+	# FIXME: Fix selection so that object IDs match
+	canvas.sync_design()
 	update_status_text()
-	_DEBUG_update_chart()
+	if has_issues:
+		clear_result()
 
 func _on_simulation_started():
-	# TODO: Show some indicator
+	# TODO: Show some indicator to give hope.
 	pass
 
 func _on_simulation_success(result):
 	# TODO: Send signal: result changed
-	Global.result = result
-	Global.player.result = result
+	set_result(result)
 
 func _on_simulation_failure():
 	# TODO: Handle this, display some error somewhere, big, red or something
-	push_warning("Simulation failed. Signal not handled.")
+	clear_result()
 
+func set_result(result):
+	Global.result = result
+	player.result = result
+	canvas.sync_indicators(result)
+	_DEBUG_update_chart()
+
+func clear_result():
+	Global.player.stop()
+	Global.result = null
+	Global.player.result = null
+	canvas.clear_indicators()
+	
+
+func _on_simulation_player_step():
+	canvas.update_indicator_values()
+	
 func _DEBUG_update_chart():
 	var chart: Chart = $Gui/MakeshiftChart/Chart
 	var ids = canvas.selection.get_ids()

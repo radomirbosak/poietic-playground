@@ -64,7 +64,7 @@ func _draw():
 				display_origin = min_value
 				display_end = capped_value
 		
-		prints(display_origin, display_end, mid_value, capped_value, overflow, underflow)
+		# prints(display_origin, display_end, mid_value, capped_value, overflow, underflow)
 		var inset_length = size.x - inset * 2
 		var scale = inset_length / (max_value - min_value)
 		var value_rect = Rect2(

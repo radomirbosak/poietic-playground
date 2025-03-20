@@ -8,7 +8,6 @@ var selection: PoieticSelection = PoieticSelection.new()
 @export var zoom_level: float = 1.0
 @export var canvas_offset: Vector2 = Vector2.ZERO
 @export var _design_sync_needed: bool = true
-@export var _indicators_sync_needed: bool = true
 
 const default_pictogram_color = Color.WHITE
 const default_label_color = Color.WHITE
@@ -68,24 +67,15 @@ func _process(_delta):
 	if _design_sync_needed:
 		sync_design()
 
-func _on_simulation_success(result: PoieticResult):
-	# Update indicator ranges
-	sync_indicators(result)
-
-func _on_simulation_player_step():
-	update_indicator_values()
-	
 func _on_selection_changed(objects):
 	sync_selection()
-
-func _on_design_changed():
-	sync_design()
 
 func queue_sync():
 	_design_sync_needed = true
 
 ## Update indicators from the player.
 ##
+## This method is typically called on simulation player step.
 func update_indicator_values():
 	for id in Global.design.get_diagram_nodes():
 		var object = Global.design.get_object(id)
@@ -94,7 +84,20 @@ func update_indicator_values():
 		if diagram_node:
 			diagram_node.display_value = Global.player.numeric_value(id)
 
+## Remove values from indicators
+##
+## This method is called when design fails validation or when the simulation fails.
+##
+func clear_indicators():
+	for node in self.all_diagram_nodes():
+		node.display_value = null
+
 ## Synchronize indicators based on a simulation result.
+##
+## The method sets initial value of indicators and sets indicator range from the
+## simulation result (time series).
+##
+## This method is typically called on design change.
 ##
 func sync_indicators(result: PoieticResult):
 	for id in Global.design.get_diagram_nodes():

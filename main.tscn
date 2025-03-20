@@ -44,8 +44,8 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -175.0
-offset_top = -149.0
+offset_left = -296.0
+offset_top = -188.0
 grow_horizontal = 0
 grow_vertical = 0
 
@@ -139,6 +139,6 @@ step_duration = 0.01
 [connection signal="id_pressed" from="MenuBar/ViewMenu" to="." method="_on_view_menu_id_pressed"]
 [connection signal="simulation_player_restarted" from="SimulationPlayer" to="Gui/ControlBar" method="_on_simulator_step"]
 [connection signal="simulation_player_started" from="SimulationPlayer" to="Gui/ControlBar" method="_on_simulator_started"]
+[connection signal="simulation_player_step" from="SimulationPlayer" to="." method="_on_simulation_player_step"]
 [connection signal="simulation_player_step" from="SimulationPlayer" to="Gui/ControlBar" method="_on_simulator_step"]
-[connection signal="simulation_player_step" from="SimulationPlayer" to="Canvas" method="_on_simulation_player_step"]
 [connection signal="simulation_player_stopped" from="SimulationPlayer" to="Gui/ControlBar" method="_on_simulator_stopped"]

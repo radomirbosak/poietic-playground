@@ -10,10 +10,13 @@ const highlight_padding = 5
 ##
 ## Typically a computed simulation value of the node.
 ##
-var display_value: float = 0.0:
+var display_value: Variant = 0.0:
 	set(value):
-		display_value = value
-		update_indicator()
+		if value is float or value == null:
+			display_value = value
+			update_indicator()
+		else:
+			push_warning("Invalid display value for node ID ", object_id, ": ", value)
 
 var object_id: int = 0
 
@@ -172,10 +175,12 @@ func update_pictogram():
 	selection_highlight_shape = DiagramGeometry.offset_shape(shape, 6)
 	# collision.shape = shape
 
+var indicator_offset = 30
+
 func update_indicator():
 	if value_indicator == null:
 		var indicator = ValueIndicator.new()
-		indicator.position = Vector2(0, -100)
+		indicator.position = Vector2(0, - shape.get_rect().size.y / 2 - indicator_offset)
 		indicator.min_value = 0
 		indicator.max_value = 100
 		var fill_style = StyleBoxFlat.new()

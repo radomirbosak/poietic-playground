@@ -20,7 +20,7 @@ func _on_selection_changed(new_selection):
 	# TODO: Do we need new selection? We should query the canvas one.
 	set_selection(new_selection)
 	
-func _on_design_changed():
+func _on_design_changed(success: bool):
 	# Just re-apply current selection
 	set_selection(selection)
 

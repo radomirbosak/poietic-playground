@@ -2,14 +2,14 @@
 	"format_version": "0",
 	"metamodel": "Flows",
 	"objects": [
-		{ "type": "Stock", "name": "source", "attributes": { "position": [400, 300], "formula": "100" } },
-		{ "type": "FlowRate", "name": "flow", "attributes": { "position": [600, 300], "formula": "rate * 0.01" } },
-		{ "type": "Stock", "name": "target", "attributes": { "position": [800, 300], "formula": "0" } },
+		{ "type": "Stock", "name": "resources", "attributes": { "position": [400, 300], "formula": "100" } },
+		{ "type": "FlowRate", "name": "harvest", "attributes": { "position": [600, 300], "formula": "rate * 0.01" } },
+		{ "type": "Stock", "name": "storage", "attributes": { "position": [800, 300], "formula": "0" } },
 		{ "type": "Auxiliary", "name": "rate", "attributes": { "position": [400, 500], "formula": "100" } },
 
-		{ "type": "Flow", "from": "source", "to": "flow" },
-		{ "type": "Flow", "from": "flow", "to": "target" },
-		{ "type": "Parameter", "from": "rate", "to": "flow" },
+		{ "type": "Flow", "from": "resources", "to": "harvest" },
+		{ "type": "Flow", "from": "harvest", "to": "storage" },
+		{ "type": "Parameter", "from": "rate", "to": "harvest" },
 
 		{ "type": "Simulation", "attributes": { "initial_time": 0.0, "time_delta": 1.0, "end_time": 100.0 } }
 	]
