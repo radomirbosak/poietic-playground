@@ -2,7 +2,7 @@ extends Node
 
 # View Preferences
 
-var show_value_indicators: bool = false
+var show_value_indicators: bool = true
 
 # Canvas Tools
 var selection_tool = SelectionTool.new()

@@ -21,7 +21,7 @@ var object_id: int = 0
 var image: Sprite2D
 var shape: Shape2D
 var label_text: Label
-var value_indicator: ProgressBar
+var value_indicator: ValueIndicator
 # TODO: Physics
 var collision: CollisionShape2D = CollisionShape2D.new()
 
@@ -174,28 +174,21 @@ func update_pictogram():
 
 func update_indicator():
 	if value_indicator == null:
-		var indicator = ProgressBar.new()
-		indicator.custom_minimum_size = Vector2(100,5)
-		indicator.size = Vector2(100,5)
-		indicator.position = Vector2(-indicator.size.x / 2, -100)
+		var indicator = ValueIndicator.new()
+		indicator.position = Vector2(0, -100)
 		indicator.min_value = 0
 		indicator.max_value = 100
-		indicator.show_percentage = false
 		var fill_style = StyleBoxFlat.new()
-		fill_style.bg_color = Color.LIME_GREEN
+		fill_style.bg_color = Color.YELLOW
 		fill_style.border_color = Color.LIME_GREEN
-		fill_style.set_border_width_all(2)
-		indicator.add_theme_stylebox_override("fill", fill_style)
+		fill_style.set_border_width_all(0)
+		indicator.normal_style = fill_style
 		var bg_style = StyleBoxFlat.new()
 		bg_style.bg_color = Color.BLACK
-		bg_style.border_color = Color.LIME_GREEN
+		bg_style.border_color = Color.DIM_GRAY
 		bg_style.set_border_width_all(2)
-		indicator.add_theme_stylebox_override("background", bg_style)
+		indicator.bg_style = bg_style
 		add_child(indicator)
-		indicator.anchor_left = 0.5
-		indicator.anchor_top = 0
-		indicator.anchor_right = 0.5
-		indicator.anchor_bottom = 0
 		value_indicator = indicator
 		
 	# TODO: Make indicator display some "unknown status" when the value is null
@@ -203,7 +196,7 @@ func update_indicator():
 		value_indicator.value = self.display_value
 	else:
 		# push_warning("No display value")
-		value_indicator.value = 0
+		value_indicator.value = null
 
 func bounding_radius():
 	if shape is RectangleShape2D:

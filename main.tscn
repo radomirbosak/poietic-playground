@@ -128,6 +128,7 @@ item_2/checkable = 1
 item_2/id = 2
 
 [node name="SimulationPlayer" type="PoieticPlayer" parent="."]
+step_duration = 0.01
 
 [connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
