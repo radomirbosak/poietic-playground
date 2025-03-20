@@ -30,13 +30,10 @@ func initialize():
 	InspectorTraitPanel._initialize_panels()
 	Pictogram._load_pictograms()
 
-	print("Initializing design ...")
-
 	metamodel = PoieticMetamodel.new()
 	design = PoieticDesignController.new()
-	# player = PoieticPlayer.new()
 	
-	print("Done initializing.")
+	print("Done initializing globals.")
 	
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")

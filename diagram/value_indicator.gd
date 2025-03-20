@@ -50,8 +50,8 @@ func _draw():
 		var display_end: float = capped_value
 		if mid_value is float:
 			if value < mid_value:
-				display_end = mid_value
 				display_origin = capped_value
+				display_end = mid_value
 				style = negative_style
 			else:
 				display_origin = mid_value
@@ -63,7 +63,8 @@ func _draw():
 			else:
 				display_origin = min_value
 				display_end = capped_value
-
+		
+		prints(display_origin, display_end, mid_value, capped_value, overflow, underflow)
 		var inset_length = size.x - inset * 2
 		var scale = inset_length / (max_value - min_value)
 		var value_rect = Rect2(

@@ -39,6 +39,7 @@ func _ready():
 
 	Global.design.simulation_finished.connect(_on_simulation_success)
 	Global.design.simulation_finished.connect(control_bar._on_simulation_success)
+	Global.design.simulation_finished.connect(canvas._on_simulation_success)
 
 	Global.design.simulation_failed.connect(_on_simulation_failure)
 	Global.design.simulation_failed.connect(control_bar._on_simulation_failure)
@@ -52,8 +53,10 @@ func _ready():
 	import_foreign_frame_from(path)
 	
 	# Tell everyone about demo design
-	Global.design.design_changed.emit()
+	# Global.design.design_changed.emit()
 	update_status_text()
+	
+	print("Done initializing main.")
 
 func _on_selection_changed(selection):
 	_DEBUG_update_chart()

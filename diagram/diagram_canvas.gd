@@ -7,7 +7,8 @@ var selection: PoieticSelection = PoieticSelection.new()
 
 @export var zoom_level: float = 1.0
 @export var canvas_offset: Vector2 = Vector2.ZERO
-@export var sync_needed: bool = true
+@export var _design_sync_needed: bool = true
+@export var _indicators_sync_needed: bool = true
 
 const default_pictogram_color = Color.WHITE
 const default_label_color = Color.WHITE
@@ -64,38 +65,56 @@ func _ready():
 	selection.selection_changed.connect(_on_selection_changed)
 
 func _process(_delta):
-	if sync_needed:
+	if _design_sync_needed:
 		sync_design()
-		sync_needed = false
 
-func _on_simulator_success(result: PoieticResult):
+func _on_simulation_success(result: PoieticResult):
 	# Update indicator ranges
-	update_indicator_values()
+	sync_indicators(result)
 
 func _on_simulation_player_step():
 	update_indicator_values()
+	
+func _on_selection_changed(objects):
+	sync_selection()
 
+func _on_design_changed():
+	sync_design()
+
+func queue_sync():
+	_design_sync_needed = true
+
+## Update indicators from the player.
+##
 func update_indicator_values():
 	for id in Global.design.get_diagram_nodes():
 		var object = Global.design.get_object(id)
 		var diagram_node = get_diagram_node(id)
 		# We might get null node when sync is queued and we do not have a canvas node yet
 		if diagram_node:
-			var value = Global.player.numeric_value(id)
-			if not value:
-				push_warning("Empty player value for ", id)
-				value = 0
-			diagram_node.display_value = value
+			diagram_node.display_value = Global.player.numeric_value(id)
+
+## Synchronize indicators based on a simulation result.
+##
+func sync_indicators(result: PoieticResult):
+	for id in Global.design.get_diagram_nodes():
+		var object = Global.design.get_object(id)
+		var diagram_node = get_diagram_node(id)
+		# We might get null node when sync is queued and we do not have a canvas node yet
+		if diagram_node:
+			var series = result.time_series(id)
+			if not series:
+				push_warning("No result time series for object ", id)
+				continue
+			diagram_node.value_indicator.min_value = series.data_min
+			diagram_node.value_indicator.max_value = series.data_max
+			if series.data_min < 0:
+				diagram_node.value_indicator.mid_value = 0
+			else:
+				diagram_node.value_indicator.mid_value = null
+			diagram_node.display_value = series.first
+				
 	
-func _on_selection_changed(objects):
-	sync_selection()
-
-func _on_design_changed():
-	queue_sync()
-
-func queue_sync():
-	sync_needed = true
-
 func _unhandled_input(event):
 	if event is InputEventPanGesture:
 		canvas_offset += (-event.delta) * zoom_level * 10
@@ -192,7 +211,8 @@ func sync_design():
 
 	# Finalize
 	sync_selection()
-	
+	_design_sync_needed = false
+
 func sync_selection():
 	var selected_ids = selection.get_ids()
 	for child in self.get_children():
