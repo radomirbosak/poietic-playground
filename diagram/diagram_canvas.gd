@@ -123,12 +123,16 @@ func _unhandled_input(event):
 		canvas_offset += (-event.delta) * zoom_level * 10
 		update_canvas_position()
 	elif event is InputEventMagnifyGesture:
-		var mouse = get_global_mouse_position()
-		var new_trans = transform.scaled(Vector2(event.factor, event.factor))
-		var new_mouse = new_trans.affine_inverse() * mouse
+		var g_mouse = get_global_mouse_position()
+		var t_before = Transform2D().scaled(Vector2(zoom_level, zoom_level)).translated(canvas_offset)
+		var m_before = t_before.affine_inverse() * g_mouse
+
 		zoom_level *= event.factor
-		# zoom_level = clamp(zoom_level, 0.1, 5.0)
-		canvas_offset += (get_local_mouse_position() - new_mouse) * zoom_level
+		zoom_level = clamp(zoom_level, 0.1, 5.0)
+
+		var t_after = Transform2D().scaled(Vector2(zoom_level, zoom_level)).translated(canvas_offset)
+		var m_after = t_after.affine_inverse() * g_mouse
+		canvas_offset += -(m_before - m_after) * zoom_level
 		update_canvas_position()
 	else: # Regular tool use
 		var tool = Global.current_tool

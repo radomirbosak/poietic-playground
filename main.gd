@@ -90,7 +90,6 @@ func clear_result():
 	Global.player.result = null
 	canvas.clear_indicators()
 	
-
 func _on_simulation_player_step():
 	canvas.update_indicator_values()
 	
