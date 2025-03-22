@@ -2,7 +2,7 @@ class_name DiagramCanvas extends Node2D
 
 # TODO: Add error indicators at the canvas edges if there are objects with errors at that direction
 
-var diagram_objects: Dictionary[int, Node2D] = {} 
+var diagram_objects: Dictionary[int, DiagramObject] = {} 
 var selection: PoieticSelection = PoieticSelection.new()
 
 @export var zoom_level: float = 1.0
@@ -54,10 +54,6 @@ func get_diagram_connection(id: int) -> DiagramConnection:
 		return object
 	else:
 		return null
-
-
-func _init():
-	pass
 
 func _ready():
 	add_to_group("drag_drop_targets")
@@ -148,12 +144,8 @@ func update_canvas_position() -> void:
 	
 func object_at_position(test_position: Vector2):
 	for child in get_children():
-		if child is DiagramNode:
-			if child.contains_point(test_position):
-				return child
-		elif child is DiagramConnection:
-			if child.contains_point(test_position):
-				return child
+		if child is DiagramObject and child.contains_point(test_position):
+			return child
 			
 	return null
 
@@ -182,16 +174,16 @@ func sync_design():
 	# Current Nodes
 	for node in all_diagram_nodes():
 		var object: PoieticObject = Global.design.get_object(node.object_id)
-		node.update_from(object)
+		node._update_from_design_object(object)
 		var issues = Global.design.issues_for_object(node.object_id)
-		node.has_errors = !issues.is_empty()
+		node.has_issues = !issues.is_empty()
 
 	# Added Nodes
 	for id in diff.added_nodes:
 		var object: PoieticObject = Global.design.get_object(id)
 		var node = create_node_from(object)
 		var issues = Global.design.issues_for_object(id)
-		node.has_errors = !issues.is_empty()
+		node.has_issues = !issues.is_empty()
 
 	# Current edges
 	for conn in all_diagram_connections():
@@ -204,9 +196,9 @@ func sync_design():
 		assert(target)
 		conn.target = target
 
-		conn.update_from(object)
+		conn._update_from_design_object(object)
 		var issues = Global.design.issues_for_object(conn.object_id)
-		conn.has_errors = !issues.is_empty()
+		conn.has_issues = !issues.is_empty()
 	
 	# Added Edges
 	for id in diff.added_edges:
@@ -214,7 +206,7 @@ func sync_design():
 		var new_conn = create_edge_from(object)
 		assert(new_conn)
 		var issues = Global.design.issues_for_object(id)
-		new_conn.has_errors = !issues.is_empty()
+		new_conn.has_issues = !issues.is_empty()
 
 	# Finalize
 	sync_selection()
@@ -223,12 +215,9 @@ func sync_design():
 func sync_selection():
 	var selected_ids = selection.get_ids()
 	for child in self.get_children():
-		if child is DiagramNode:
-			child.set_selected(selected_ids.has(child.object_id))
-		elif child is DiagramConnection:
-			child.set_selected(selected_ids.has(child.object_id))
-	
-		
+		if child is DiagramObject:
+			child.is_selected = selected_ids.has(child.object_id)	
+
 func create_node_from(object: PoieticObject) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
 	node.name = "diagram_node" + str(object.object_id)
@@ -237,7 +226,7 @@ func create_node_from(object: PoieticObject) -> DiagramNode:
 
 	diagram_objects[object.object_id] = node
 	add_child(node)
-	node.update_from(object)
+	node._set_design_object(object)
 	return node
 
 func create_edge_from(object: PoieticObject) -> DiagramConnection:
@@ -257,10 +246,9 @@ func create_edge_from(object: PoieticObject) -> DiagramConnection:
 		return null
 
 	var conn: DiagramConnection = DiagramConnection.new()
+	conn._set_design_object(object)
 	conn.set_connection(origin, target)	
 	conn.name = "diagram_connection" + str(object.object_id)
-	conn.type_name = object.type_name
-	conn.object_id = object.object_id
 	diagram_objects[object.object_id] = conn
 	add_child(conn)
 	return conn
@@ -284,15 +272,17 @@ func drag_selection(move_delta: Vector2):
 		node.position += move_delta
 
 func finish_drag_selection(_final_position: Vector2) -> void:
+	var nodes_to_move: Array[DiagramNode] = get_selected_nodes()
+	if nodes_to_move.is_empty():
+		return
+		
 	var trans = Global.design.new_transaction()
 	
 	for node in get_selected_nodes():
 		node.is_dragged = false
 		var object = Global.design.get_object(node.object_id)
 		trans.set_attribute(node.object_id, "position", node.position)
-	# TODO: Send signal that frame has been changed
 	Global.design.accept(trans)
-	# FIXME: Proper change handling
 		
 func delete_selection():
 	var trans = Global.design.new_transaction()

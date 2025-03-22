@@ -40,6 +40,11 @@ window/stretch/aspect="ignore"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 
+[global_group]
+
+diagram_connections=""
+diagram_nodes=""
+
 [input]
 
 ui_undo={

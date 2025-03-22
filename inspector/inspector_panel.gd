@@ -26,7 +26,7 @@ func _on_design_changed(success: bool):
 
 func set_selection(new_selection):
 	self.selection = new_selection
-	print("Selection changed: ", selection.count(), " nodes selected")
+	prints("Selection changed: ", selection.count(), " nodes selected: ", selection.get_ids())
 	
 	var type_names = Global.design.get_distinct_types(selection)
 

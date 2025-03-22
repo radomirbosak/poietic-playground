@@ -1,13 +1,7 @@
-class_name DiagramConnection extends Node2D
+class_name DiagramConnection extends DiagramObject
 
-# DampedSpringJoint2D
-# Diagram Properties
-var type_name: String
-var object_id: int
 var origin: DiagramNode
 var target: Node2D
-
-var label: String
 
 var arrow_origin: Vector2 = Vector2()
 var arrow_target: Vector2 = Vector2()
@@ -22,13 +16,8 @@ var has_errors: bool = false:
 		if error_indicator:
 			error_indicator.visible = has_errors
 
-# Physics
-# var joint: DampedSpringJoint2D
-
 # Select Tool
 var touchable_outline: PackedVector2Array = []
-var is_selected: bool = false
-
 var children_needs_update: bool = true
 
 func queue_layout():
@@ -36,10 +25,10 @@ func queue_layout():
 
 func _process(_delta: float) -> void:
 	if not origin:
-		# push_error("Connection ", self, " has no origin")
+		push_error("Connection ", self, " has no origin")
 		return
 	if not target:
-		# push_error("Connection ", self, " has no target")
+		push_error("Connection ", self, " has no target")
 		return
 		
 	var new_origin_pos = to_local(origin.global_position)
@@ -52,30 +41,19 @@ func _process(_delta: float) -> void:
 ## Updates the diagram node based on a design object.
 ##
 ## This method should be called whenever the source of truth is changed.
-func update_from(object: PoieticObject):
+func _update_from_design_object(object: PoieticObject):
 	var position = object.get_position()
 	
 	if position is Vector2:
 		self.position = position
 	else:
 		self.position = Vector2()
-		
-	var text = object.name
-	if text is String:
-		self.label = text
 
 	queue_layout()
 
 func set_connection(origin: DiagramNode, target: Node2D):
 	self.origin = origin
 	self.target = target
-	# TODO: Physics
-	# if joint == null:
-		#joint = DampedSpringJoint2D.new()
-		#add_child(joint)
-	#if joint != null:
-		#joint.node_a = joint.get_path_to(origin)
-		#joint.node_b = joint.get_path_to(target)
 	update_arrow()
 	
 func set_target(target: DiagramNode):
@@ -155,12 +133,6 @@ func draw_arrow():
 				var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
 				if len(polygons) >= 1:
 					draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
-
-
-
-func set_selected(flag: bool):
-	self.is_selected = flag
-	queue_redraw()
 
 func contains_point(point: Vector2):
 	var local = to_local(point)
