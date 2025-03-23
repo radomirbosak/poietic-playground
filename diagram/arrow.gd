@@ -8,6 +8,24 @@ var tail: Vector2 = Vector2()
 var head_type: ArrowheadType = ArrowheadType.SQUARE
 var tail_type: ArrowheadType = ArrowheadType.DIAMOND
 
+enum ArrowheadType {
+	NONE,          # No arrow-head
+	STICK,         # Simple stick arrowhead
+	DIAMOND,       # Diamond-shaped arrowhead
+	SQUARE,        # Square-shaped arrowhead
+	BAR,           # Bar or tee-shaped arrowhead (negative control)
+	NON_NAVIGABLE, # X-like cross
+	NEGATIVE,      # Negative control (a bar at the endpoint)
+	CIRCLE,        # Circle touching the endpoint
+	CIRCLE_CENTER  # Circle centered at the endpoint
+}
+
+class Arrowhead:
+	var polygons: Array[PackedVector2Array]
+	var polylines: Array[PackedVector2Array]
+	var offset: float
+		
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -44,21 +62,22 @@ func draw_arrow():
 		prints("No points for head ", head_type, head_points)
 
 
-enum ArrowheadType {
-	NONE,         # No arrow-head
-	STICK,       # Simple stick arrowhead
-	DIAMOND,     # Diamond-shaped arrowhead
-	SQUARE,      # Square-shaped arrowhead
-	BAR,         # Bar or tee-shaped arrowhead (negative control)
-	NON_NAVIGABLE, # X-like cross (non-navigable)
-	NEGATIVE,      # X-like cross (non-navigable)
-	CIRCLE       # Circle-shaped arrowhead
-}
+func get_touch_point_offset(size: float, type: ArrowheadType = ArrowheadType.STICK) -> float:
+	match type:
+		ArrowheadType.NONE, ArrowheadType.STICK:
+			return 0
+		ArrowheadType.DIAMOND, ArrowheadType.SQUARE, ArrowheadType.CIRCLE:
+			return size
+		ArrowheadType.BAR, ArrowheadType.NEGATIVE, ArrowheadType.NON_NAVIGABLE:
+			return 0
+		ArrowheadType.CIRCLE_CENTER:
+			return size / 2
+	return 0
 
 func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type: ArrowheadType = ArrowheadType.STICK) -> Curve2D:
 	var curve = Curve2D.new()
 	var direction = (target - origin).normalized()
-	var perpendicular = direction.orthogonal()  # Perpendicular direction
+	var perpendicular = direction.orthogonal()
 	
 	match type:
 		ArrowheadType.NONE:
@@ -71,7 +90,6 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 			curve.add_point(point2)
 		
 		ArrowheadType.DIAMOND:
-			# Diamond-shaped arrowhead
 			var back = target - direction * size 
 			var side1 = target - direction * (size / 2) + perpendicular * (size/2)
 			var side2 = target - direction * (size / 2) - perpendicular * (size/2)
@@ -82,7 +100,6 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 			curve.add_point(side1)
 		
 		ArrowheadType.SQUARE:
-			# Square-shaped arrowhead
 			var c1 = target - perpendicular * (size / 2)
 			var c2 = c1 - direction * size
 			var c3 = c2 + perpendicular * size
@@ -94,21 +111,18 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 			curve.add_point(c1)
 		
 		ArrowheadType.BAR:
-			# Bar or tee-shaped arrowhead
 			var point1 = target - direction * (size / 2) - perpendicular * (size / 2)
 			var point2 = target - direction * (size / 2) + perpendicular * (size / 2)
 			curve.add_point(point1)
 			curve.add_point(point2)
 
 		ArrowheadType.NEGATIVE:
-			# Bar or tee-shaped arrowhead
 			var point1 = target - perpendicular * (size / 2)
 			var point2 = target + perpendicular * (size / 2)
 			curve.add_point(point1)
 			curve.add_point(point2)
 		
 		ArrowheadType.NON_NAVIGABLE:
-			# X-like cross (non-navigable)
 			var c1 = target - perpendicular * (size / 2)
 			var c2 = c1 - direction * size
 			var c3 = c2 + perpendicular * size
@@ -123,10 +137,14 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 			var centre = target - direction * radius
 			curve = create_circle_curve(centre, radius)
 	
+		ArrowheadType.CIRCLE_CENTER:
+			var radius = size / 2
+			var centre = target
+			curve = create_circle_curve(centre, radius)
+
 	return curve
 
-
-func create_circle_curve(center: Vector2, radius: float, resolution: int = 4) -> Curve2D:
+func create_circle_curve(center: Vector2, radius: float) -> Curve2D:
 	# https://spencermortensen.com/articles/bezier-circle/
 	# P0=(0,a), P1=(b,c), P2=(c,b), P3=(a,0)
 	var curve = Curve2D.new()
