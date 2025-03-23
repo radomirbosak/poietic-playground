@@ -26,7 +26,7 @@ func update_items():
 	for child in item_grid.get_children():
 		item_grid.remove_child(child)
 		
-	for pictogram in Pictogram.get_placeable_pictograms():
+	for pictogram in Global.get_placeable_pictograms():
 		add_item(pictogram)
 
 func add_item(pictogram: Pictogram):
@@ -41,4 +41,3 @@ func add_item(pictogram: Pictogram):
 
 func _on_item_selected(item: ObjectPaletteItem):
 	place_object.emit(callout_position, item.pictogram.name)
-	

@@ -3,7 +3,7 @@ class_name DiagramCanvas extends Node2D
 # TODO: Add error indicators at the canvas edges if there are objects with errors at that direction
 
 var diagram_objects: Dictionary[int, DiagramObject] = {} 
-var selection: PoieticSelection = PoieticSelection.new()
+@export var selection: PoieticSelection = PoieticSelection.new()
 
 @export var zoom_level: float = 1.0
 @export var canvas_offset: Vector2 = Vector2.ZERO
@@ -28,6 +28,7 @@ func all_diagram_edge_ids() -> PackedInt64Array:
 	return result
 
 func all_diagram_nodes() -> Array[DiagramNode]:
+	self.get_groups()
 	var result: Array[DiagramNode]
 	for object in diagram_objects.values():
 		if object is DiagramNode:

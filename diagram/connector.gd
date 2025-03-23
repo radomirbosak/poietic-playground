@@ -1,3 +1,5 @@
+## Graphical connector between two diagram objects.
+##
 class_name Connector extends Node2D
 
 @export var origin_point: Vector2 = Vector2():

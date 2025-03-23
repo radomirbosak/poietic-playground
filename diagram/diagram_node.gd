@@ -109,7 +109,7 @@ func update_pictogram():
 		image = Sprite2D.new()
 		add_child(image)
 
-	var pictogram: Pictogram = Pictogram.get_pictogram(type_name)
+	var pictogram: Pictogram = Global.get_pictogram(type_name)
 	image.texture = ImageTexture.create_from_image(pictogram.get_image())
 	shape = pictogram.shape
 	# TODO: Use offset shape, not grow shape.

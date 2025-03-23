@@ -24,17 +24,65 @@ var canvas: DiagramCanvas = null
 
 signal tool_changed(tool: CanvasTool)
 
+static var _all_pictograms: Dictionary[String,Pictogram] = {}
+static var default_pictogram: Pictogram
+
 func initialize():
 	print("Initializing globals ...")
 
 	InspectorTraitPanel._initialize_panels()
-	Pictogram._load_pictograms()
+	self._load_pictograms()
 
 	metamodel = PoieticMetamodel.new()
 	design = PoieticDesignController.new()
 	
 	print("Done initializing globals.")
+
+static func _load_pictograms():
+	# TODO: Adjust the scales based on the rules for the pictogram sizes (not yet defined)
+	var circle = CircleShape2D.new()
+	circle.radius = Pictogram.tile_size / Pictogram.default_image_scale
+	var square = RectangleShape2D.new()
+	square.size = Vector2(Pictogram.tile_size, Pictogram.tile_size)
+	var rectangle = RectangleShape2D.new()
+	rectangle.size = Vector2(Pictogram.tile_size * 3, Pictogram.tile_size * 2)
+	var flow_shape = CircleShape2D.new()
+	flow_shape.radius = Pictogram.tile_size * 0.8
 	
+	_all_pictograms.clear()
+	
+	default_pictogram = Pictogram.new("Unknown", square)
+	_all_pictograms["default"] = default_pictogram
+	var pictograms: Array[Pictogram]= [
+		Pictogram.new("Stock", rectangle),
+		Pictogram.new("FlowRate", flow_shape),
+		Pictogram.new("Auxiliary", circle),
+		Pictogram.new("GraphicalFunction", circle),
+		Pictogram.new("Smooth", square),
+		Pictogram.new("Delay", square)
+	]
+	for pictogram in pictograms:
+		_all_pictograms[pictogram.name] = pictogram
+		
+	# TODO: Aliases
+	# _all_pictograms["FlowRate"] = _all_pictograms["Flow"]
+	
+static func get_pictogram(name: String) -> Pictogram:
+	var pictogram = _all_pictograms.get(name)
+	if pictogram:
+		return pictogram
+	else:
+		push_warning("Unknown pictogram: ", name)
+		return default_pictogram
+
+
+static func get_placeable_pictograms() -> Array[Pictogram]:
+	var result: Array[Pictogram]
+	for name in Global.metamodel.get_type_list_with_trait("DiagramNode"):
+		result.append(get_pictogram(name))
+	return result
+
+
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")
 	
@@ -71,3 +119,7 @@ func open_object_context_menu(object: Variant, position: Vector2):
 	menu.set_callout_point(position)
 	# canvas.add_child(palette)
 	Global.set_modal(menu)
+
+func _notification(what):
+	if what == Node.NOTIFICATION_WM_CLOSE_REQUEST:
+		_all_pictograms.clear()
