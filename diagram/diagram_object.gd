@@ -17,7 +17,11 @@ var default_issues_indicator_offset: Vector2 = Vector2(0, -10)
 @export var is_selected: bool = false:
 	set(value):
 		is_selected = value
+		update_selection()
 		queue_redraw()
+
+func update_selection():
+	pass
 
 func _set_design_object(object: PoieticObject):
 	if self.object_id:
@@ -34,5 +38,5 @@ func _update_from_design_object(object: PoieticObject):
 func contains_point(point: Vector2) -> bool:
 	return false
 
-func touched_handle(point: Vector2) -> Handle:
+func handle_at_point(point: Vector2) -> Variant: # optional Handle
 	return null

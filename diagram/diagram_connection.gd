@@ -8,6 +8,8 @@ var arrow_target: Vector2 = Vector2()
 var previous_origin_pos: Vector2
 var previous_target_pos: Vector2
 
+var midpoint_handles: Array[Handle] = []
+
 var error_indicator: Node2D
 
 var has_errors: bool = false:
@@ -64,6 +66,8 @@ func _draw() -> void:
 	draw_arrow()
 
 func update_arrow():
+	update_selection()
+	
 	if origin == null or target == null:
 		push_warning("Updating connector shape without origin or target")
 		return
@@ -137,3 +141,14 @@ func draw_arrow():
 func contains_point(point: Vector2):
 	var local = to_local(point)
 	return Geometry2D.is_point_in_polygon(local, touchable_outline)
+
+# On midpoints:
+# No midpoint: have a "suggested midpoint" in the ((target - origin) / 2) arrow vector
+# Midpoint: When an endpoint location changes, recalculate midpoints
+
+func update_selection():
+	for handle in midpoint_handles:
+		handle.visible = is_selected
+
+func recalculate_midpoints(midpoints: PackedVector2Array, new_origin: Vector2, new_target: Vector2) -> PackedVector2Array:
+	return []

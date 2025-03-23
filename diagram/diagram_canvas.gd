@@ -149,6 +149,17 @@ func object_at_position(test_position: Vector2):
 			
 	return null
 
+func handle_at_position(test_position: Vector2):
+	# TODO: Combine with object_at_position
+	for child in get_children():
+		if child is DiagramObject:
+			var handle = child.handle_at_point(test_position)
+			if handle is Handle:
+				return handle
+			
+	return null
+
+
 func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
 	var children: Array[DiagramConnection] = []
 	for conn in all_diagram_connections():
