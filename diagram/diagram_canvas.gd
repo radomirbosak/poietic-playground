@@ -168,6 +168,8 @@ func get_connectors(node: DiagramNode) -> Array[DiagramConnector]:
 	return children
 
 func sync_design():
+	var DEBUG_ex_nodes = all_diagram_node_ids()
+	var DEBUG_ex_edges = all_diagram_edge_ids()
 	var diff = Global.design.get_difference(all_diagram_node_ids(), all_diagram_edge_ids())
 	
 	# We need to remove both nodes and edges first, just in case the design contains objects where
@@ -232,12 +234,9 @@ func sync_selection():
 func create_node_from(object: PoieticObject) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
 	node.name = "diagram_node" + str(object.object_id)
-	node.type_name = object.type_name
-	node.object_id = object.object_id
-
+	node._set_design_object(object)
 	diagram_objects[object.object_id] = node
 	add_child(node)
-	node._set_design_object(object)
 	return node
 
 func create_edge_from(object: PoieticObject) -> DiagramConnector:
