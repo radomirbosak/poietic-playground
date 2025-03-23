@@ -6,6 +6,8 @@ var target: DiagramNode
 
 @export var connector: Connector
 
+var selection_outline: Line2D
+
 var previous_origin_pos: Vector2
 var previous_target_pos: Vector2
 
@@ -35,23 +37,16 @@ static func create_connector(type_name: String, origin_point: Vector2 = Vector2(
 	connector.line_width = 2.0
 	return connector
 
-func queue_layout():
-	children_needs_update = true
-
 func _process(_delta: float) -> void:
-	if not origin:
-		push_error("Connector ", self, " has no origin")
-		return
-	if not target:
-		push_error("Connector ", self, " has no target")
-		return
+	assert(origin)
+	assert(target)
 		
 	var new_origin_pos = to_local(origin.global_position)
 	var new_target_pos = to_local(target.global_position)
 	if new_origin_pos != previous_origin_pos or new_target_pos != previous_target_pos:
 		previous_origin_pos = new_origin_pos
 		previous_target_pos = new_target_pos
-		update_arrow()
+		update_connector()
 
 ## Updates the diagram node based on a design object.
 ##
@@ -68,21 +63,14 @@ func _update_from_design_object(object: PoieticObject):
 	else:
 		self.position = Vector2()
 
-	queue_layout()
+	children_needs_update = true
 
 func set_connector(origin: DiagramNode, target: Node2D):
 	self.origin = origin
 	self.target = target
-	update_arrow()
+	update_connector()
 	
-func set_target(target: DiagramNode):
-	self.target = target
-	update_arrow()
-	
-func _draw() -> void:
-	draw_arrow()
-
-func update_arrow():
+func update_connector():
 	assert(connector)
 	assert(origin)
 	assert(target)
@@ -109,20 +97,6 @@ func update_arrow():
 	
 	queue_redraw()
 
-func draw_arrow():
-	# TODO: Rewrite nicely
-	const arrow_size: float = 30
-	
-	var selection_outline_width: float = 10
-
-	if type_name == "Flow":
-		selection_outline_width = 15
-
-	if is_selected:
-		var polygons = Geometry2D.offset_polyline([connector.origin_point, connector.target_point], selection_outline_width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
-		if len(polygons) >= 1:
-			draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
-
 func contains_point(point: Vector2):
 	var local = to_local(point)
 	return Geometry2D.is_point_in_polygon(local, touchable_outline)
@@ -132,6 +106,26 @@ func contains_point(point: Vector2):
 # Midpoint: When an endpoint location changes, recalculate midpoints
 
 func update_selection():
+	if not selection_outline:
+		selection_outline = Line2D.new()
+		self.add_child(selection_outline)
+		selection_outline.default_color = DiagramCanvas.default_selection_color
+		selection_outline.width = 2.0
+		selection_outline.closed = true
+
+	if is_selected:
+		var selection_outline_width: float = 10
+		if type_name == "Flow":
+			selection_outline_width = 15
+
+		var polygons = Geometry2D.offset_polyline([connector.origin_point, connector.target_point], selection_outline_width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+		if len(polygons) >= 1:
+			# draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
+			selection_outline.points = polygons[0]
+		selection_outline.visible = true
+	else:
+		selection_outline.visible = false
+		
 	for handle in midpoint_handles:
 		handle.visible = is_selected
 
