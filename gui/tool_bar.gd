@@ -14,15 +14,15 @@ const connect_options_tab = 1
 @onready var options_separator: VSeparator = %OptionsSeparator
 
 func _ready():
-	_initialize_connection_types()
+	_initialize_connector_types()
 	tool_options.visible = false
 
 	Global.tool_changed.connect(_on_tool_changed)
 	Global.change_tool(Global.selection_tool)
 
-func _initialize_connection_types():
-	var connection_types: Array[String] = ["Flow", "Parameter", "Comment"]
-	for type in connection_types:
+func _initialize_connector_types():
+	var connector_types: Array[String] = ["Flow", "Parameter", "Comment"]
+	for type in connector_types:
 		pass
 
 func _on_tool_changed(tool: CanvasTool):

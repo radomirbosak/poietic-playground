@@ -1,8 +1,8 @@
-class_name DiagramConnection extends DiagramObject
+class_name DiagramConnector extends DiagramObject
 # TODO: Rename to DiagramConnector
 
 var origin: DiagramNode
-var target: Node2D
+var target: DiagramNode
 
 @export var connector: Connector
 
@@ -40,10 +40,10 @@ func queue_layout():
 
 func _process(_delta: float) -> void:
 	if not origin:
-		push_error("Connection ", self, " has no origin")
+		push_error("Connector ", self, " has no origin")
 		return
 	if not target:
-		push_error("Connection ", self, " has no target")
+		push_error("Connector ", self, " has no target")
 		return
 		
 	var new_origin_pos = to_local(origin.global_position)
@@ -70,7 +70,7 @@ func _update_from_design_object(object: PoieticObject):
 
 	queue_layout()
 
-func set_connection(origin: DiagramNode, target: Node2D):
+func set_connector(origin: DiagramNode, target: Node2D):
 	self.origin = origin
 	self.target = target
 	update_arrow()

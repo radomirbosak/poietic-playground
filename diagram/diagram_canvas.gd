@@ -23,7 +23,7 @@ func all_diagram_node_ids() -> PackedInt64Array:
 func all_diagram_edge_ids() -> PackedInt64Array:
 	var result = PackedInt64Array()
 	for object in diagram_objects.values():
-		if object is DiagramConnection:
+		if object is DiagramConnector:
 			result.append(object.object_id)
 	return result
 
@@ -34,10 +34,10 @@ func all_diagram_nodes() -> Array[DiagramNode]:
 			result.append(object)
 	return result
 
-func all_diagram_connections() -> Array[DiagramConnection]:
-	var result: Array[DiagramConnection]
+func all_diagram_connectors() -> Array[DiagramConnector]:
+	var result: Array[DiagramConnector]
 	for object in diagram_objects.values():
-		if object is DiagramConnection:
+		if object is DiagramConnector:
 			result.append(object)
 	return result
 
@@ -48,9 +48,9 @@ func get_diagram_node(id: int) -> DiagramNode:
 	else:
 		return null
 
-func get_diagram_connection(id: int) -> DiagramConnection:
+func get_diagram_connector(id: int) -> DiagramConnector:
 	var object = diagram_objects.get(id)
-	if object is DiagramConnection:
+	if object is DiagramConnector:
 		return object
 	else:
 		return null
@@ -160,9 +160,9 @@ func handle_at_position(test_position: Vector2):
 	return null
 
 
-func get_connections(node: DiagramNode) -> Array[DiagramConnection]:
-	var children: Array[DiagramConnection] = []
-	for conn in all_diagram_connections():
+func get_connectors(node: DiagramNode) -> Array[DiagramConnector]:
+	var children: Array[DiagramConnector] = []
+	for conn in all_diagram_connectors():
 		if conn.origin == node or conn.target == node:
 			children.append(conn)
 	return children
@@ -197,7 +197,7 @@ func sync_design():
 		node.has_issues = !issues.is_empty()
 
 	# Current edges
-	for conn in all_diagram_connections():
+	for conn in all_diagram_connectors():
 		var object: PoieticObject = Global.design.get_object(conn.object_id)
 		
 		var origin: DiagramNode = get_diagram_node(object.origin)
@@ -240,26 +240,26 @@ func create_node_from(object: PoieticObject) -> DiagramNode:
 	node._set_design_object(object)
 	return node
 
-func create_edge_from(object: PoieticObject) -> DiagramConnection:
+func create_edge_from(object: PoieticObject) -> DiagramConnector:
 	if object.origin == null or object.target == null:
-		push_error("Trying to create connection from object without origin or target.")
+		push_error("Trying to create connector from object without origin or target.")
 		return null
 	var origin: DiagramNode = get_diagram_node(object.origin)
 	var target: DiagramNode = get_diagram_node(object.target)
 
 	if origin == null:
-		# This might be because we are trying to create a non-diagram connection.
-		push_error("Origin ", object.origin, " is not part of canvas. Connection not created.")
+		# This might be because we are trying to create a non-diagram connector.
+		push_error("Origin ", object.origin, " is not part of canvas. Connector not created.")
 		return null
 	if target == null:
-		# This might be because we are trying to create a non-diagram connection.
-		push_error("Target ", object.target, " is not part of canvas. Connection not created.")
+		# This might be because we are trying to create a non-diagram connector.
+		push_error("Target ", object.target, " is not part of canvas. Connector not created.")
 		return null
 
-	var conn: DiagramConnection = DiagramConnection.new()
+	var conn: DiagramConnector = DiagramConnector.new()
 	conn._set_design_object(object)
-	conn.set_connection(origin, target)	
-	conn.name = "diagram_connection" + str(object.object_id)
+	conn.set_connector(origin, target)	
+	conn.name = "connector" + str(object.object_id)
 	diagram_objects[object.object_id] = conn
 	add_child(conn)
 	return conn
