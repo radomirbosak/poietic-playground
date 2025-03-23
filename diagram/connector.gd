@@ -1,80 +1,112 @@
-class_name Arrow extends Node2D
+class_name Connector extends Node2D
 
-var type_name: String = "Flow"
+@export var origin_point: Vector2 = Vector2():
+	set(value):
+		origin_point = value
+		queue_redraw()
+		
+@export var target_point: Vector2 = Vector2():
+	set(value):
+		target_point = value
+		queue_redraw()
 
-var head: Vector2 = Vector2()
-var tail: Vector2 = Vector2()
+@export var midpoints: PackedVector2Array:
+	set(value):
+		midpoints = value
+		queue_redraw()
 
-var head_type: ArrowheadType = ArrowheadType.SQUARE
-var tail_type: ArrowheadType = ArrowheadType.DIAMOND
+## Shape of the arrow head, at the target point.
+@export var head_type: ArrowheadType = ArrowheadType.STICK:
+	set(value):
+		head_type = value
+		queue_redraw()
+
+## Shape of the arrow tail, at the origin point.
+@export var tail_type: ArrowheadType = ArrowheadType.NONE:
+	set(value):
+		tail_type = value
+		queue_redraw()
+
+enum ArrowStyle {
+	STRAIGHT,
+	CURVED,
+	ORTHOGONAL
+}
 
 enum ArrowheadType {
 	NONE,          # No arrow-head
 	STICK,         # Simple stick arrowhead
 	DIAMOND,       # Diamond-shaped arrowhead
-	SQUARE,        # Square-shaped arrowhead
+	BOX,        # BOX-shaped arrowhead
 	BAR,           # Bar or tee-shaped arrowhead (negative control)
 	NON_NAVIGABLE, # X-like cross
 	NEGATIVE,      # Negative control (a bar at the endpoint)
-	CIRCLE,        # Circle touching the endpoint
-	CIRCLE_CENTER  # Circle centered at the endpoint
+	BALL,        # BALL touching the endpoint
+	BALL_CENTER  # BALL centered at the endpoint
 }
 
 class Arrowhead:
-	var polygons: Array[PackedVector2Array]
-	var polylines: Array[PackedVector2Array]
+	var curves: Array[Curve2D]
 	var offset: float
+	
+	func _init(curves: Array[Curve2D], offset: float):
+		self.curves = curves
+		self.offset = offset
 		
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-func _process(delta):
-	# queue_redraw()
-	pass
 
 func _draw():
 	draw_arrow()
 
+func set_endpoints(origin: Vector2, target: Vector2):
+	self.origin_point = origin
+	self.target_point = target
+	queue_redraw()
 
 func draw_arrow():
 	# TODO: Rewrite nicely
 	const arrow_size: float = 30
-	var normal = (tail - head).normalized()
-
-	draw_line(tail, head, Color.WHITE, 4.0)
-
-	var tail_curve = create_arrowhead(head, tail, 40, tail_type)
-	var tail_points = tail_curve.tessellate()
-	if len(tail_points) >= 2:
-		draw_colored_polygon(tail_points, Color.CORAL)
-		draw_polyline(tail_points, Color.WHITE, 4.0)
-	else:
-		prints("No points for tail ", tail_type, tail_points)
-	
-	var head_curve = create_arrowhead(tail, head, 40, head_type)
-	var head_points = head_curve.tessellate()
-	if len(head_points) >= 2:
-		draw_colored_polygon(head_points, Color.CORAL)
-		draw_polyline(head_points, Color.WHITE, 4.0)
-	else:
-		prints("No points for head ", head_type, head_points)
+	var normal = (target_point - origin_point).normalized()
 
 
+	var head_arrowhead: Arrowhead = create_arrowhead(origin_point, target_point, 40, head_type)
+	var tail_arrowhead: Arrowhead = create_arrowhead(target_point, origin_point, 40, tail_type)
+	var curves: Array[Curve2D] = tail_arrowhead.curves + head_arrowhead.curves
+
+	var direction = (target_point - origin_point).normalized()
+	var adjusted_origin = origin_point + (direction * tail_arrowhead.offset)
+	var adjusted_target = target_point - (direction * head_arrowhead.offset)
+	draw_line(adjusted_origin, adjusted_target, Color.WHITE, 4.0)
+
+	for curve in curves:
+		var points = curve.tessellate()
+		if len(points) >= 2:
+			# draw_colored_polygon(points, Color.CORAL)
+			draw_polyline(points, Color.WHITE, 4.0)
+
+## Offset of the intended arrow endpoint and where it should actually connect to the arrowhead.
+##
+## For stick, bar, negative and non-navigable arrowheads it is 0, that means that the endpoint
+## is the same as intended.
+##
+## For diamond, box and ball they are offset by the shape size. For ball-center it is offset by
+## 1/2 of a size to make the bal center by at the intended enpoint yet the line connect to the
+## ball shape from the outside.
+##
 func get_touch_point_offset(size: float, type: ArrowheadType = ArrowheadType.STICK) -> float:
 	match type:
 		ArrowheadType.NONE, ArrowheadType.STICK:
 			return 0
-		ArrowheadType.DIAMOND, ArrowheadType.SQUARE, ArrowheadType.CIRCLE:
+		ArrowheadType.DIAMOND, ArrowheadType.BOX, ArrowheadType.BALL:
 			return size
 		ArrowheadType.BAR, ArrowheadType.NEGATIVE, ArrowheadType.NON_NAVIGABLE:
 			return 0
-		ArrowheadType.CIRCLE_CENTER:
+		ArrowheadType.BALL_CENTER:
 			return size / 2
-	return 0
+		_:
+			return 0
 
-func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type: ArrowheadType = ArrowheadType.STICK) -> Curve2D:
+func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type: ArrowheadType = ArrowheadType.STICK) -> Arrowhead:
+	var curves: Array[Curve2D] = []
 	var curve = Curve2D.new()
 	var direction = (target - origin).normalized()
 	var perpendicular = direction.orthogonal()
@@ -83,8 +115,8 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 		ArrowheadType.NONE:
 			pass
 		ArrowheadType.STICK:
-			var point1 = target - (direction * size) + (perpendicular * size/2)
-			var point2 = target - (direction * size) - (perpendicular * size/2)
+			var point1 = target - (direction * size * 1.5) + (perpendicular * size/2)
+			var point2 = target - (direction * size * 1.5) - (perpendicular * size/2)
 			curve.add_point(point1)
 			curve.add_point(target)
 			curve.add_point(point2)
@@ -99,7 +131,7 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 			curve.add_point(back)
 			curve.add_point(side1)
 		
-		ArrowheadType.SQUARE:
+		ArrowheadType.BOX:
 			var c1 = target - perpendicular * (size / 2)
 			var c2 = c1 - direction * size
 			var c3 = c2 + perpendicular * size
@@ -122,30 +154,34 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 			curve.add_point(point1)
 			curve.add_point(point2)
 		
-		ArrowheadType.NON_NAVIGABLE:
-			var c1 = target - perpendicular * (size / 2)
+		ArrowheadType.NON_NAVIGABLE:  # X-shaped
+			var c1 = target - direction * (size) - perpendicular * (size / 2)
 			var c2 = c1 - direction * size
 			var c3 = c2 + perpendicular * size
 			var c4 = c3 + direction * size
 			curve.add_point(c1)
 			curve.add_point(c3)
+			curves.append(curve)
+			curve = Curve2D.new()
 			curve.add_point(c4)
 			curve.add_point(c2)
 		
-		ArrowheadType.CIRCLE:
+		ArrowheadType.BALL:
 			var radius = size / 2
 			var centre = target - direction * radius
 			curve = create_circle_curve(centre, radius)
 	
-		ArrowheadType.CIRCLE_CENTER:
+		ArrowheadType.BALL_CENTER:
 			var radius = size / 2
 			var centre = target
 			curve = create_circle_curve(centre, radius)
 
-	return curve
+	curves.append(curve)
+	var arrowhead = Arrowhead.new(curves, get_touch_point_offset(size,type))
+	return arrowhead
 
 func create_circle_curve(center: Vector2, radius: float) -> Curve2D:
-	# https://spencermortensen.com/articles/bezier-circle/
+	# https://spencermortensen.com/articles/bezier-BALL/
 	# P0=(0,a), P1=(b,c), P2=(c,b), P3=(a,0)
 	var curve = Curve2D.new()
 	var magic = radius * 0.552285  # Approximation factor for Bézier control points
