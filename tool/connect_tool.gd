@@ -10,10 +10,8 @@ var last_pointer_position = Vector2()
 
 var origin: DiagramNode
 
-var dragging_connection: DiagramConnection = null
-var dragging_target: Node2D = null
+var dragging_connector: Connector = null
 
-var modal = 10
 var palette: ObjectPalette
 var type_name: String = "Parameter"
 
@@ -23,7 +21,6 @@ func tool_name() -> String:
 func set_type(type_name: String):
 	self.type_name = type_name
 	
-
 func tool_selected():
 	if not palette:
 		palette = ObjectPalette.new()
@@ -31,7 +28,6 @@ func tool_selected():
 	
 func tool_released():
 	pass
-
 
 func input_began(_event: InputEvent, pointer_position: Vector2):
 	var candidate = canvas.object_at_position(pointer_position)
@@ -46,8 +42,8 @@ func input_began(_event: InputEvent, pointer_position: Vector2):
 	
 func input_moved(_event: InputEvent, move_delta: Vector2):
 	if state == ConnectToolState.CONNECT:
-		dragging_target.position += move_delta
-		var target = canvas.object_at_position(dragging_target.position)
+		dragging_connector.target_point += move_delta
+		var target = canvas.object_at_position(dragging_connector.target_point)
 		if target and target is DiagramNode:
 			if can_connect(target):
 				Input.set_default_cursor_shape(Input.CURSOR_CAN_DROP)
@@ -55,17 +51,14 @@ func input_moved(_event: InputEvent, move_delta: Vector2):
 				Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
 		else:
 			Input.set_default_cursor_shape(Input.CURSOR_DRAG)
-
-		dragging_connection.update_arrow()
 	
 func input_ended(_event: InputEvent, pointer_position: Vector2):
 	match state:
 		ConnectToolState.EMPTY:
 			pass
 		ConnectToolState.CONNECT:
-			assert(dragging_connection != null)
+			assert(dragging_connector != null)
 			state = ConnectToolState.EMPTY
-			dragging_target.free()
 
 			var target = canvas.object_at_position(pointer_position)
 			if target is DiagramNode:
@@ -74,24 +67,21 @@ func input_ended(_event: InputEvent, pointer_position: Vector2):
 				else:
 					# Do some "poofffffff" animation here
 					pass
-			dragging_connection.free()
-			dragging_connection = null
+			dragging_connector.free()
+			dragging_connector = null
 			origin = null
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 
 func create_drag_connection(origin: DiagramNode, pointer_position: Vector2):
-	print("Drag connection of type ", type_name)
+	print("Creating drag connection of type ", type_name)
 	assert(canvas != null)
-	assert(dragging_connection == null)
-
-	dragging_connection = DiagramConnection.new()
-	dragging_target = Node2D.new()
-	canvas.add_child(dragging_connection)
-	canvas.add_child(dragging_target)
-	dragging_target.position = canvas.to_local(pointer_position)
-	dragging_connection.set_connection(origin, dragging_target)
-	dragging_connection.type_name = type_name
-	dragging_connection.update_arrow()
+	assert(dragging_connector == null)
+	
+	dragging_connector = DiagramConnection.create_connector(type_name)
+	canvas.add_child(dragging_connector)
+	dragging_connector.target_point = canvas.to_local(pointer_position)
+	# TODO: Clip at origin border
+	dragging_connector.origin_point = origin.position
 
 func can_connect(target: DiagramNode) -> bool:
 	if target == origin:

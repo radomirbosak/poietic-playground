@@ -1,10 +1,11 @@
 class_name DiagramConnection extends DiagramObject
+# TODO: Rename to DiagramConnector
 
 var origin: DiagramNode
 var target: Node2D
 
-var arrow_origin: Vector2 = Vector2()
-var arrow_target: Vector2 = Vector2()
+@export var connector: Connector
+
 var previous_origin_pos: Vector2
 var previous_target_pos: Vector2
 
@@ -21,6 +22,18 @@ var has_errors: bool = false:
 # Select Tool
 var touchable_outline: PackedVector2Array = []
 var children_needs_update: bool = true
+
+static func create_connector(type_name: String, origin_point: Vector2 = Vector2(), target_point: Vector2 = Vector2()) -> Connector:
+	var connector: Connector
+	match type_name:
+		"Flow":
+			connector = FatConnector.new()
+		_:
+			connector = ThinConnector.new()
+			connector.head_size = 20
+	connector.set_endpoints(origin_point, target_point)
+	connector.line_width = 2.0
+	return connector
 
 func queue_layout():
 	children_needs_update = true
@@ -44,6 +57,10 @@ func _process(_delta: float) -> void:
 ##
 ## This method should be called whenever the source of truth is changed.
 func _update_from_design_object(object: PoieticObject):
+	if not connector:
+		self.connector = create_connector(type_name)
+		self.add_child(self.connector)
+
 	var position = object.get_position()
 	
 	if position is Vector2:
@@ -66,12 +83,11 @@ func _draw() -> void:
 	draw_arrow()
 
 func update_arrow():
+	assert(connector)
+	assert(origin)
+	assert(target)
 	update_selection()
 	
-	if origin == null or target == null:
-		push_warning("Updating connector shape without origin or target")
-		return
-
 	var target_shape: Shape2D
 	if target is DiagramNode:
 		target_shape = target.shape
@@ -80,8 +96,11 @@ func update_arrow():
 		target_shape.radius = 10
 
 	var points = DiagramGeometry.shape_clipped_connection(origin.shape, origin.global_transform, target_shape, target.global_transform)
-	arrow_origin = to_local(points[0])
-	arrow_target = to_local(points[1])
+	
+	var arrow_origin = to_local(points[0])
+	var arrow_target = to_local(points[1])
+	connector.set_endpoints(arrow_origin, arrow_target)
+	
 	var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
 	if len(polygons) >= 1:
 		touchable_outline = polygons[0]
@@ -93,50 +112,16 @@ func update_arrow():
 func draw_arrow():
 	# TODO: Rewrite nicely
 	const arrow_size: float = 30
-	var normal = (arrow_target - arrow_origin).normalized()
-	match type_name:
-		"Flow":
-			var head_points = DiagramGeometry.arrow_points(arrow_origin, arrow_target, DiagramGeometry.ArrowHeadType.STICK, arrow_size, 30)
-			var l_origin = arrow_origin + normal.rotated(-90)*5
-			var l_target = arrow_target + normal.rotated(-90)*5
-			var r_origin = arrow_origin + normal.rotated(+90)*5
-			var r_target = arrow_target + normal.rotated(+90)*5
-			var loffset = normal.rotated(-90)*5
-			var roffset = normal.rotated(+90)*5
-			var points = PackedVector2Array()
-			var lhead = l_target-(head_points[1]-head_points[0]).project(l_target - l_origin)
-			var rhead = r_target-(head_points[1]-head_points[2]).project(r_target - r_origin)
-			points = [
-				l_origin,
-				# arrow_target+loffset,
-				lhead,
-				head_points[0],
-				head_points[1],
-				head_points[2],
-				rhead,
-				r_origin,
-				l_origin
-			]
-			draw_polyline(points, DiagramCanvas.default_pictogram_color, 2.0)
+	
+	var selection_outline_width: float = 10
 
-			if len(head_points) > 0:
-				draw_polyline(head_points, DiagramCanvas.default_pictogram_color, 2.0)
-				
-			if is_selected:
-				var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 15, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
-				if len(polygons) >= 1:
-					draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
-		_:
-			var head_points = DiagramGeometry.arrow_points(arrow_origin, arrow_target, DiagramGeometry.ArrowHeadType.STICK, arrow_size, 15)
-			draw_line(arrow_origin, arrow_target, DiagramCanvas.default_pictogram_color, 2.0)
+	if type_name == "Flow":
+		selection_outline_width = 15
 
-			if len(head_points) > 0:
-				draw_polyline(head_points, DiagramCanvas.default_pictogram_color, 2.0)
-				
-			if is_selected:
-				var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
-				if len(polygons) >= 1:
-					draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
+	if is_selected:
+		var polygons = Geometry2D.offset_polyline([connector.origin_point, connector.target_point], selection_outline_width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+		if len(polygons) >= 1:
+			draw_polyline(polygons[0], DiagramCanvas.default_selection_color, 2.0)
 
 func contains_point(point: Vector2):
 	var local = to_local(point)
