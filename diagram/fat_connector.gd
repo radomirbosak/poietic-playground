@@ -13,7 +13,7 @@ class_name FatConnector extends Connector
 		queue_redraw()
 
 # Outline (move to separate node type)
-@export var width: float = 10.0
+@export var width: float = 5.0
 
 enum ArrowStyle {
 	STRAIGHT,
@@ -26,46 +26,83 @@ enum ArrowheadType {
 	REGULAR,        # Simple outlined arrowhead
 }
 
-func _draw():
-	var points = arrow_points()
-	draw_polyline(points, line_color, line_width)
+class Arrowhead:
+	var polygon: PackedVector2Array
+	var offset: float
+	
+	func _init(polygon: PackedVector2Array, offset: float):
+		self.polygon = polygon
+		self.offset = offset
 
-func arrow_points() -> PackedVector2Array:
+func _draw():
+	var polygons = arrow_polygons()
+	for poly in polygons:
+		if poly[-1] != poly[0]:
+			poly.append(poly[0])
+		draw_polyline(poly, line_color, line_width)
+
+## Create an arrowhead that will be combined with the rest of the line outline.
+##
+## If the arrow head type is none/unknown, then it returns an empty array.
+##
+## The caller is expected to offset the outline from the head point by the head
+## size, if a polygon points are returned. Otherwise the head point should
+## remain the same.
+##
+func arrowhead(end_point: Vector2, direction: Vector2, type: ArrowheadType) -> Arrowhead:
+	var perpendicular = direction.orthogonal()
+	var p1: Vector2
+	var p2: Vector2
+	var points: PackedVector2Array = PackedVector2Array()
+	if type == ArrowheadType.REGULAR:
+		p1 = end_point - (direction * head_size) + (perpendicular * head_size / 2)
+		p2 = p1 - (perpendicular * head_size)
+		# points += [p1, a1, target_point, a2, p2]
+		# points = [p2, end_point, p1, p2]
+		points = [p2, p1, end_point, p2]
+		return Arrowhead.new(points, head_size)
+	else:
+		return Arrowhead.new(points, 0)
+
+func arrow_polygons() -> Array[PackedVector2Array]:
 	var direction = (target_point - origin_point).normalized()
 	var perpendicular = direction.orthogonal()
 	var points: PackedVector2Array = PackedVector2Array()
-	var p1: Vector2
-	var p2: Vector2
-	
-	if head_type == ArrowheadType.REGULAR:
-		p1 = target_point - (direction * head_size) + (perpendicular * width / 2)
-		p2 = p1 - perpendicular * width
-		var a1 = p1 + perpendicular * ((head_size / 2) - (width / 2))
-		var a2 = p2 - perpendicular * ((head_size / 2) - (width / 2))
 
-		# points += [p1, a1, target_point, a2, p2]
-		points.append_array([p2, a2, target_point, a1, p1])
+	var origin_lead: Vector2 # Next point after the origin point
+	var target_lead: Vector2 # Last point before the target point
+	if midpoints.is_empty():
+		origin_lead = target_point
+		target_lead = origin_point
 	else:
-		p1 = target_point + (perpendicular * width / 2)
-		p2 = p1 - perpendicular * width
-		points.append_array([p2, p1])
+		origin_lead = midpoints[-1]
+		target_lead = midpoints[0]
+
+	var origin_direction = origin_lead.direction_to(origin_point)
+	var target_direction = target_lead.direction_to(target_point)
+
+	var head_arrowhead = arrowhead(target_point, target_direction, head_type)
+	var tail_arrowhead = arrowhead(origin_point, origin_direction, tail_type)
+
+	var clipped_origin = origin_point - (origin_direction * (tail_arrowhead.offset + width/2))
+	var clipped_target = target_point - (target_direction * (head_arrowhead.offset + width/2))
+
+	var polyline: PackedVector2Array = [clipped_origin]
+	for point in midpoints:
+		polyline.append(point)
+	polyline.append(clipped_target)
 	
-	if tail_type == ArrowheadType.REGULAR:
-		var p4 = origin_point + (direction * head_size) + (perpendicular * width / 2)
-		var p3 = p4 - perpendicular * width
-		var a4 = p4 + perpendicular * ((head_size / 2) - (width / 2))
-		var a3 = p3 - perpendicular * ((head_size / 2) - (width / 2))
+	var outline = Geometry2D.offset_polyline(polyline, width, Geometry2D.JOIN_SQUARE, Geometry2D.END_SQUARE)
+	# TODO: We need to combine multiple polygons properly
+	var combined: Array[PackedVector2Array]
+	combined = Geometry2D.merge_polygons(head_arrowhead.polygon, outline[0])
+	combined = Geometry2D.merge_polygons(combined[0], tail_arrowhead.polygon)
 
-		points.append_array([p4, a4, origin_point, a3, p3])
-	else:
-		var p4 = origin_point + (perpendicular * width / 2)
-		var p3 = p4 - perpendicular * width
-		points.append_array([p4, p3])
+	return combined
 
-	points.append(p2)
-	return points
-
-func selection_outline(width: int = selection_outline_width) -> Array[PackedVector2Array]:
-	var points = arrow_points()
-	var polygons = Geometry2D.offset_polygon(points, width, Geometry2D.JOIN_ROUND)
+func selection_outline(width: float = selection_outline_width) -> Array[PackedVector2Array]:
+	var polygons: Array[PackedVector2Array] = []
+	for poly in arrow_polygons():
+		var offset = Geometry2D.offset_polygon(poly, width, Geometry2D.JOIN_ROUND)
+		polygons.append_array(offset)
 	return polygons

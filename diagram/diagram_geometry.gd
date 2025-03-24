@@ -203,3 +203,36 @@ static func draw_capsule(canvas: CanvasItem, position: Vector2, radius: float, h
 	# Draw the two lines connecting the semicircles
 	canvas.draw_line(position + Vector2(-radius, -half_height), position + Vector2(-radius, half_height), color, width)
 	canvas.draw_line(position + Vector2(radius, -half_height), position + Vector2(radius, half_height), color, width)
+
+func merge_multiple_polygons(polygons: Array[PackedVector2Array]) -> Array[PackedVector2Array]:
+	if polygons.is_empty():
+		return []
+	
+	var merged: Array[PackedVector2Array] = [polygons[0]]
+	
+	for current in polygons:
+		var new_merged: Array[PackedVector2Array] = []
+		var merged_this_round = false
+		
+		# Try to merge with existing merged polygons
+		for index in range(merged.size()):
+			var result = Geometry2D.merge_polygons(merged[index], current)
+			
+			if result.size() == 1:
+				# Successfully merged
+				new_merged.append_array(result)
+				merged_this_round = true
+				# Add any remaining merged polygons that weren't processed yet
+				new_merged.append_array(merged.slice(index + 1, merged.size()))
+				break
+			else:
+				# Couldn't merge with this one, keep it for now
+				new_merged.append(merged[index])
+		
+		if not merged_this_round:
+			# Couldn't merge with any existing polygon, add as new
+			new_merged.append(current)
+		
+		merged = new_merged
+	
+	return merged

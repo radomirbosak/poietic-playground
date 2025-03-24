@@ -87,7 +87,7 @@ func arrow_curves() -> Array[Curve2D]:
 
 	return curves
 	
-func selection_outline(width: int = selection_outline_width) -> Array[PackedVector2Array]:
+func selection_outline(width: float = selection_outline_width) -> Array[PackedVector2Array]:
 	# TODO: Merge with draw (uses shared code)
 	var result: Array[PackedVector2Array] = []
 
