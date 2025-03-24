@@ -216,6 +216,7 @@ func sync_design():
 		conn.target = target
 
 		conn._update_from_design_object(object)
+		conn.update_connector()
 		var issues = Global.design.issues_for_object(conn.object_id)
 		conn.has_issues = !issues.is_empty()
 	
@@ -264,7 +265,9 @@ func create_edge_from(object: PoieticObject) -> DiagramConnector:
 	var conn: DiagramConnector = DiagramConnector.new()
 	add_child(conn)
 	conn._set_design_object(object)
-	conn.set_connector(origin, target)	
+	conn.origin = origin
+	conn.target = target
+	conn.update_connector()
 	conn.name = "connector" + str(object.object_id)
 	diagram_objects[object.object_id] = conn
 	return conn
@@ -314,12 +317,19 @@ func drag_handle(handle: Handle, move_delta: Vector2):
 
 func finish_drag_handle(handle: Handle, _final_position: Vector2) -> void:
 	handle.position = _final_position
-	var parent = handle.get_parent()
+	var connector: DiagramConnector = handle.get_parent()
 
-	if parent is DiagramConnector:
-		parent.set_midpoint(handle.index, handle.position)
-	else:
-		push_error("Unhandled handle parent: ", parent, " handle: ", handle)
+	if connector is not DiagramConnector:
+		push_error("Unhandled handle parent: ", connector, " handle: ", handle)
+		return
+	connector.set_midpoint(handle.index, handle.position)
+		
+	var trans = Global.design.new_transaction()
+	
+	var object = Global.design.get_object(connector.object_id)
+	trans.set_attribute(connector.object_id, "midpoints", connector.connector.midpoints)
+	Global.design.accept(trans)
+	
 		
 func delete_selection():
 	var trans = Global.design.new_transaction()

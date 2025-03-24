@@ -66,21 +66,17 @@ func _update_from_design_object(object: PoieticObject):
 	# Midpoints
 	var original_midpoints = object.get_attribute("midpoints")
 	if original_midpoints == null:
-		pass
-	elif original_midpoints as PackedVector2Array:
-		prints("setting mids: ", original_midpoints)
-		self.midpoints = original_midpoints
-	else:
+		self.connector.midpoints = []
+	elif original_midpoints is PackedVector2Array:
+		self.connector.midpoints = original_midpoints
+	elif original_midpoints != null:
 		printerr("Invalid midpoints type ", original_midpoints.get_class(), " for object ", self.object_id)
 
 	children_needs_update = true
 
-func set_connector(origin: DiagramNode, target: Node2D):
-	self.origin = origin
-	self.target = target
-	update_connector()
 	
 func update_connector():
+	# TODO: Review where and how many times this update is called
 	assert(connector)
 	assert(origin)
 	assert(target)
@@ -150,10 +146,9 @@ func update_midpoint_handles():
 		else:
 			handle = midpoint_handles[0]
 			
-		var direction = connector.origin_point.direction_to(connector.target_point)
-		var length = connector.origin_point.distance_to(connector.target_point)
-		var midpoint = (connector.origin_point) + (direction * (length / 2))
-		handle.position = midpoint
+		var direction = origin.position.direction_to(target.position)
+		var length = origin.position.distance_to(target.position)
+		handle.position = (origin.position) + (direction * (length / 2))
 		handle.index = -1
 		midpoint_handles.assign([handle])
 	else:

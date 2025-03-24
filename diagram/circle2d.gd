@@ -9,5 +9,5 @@ var filled: bool = false
 
 func _draw() -> void:
 	if filled:
-		draw_circle(center, radius, fill_color, true, width)
+		draw_circle(center, radius, fill_color, true)
 	draw_circle(center, radius, color, false, width)
