@@ -21,33 +21,10 @@ static func arrow_points(tail: Vector2, head: Vector2, type: ArrowHeadType, size
 			push_warning("Unknown arrowhead type: ", type)
 			return []
 
-## Calculate a line that connects two shapes at the shape boundaries.
+## Get intersection points of a line with a shape.
 ##
-## Returns an array of exactly two points that can be used to draw an arrow from
-## the origin shape to the target shape.
-static func shape_clipped_connection(origin_shape: Shape2D, origin_transform: Transform2D, target_shape: Shape2D, target_transform: Transform2D) -> PackedVector2Array:
-	var arrow_origin: Vector2
-	var arrow_target: Vector2
-
-	var origin_center = origin_transform.get_origin()
-	var target_center = target_transform.get_origin()
-
-	var origin_inter = DiagramGeometry.intersect_line_with_shape(origin_center, target_center, origin_shape, origin_transform)
-	
-	if len(origin_inter) >= 1:
-		arrow_origin = origin_inter[0]	
-	else:
-		arrow_origin = origin_center
-	
-	var target_inter = DiagramGeometry.intersect_line_with_shape(target_center, origin_center, target_shape, target_transform)
-
-	if len(target_inter) >= 1:
-		arrow_target = target_inter[0]	
-	else:
-		arrow_target = target_center
-
-	return [arrow_origin, arrow_target]
-
+## Used to determine touch-points of a connecting line with a shape of a diagram node.
+##
 static func intersect_line_with_shape(line_start: Vector2, line_end: Vector2, shape: Shape2D, shape_transform: Transform2D = Transform2D()) -> PackedVector2Array:
 	if shape is CircleShape2D:
 		return intersect_line_with_circle(line_start, line_end, shape_transform.get_origin(), shape.radius * shape_transform.get_scale().x)

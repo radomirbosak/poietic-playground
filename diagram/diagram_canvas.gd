@@ -318,8 +318,6 @@ func finish_drag_handle(handle: Handle, _final_position: Vector2) -> void:
 		pass
 	else:
 		push_error("Unhandled handle parent: ", parent, " handle: ", handle)
-	
-	
 		
 func delete_selection():
 	var trans = Global.design.new_transaction()

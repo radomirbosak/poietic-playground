@@ -60,15 +60,12 @@ func draw_simple_arrow():
 func arrow_curves() -> Array[Curve2D]:
 	# TODO: Merge with selection_outline() (uses shared code)
 	var target_direction: Vector2
-	if midpoints.is_empty():
-		target_direction = origin_point.direction_to(target_point)
-	else:
-		target_direction = midpoints[-1].direction_to(target_point)
-
 	var origin_direction: Vector2
 	if midpoints.is_empty():
+		target_direction = origin_point.direction_to(target_point)
 		origin_direction = target_point.direction_to(origin_point)
 	else:
+		target_direction = midpoints[-1].direction_to(target_point)
 		origin_direction = midpoints[0].direction_to(origin_point)
 
 	var head_arrowhead: Arrowhead = create_arrowhead(target_point, target_direction, head_size, head_type)

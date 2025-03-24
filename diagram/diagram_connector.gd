@@ -92,10 +92,33 @@ func update_connector():
 		target_shape = CircleShape2D.new()
 		target_shape.radius = 10
 
-	var points = DiagramGeometry.shape_clipped_connection(origin.shape, origin.global_transform, target_shape, target.global_transform)
+	var orign_point = origin.position
+	# Origin
+	var origin_lead: Vector2 # Next point after the origin point
+	var target_lead: Vector2 # Last point before the target point
+	if connector.midpoints.is_empty():
+		origin_lead = target.position
+		target_lead = origin.position
+	else:
+		origin_lead = connector.midpoints[-1]
+		target_lead = connector.midpoints[0]
 	
-	var arrow_origin = to_local(points[0])
-	var arrow_target = to_local(points[1])
+	var origin_clips = DiagramGeometry.intersect_line_with_shape(origin_lead, origin.position, origin.shape, origin.global_transform)
+	var target_clips = DiagramGeometry.intersect_line_with_shape(target_lead, target.position, target.shape, target.global_transform)
+	
+	var arrow_origin: Vector2
+	var arrow_target: Vector2
+	
+	if origin_clips.is_empty():
+		arrow_origin = origin.position
+	else:
+		arrow_origin = origin_clips[0]
+		
+	if target_clips.is_empty():
+		arrow_target = target.position
+	else:
+		arrow_target = target_clips[0]
+	
 	connector.set_endpoints(arrow_origin, arrow_target)
 	
 	touchable_outline = connector.selection_outline(10)
