@@ -154,16 +154,18 @@ func object_at_position(test_position: Vector2):
 		if child is not DiagramObject:
 			continue
 
+		for handle in child.get_handles():
+			if handle.visible and handle.contains_point(test_position):
+				candidate = handle
+				break
+		if candidate:
+			break
+			
 		if child.contains_point(test_position):
 			candidate = child
 			if not child.is_selected:
 				break   # No handles are visible, no need to test them
 
-		for handle in child.get_handles():
-			if handle.contains_point(test_position):
-				candidate = handle
-				break
-	
 	return candidate
 
 func get_connectors(node: DiagramNode) -> Array[DiagramConnector]:

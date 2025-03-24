@@ -33,6 +33,12 @@ static func create_connector(type_name: String, origin_point: Vector2 = Vector2(
 	match type_name:
 		"Flow":
 			connector = FatConnector.new()
+		"Parameter":
+			connector = ThinConnector.new()
+			connector.head_size = 20
+			connector.tail_size = 15
+			connector.head_type = ThinConnector.ArrowheadType.STICK
+			connector.tail_type = ThinConnector.ArrowheadType.NONE # Use BALL
 		_:
 			connector = ThinConnector.new()
 			connector.head_size = 20

@@ -12,6 +12,12 @@ class_name ThinConnector extends Connector
 		tail_type = value
 		queue_redraw()
 
+## Shape of the arrow tail, at the origin point.
+@export var tail_size: float = head_size:
+	set(value):
+		tail_size = value
+		queue_redraw()
+
 
 enum ArrowStyle {
 	STRAIGHT,
@@ -69,9 +75,9 @@ func arrow_curves() -> Array[Curve2D]:
 		origin_direction = midpoints[0].direction_to(origin_point)
 
 	var head_arrowhead: Arrowhead = create_arrowhead(target_point, target_direction, head_size, head_type)
-	var tail_arrowhead: Arrowhead = create_arrowhead(origin_point, origin_direction, head_size, tail_type)
+	var tail_arrowhead: Arrowhead = create_arrowhead(origin_point, origin_direction, tail_size, tail_type)
 
-	var clipped_origin = origin_point + (origin_direction * tail_arrowhead.offset)
+	var clipped_origin = origin_point - (origin_direction * tail_arrowhead.offset)
 	var clipped_target = target_point - (target_direction * head_arrowhead.offset)
 
 	var curves: Array[Curve2D] = tail_arrowhead.curves + head_arrowhead.curves
