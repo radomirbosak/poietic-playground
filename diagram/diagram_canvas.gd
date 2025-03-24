@@ -142,24 +142,27 @@ func _unhandled_input(event):
 func update_canvas_position() -> void:
 	self.position = canvas_offset
 	self.scale = Vector2(zoom_level, zoom_level)
-	
+
+## Returns either a DiagramObject or a handle at given position.
+##
 func object_at_position(test_position: Vector2):
+	var candidate: Node2D = null
+	
 	for child in get_children():
-		if child is DiagramObject and child.contains_point(test_position):
-			return child
-			
-	return null
+		if child is not DiagramObject:
+			continue
 
-func handle_at_position(test_position: Vector2):
-	# TODO: Combine with object_at_position
-	for child in get_children():
-		if child is DiagramObject:
-			var handle = child.handle_at_point(test_position)
-			if handle is Handle:
-				return handle
-			
-	return null
+		if child.contains_point(test_position):
+			candidate = child
+			if not child.is_selected:
+				break   # No handles are visible, no need to test them
 
+		for handle in child.get_handles():
+			if handle.contains_point(test_position):
+				candidate = handle
+				break
+	
+	return candidate
 
 func get_connectors(node: DiagramNode) -> Array[DiagramConnector]:
 	var children: Array[DiagramConnector] = []
@@ -294,6 +297,29 @@ func finish_drag_selection(_final_position: Vector2) -> void:
 		var object = Global.design.get_object(node.object_id)
 		trans.set_attribute(node.object_id, "position", node.position)
 	Global.design.accept(trans)
+
+func begin_drag_handle(handle: Handle, _mouse_position: Vector2):
+	pass # Nothing to do for now
+
+func drag_handle(handle: Handle, move_delta: Vector2):
+	handle.position += move_delta
+	var parent = handle.get_parent()
+
+	if parent is DiagramConnector:
+		parent.set_midpoint(handle.index, handle.position)
+	else:
+		push_error("Unhandled handle parent: ", parent, " handle: ", handle)
+
+func finish_drag_handle(handle: Handle, _final_position: Vector2) -> void:
+	handle.position = _final_position
+	var parent = handle.get_parent()
+
+	if parent is DiagramConnector:
+		pass
+	else:
+		push_error("Unhandled handle parent: ", parent, " handle: ", handle)
+	
+	
 		
 func delete_selection():
 	var trans = Global.design.new_transaction()

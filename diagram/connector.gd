@@ -28,6 +28,6 @@ func set_endpoints(origin: Vector2, target: Vector2):
 	self.target_point = target
 	queue_redraw()
 
-func selection_outline() -> Array[PackedVector2Array]:
-	var polygons = Geometry2D.offset_polyline([origin_point, target_point], selection_outline_width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+func selection_outline(width: int = selection_outline_width) -> Array[PackedVector2Array]:
+	var polygons = Geometry2D.offset_polyline([origin_point, target_point], width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
 	return polygons

@@ -11,9 +11,7 @@ var selection_outline: Node2D = Node2D.new()
 var previous_origin_pos: Vector2
 var previous_target_pos: Vector2
 
-var midpoints: PackedVector2Array
 var midpoint_handles: Array[Handle] = []
-var new_midpoint_handle: Handle = Handle.new()
 
 var error_indicator: Node2D
 
@@ -24,13 +22,11 @@ var has_errors: bool = false:
 			error_indicator.visible = has_errors
 
 # Select Tool
-var touchable_outline: PackedVector2Array = []
+var touchable_outline: Array[PackedVector2Array] = []
 var children_needs_update: bool = true
 
 func _ready():
 	self.add_child(selection_outline)
-	self.add_child(new_midpoint_handle)
-	new_midpoint_handle.visible = false
 
 static func create_connector(type_name: String, origin_point: Vector2 = Vector2(), target_point: Vector2 = Vector2()) -> Connector:
 	var connector: Connector
@@ -55,6 +51,9 @@ func _process(_delta: float) -> void:
 		previous_origin_pos = new_origin_pos
 		previous_target_pos = new_target_pos
 		update_connector()
+
+func get_handles() -> Array[Handle]:
+	return midpoint_handles
 
 ## Updates the diagram node based on a design object.
 ##
@@ -99,49 +98,67 @@ func update_connector():
 	var arrow_target = to_local(points[1])
 	connector.set_endpoints(arrow_origin, arrow_target)
 	
-	var polygons = Geometry2D.offset_polyline([arrow_origin, arrow_target], 10, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
-	if len(polygons) >= 1:
-		touchable_outline = polygons[0]
-	else:
-		touchable_outline = []
+	touchable_outline = connector.selection_outline(10)
 
 	update_midpoint_handles()
 	update_selection()
 	queue_redraw()
 	
+## Update the midpoint handles based on the connector's midpoints.
+##
+## This method is called when midpoints are added or removed from the connector.
 func update_midpoint_handles():
 	assert(origin)
 	assert(target)
 
-	if len(midpoints) == len(midpoint_handles):
-		for index in range(len(midpoints)):
-			var handle = midpoint_handles[index]
-			var point  = midpoints[index]
-			handle.position = point
-	else:
-		for handle in midpoint_handles:
-			handle.queue_free()
-		midpoint_handles.clear()
-		
-		for midpoint in midpoints:
-			var handle = Handle.new()
-			handle.position = midpoint
-			handle.visible = true # self.is_selected
-			self.add_child(handle)
+	var midpoint_count = len(connector.midpoints)
+	var handle_count = len(midpoint_handles)
 
-	if midpoints.is_empty():
-		if not new_midpoint_handle:
-			new_midpoint_handle = Handle.new()
-			self.add_child(new_midpoint_handle)
+	if midpoint_count == 0:
+		# First midpoint
+		assert(handle_count <= 1, "Midpoint hadles were not properely reset")
+		var handle: Handle
+		
+		if handle_count == 0:
+			handle = Handle.new()
+			self.add_child(handle)
+		else:
+			handle = midpoint_handles[0]
+			
 		var direction = connector.origin_point.direction_to(connector.target_point)
 		var length = connector.origin_point.distance_to(connector.target_point)
 		var midpoint = (connector.origin_point) + (direction * (length / 2))
-
-		new_midpoint_handle.position = midpoint
-		new_midpoint_handle.visible = self.is_selected
+		handle.position = midpoint
+		handle.index = -1
+		midpoint_handles.assign([handle])
 	else:
-		new_midpoint_handle.visible = false
-	
+		for index in range(midpoint_count):
+			var midpoint  = connector.midpoints[index]
+			var handle: Handle
+			if index < handle_count:
+				handle = midpoint_handles[index]
+			else:
+				handle = Handle.new()
+				midpoint_handles.append(handle)
+				self.add_child(handle)
+			handle.index = index  # Reset the index
+			handle.position = midpoint
+		var remaining = handle_count - midpoint_count
+		if remaining > 0:
+			for index in range(remaining):
+				midpoint_handles.remove_at(midpoint_count)
+
+	assert(len(midpoint_handles) > 0, "There must be always at least one midpoint handle")
+
+func set_midpoint(index: int, midpoint_position: Vector2):
+	if index == -1:
+		connector.midpoints = [midpoint_position]
+		# This was the first handle, now it is included
+		midpoint_handles[0].index = 0
+	else:
+		connector.midpoints.set(index, midpoint_position)
+	update_connector()
+
 func update_selection():
 	if is_selected:
 		var selection_outline_width: float = 10
@@ -169,15 +186,11 @@ func update_selection():
 				selection_outline.add_child(outline)
 		selection_outline.visible = true
 
-		if midpoints.is_empty():
-			new_midpoint_handle.visible = true
-		else:
-			for handle in midpoint_handles:
-				handle.visible = true
+		for handle in midpoint_handles:
+			handle.visible = true
 
 	else:
 		selection_outline.visible = false
-		new_midpoint_handle.visible = false
 		for handle in midpoint_handles:
 			handle.visible = false
 
@@ -186,7 +199,10 @@ func update_selection():
 
 func contains_point(point: Vector2):
 	var local = to_local(point)
-	return Geometry2D.is_point_in_polygon(local, touchable_outline)
+	for outline in touchable_outline:
+		if Geometry2D.is_point_in_polygon(local, outline):
+			return true
+	return false
 
 # On midpoints:
 # No midpoint: have a "suggested midpoint" in the ((target - origin) / 2) arrow vector

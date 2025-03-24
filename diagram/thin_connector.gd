@@ -51,46 +51,53 @@ func set_endpoints(origin: Vector2, target: Vector2):
 const arrow_size: float = 30
 
 func draw_simple_arrow():
-	# TODO: Merge with selection_outline() (uses shared code)
-	var normal = (target_point - origin_point).normalized()
-
-
-	var head_arrowhead: Arrowhead = create_arrowhead(origin_point, target_point, head_size, head_type)
-	var tail_arrowhead: Arrowhead = create_arrowhead(target_point, origin_point, head_size, tail_type)
-	var curves: Array[Curve2D] = tail_arrowhead.curves + head_arrowhead.curves
-
-	var direction = (target_point - origin_point).normalized()
-	var adjusted_origin = origin_point + (direction * tail_arrowhead.offset)
-	var adjusted_target = target_point - (direction * head_arrowhead.offset)
-	draw_line(adjusted_origin, adjusted_target, line_color, line_width)
-
-	for curve in curves:
+	for curve in arrow_curves():
 		var points = curve.tessellate()
 		if len(points) >= 2:
 			# draw_colored_polygon(points, Color.CORAL)
 			draw_polyline(points, line_color, line_width)
 
-func selection_outline() -> Array[PackedVector2Array]:
+func arrow_curves() -> Array[Curve2D]:
+	# TODO: Merge with selection_outline() (uses shared code)
+	var target_direction: Vector2
+	if midpoints.is_empty():
+		target_direction = origin_point.direction_to(target_point)
+	else:
+		target_direction = midpoints[-1].direction_to(target_point)
+
+	var origin_direction: Vector2
+	if midpoints.is_empty():
+		origin_direction = target_point.direction_to(origin_point)
+	else:
+		origin_direction = midpoints[0].direction_to(origin_point)
+
+	var head_arrowhead: Arrowhead = create_arrowhead(target_point, target_direction, head_size, head_type)
+	var tail_arrowhead: Arrowhead = create_arrowhead(origin_point, origin_direction, head_size, tail_type)
+
+	var clipped_origin = origin_point + (origin_direction * tail_arrowhead.offset)
+	var clipped_target = target_point - (target_direction * head_arrowhead.offset)
+
+	var curves: Array[Curve2D] = tail_arrowhead.curves + head_arrowhead.curves
+
+	var line: Curve2D = Curve2D.new()
+	line.add_point(clipped_origin)
+	
+	for point in midpoints:
+		line.add_point(point)
+	
+	line.add_point(clipped_target)
+	curves.append(line)
+
+	return curves
+	
+func selection_outline(width: int = selection_outline_width) -> Array[PackedVector2Array]:
 	# TODO: Merge with draw (uses shared code)
 	var result: Array[PackedVector2Array] = []
 
-	var normal = (target_point - origin_point).normalized()
-
-	var head_arrowhead: Arrowhead = create_arrowhead(origin_point, target_point, head_size, head_type)
-	var tail_arrowhead: Arrowhead = create_arrowhead(target_point, origin_point, head_size, tail_type)
-	var curves: Array[Curve2D] = tail_arrowhead.curves + head_arrowhead.curves
-
-	var direction = (target_point - origin_point).normalized()
-	var adjusted_origin = origin_point + (direction * tail_arrowhead.offset)
-	var adjusted_target = target_point - (direction * head_arrowhead.offset)
-
-	var line_outline = Geometry2D.offset_polyline([adjusted_origin, adjusted_target], selection_outline_width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
-	result.append_array(line_outline)
-
-	for curve in curves:
+	for curve in arrow_curves():
 		var points = curve.tessellate()
 		if len(points) >= 2:
-			var out = Geometry2D.offset_polyline(points, selection_outline_width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+			var out = Geometry2D.offset_polyline(points, width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
 			result.append_array(out)
 
 	if len(result) > 1:
@@ -124,34 +131,33 @@ func get_touch_point_offset(size: float, type: ArrowheadType = ArrowheadType.STI
 		_:
 			return 0
 
-func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type: ArrowheadType = ArrowheadType.STICK) -> Arrowhead:
+func create_arrowhead(head_point: Vector2, direction: Vector2, size: float = 10.0, type: ArrowheadType = ArrowheadType.STICK) -> Arrowhead:
 	var curves: Array[Curve2D] = []
 	var curve = Curve2D.new()
-	var direction = (target - origin).normalized()
 	var perpendicular = direction.orthogonal()
 	
 	match type:
 		ArrowheadType.NONE:
 			pass
 		ArrowheadType.STICK:
-			var point1 = target - (direction * size * 1.5) + (perpendicular * size/2)
-			var point2 = target - (direction * size * 1.5) - (perpendicular * size/2)
+			var point1 = head_point - (direction * size * 1.5) + (perpendicular * size/2)
+			var point2 = head_point - (direction * size * 1.5) - (perpendicular * size/2)
 			curve.add_point(point1)
-			curve.add_point(target)
+			curve.add_point(head_point)
 			curve.add_point(point2)
 		
 		ArrowheadType.DIAMOND:
-			var back = target - direction * size 
-			var side1 = target - direction * (size / 2) + perpendicular * (size/2)
-			var side2 = target - direction * (size / 2) - perpendicular * (size/2)
+			var back = head_point - direction * size 
+			var side1 = head_point - direction * (size / 2) + perpendicular * (size/2)
+			var side2 = head_point - direction * (size / 2) - perpendicular * (size/2)
 			curve.add_point(side1)
-			curve.add_point(target)
+			curve.add_point(head_point)
 			curve.add_point(side2)
 			curve.add_point(back)
 			curve.add_point(side1)
 		
 		ArrowheadType.BOX:
-			var c1 = target - perpendicular * (size / 2)
+			var c1 = head_point - perpendicular * (size / 2)
 			var c2 = c1 - direction * size
 			var c3 = c2 + perpendicular * size
 			var c4 = c3 + direction * size
@@ -162,19 +168,19 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 			curve.add_point(c1)
 		
 		ArrowheadType.BAR:
-			var point1 = target - direction * (size / 2) - perpendicular * (size / 2)
-			var point2 = target - direction * (size / 2) + perpendicular * (size / 2)
+			var point1 = head_point - direction * (size / 2) - perpendicular * (size / 2)
+			var point2 = head_point - direction * (size / 2) + perpendicular * (size / 2)
 			curve.add_point(point1)
 			curve.add_point(point2)
 
 		ArrowheadType.NEGATIVE:
-			var point1 = target - perpendicular * (size / 2)
-			var point2 = target + perpendicular * (size / 2)
+			var point1 = head_point - perpendicular * (size / 2)
+			var point2 = head_point + perpendicular * (size / 2)
 			curve.add_point(point1)
 			curve.add_point(point2)
 		
 		ArrowheadType.NON_NAVIGABLE:  # X-shaped
-			var c1 = target - direction * (size) - perpendicular * (size / 2)
+			var c1 = head_point - direction * (size) - perpendicular * (size / 2)
 			var c2 = c1 - direction * size
 			var c3 = c2 + perpendicular * size
 			var c4 = c3 + direction * size
@@ -187,12 +193,12 @@ func create_arrowhead(origin: Vector2, target: Vector2, size: float = 10.0, type
 		
 		ArrowheadType.BALL:
 			var radius = size / 2
-			var centre = target - direction * radius
+			var centre = head_point - direction * radius
 			curve = create_circle_curve(centre, radius)
 	
 		ArrowheadType.BALL_CENTER:
 			var radius = size / 2
-			var centre = target
+			var centre = head_point
 			curve = create_circle_curve(centre, radius)
 
 	curves.append(curve)

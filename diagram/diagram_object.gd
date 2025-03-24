@@ -40,3 +40,8 @@ func contains_point(point: Vector2) -> bool:
 
 func handle_at_point(point: Vector2) -> Variant: # optional Handle
 	return null
+
+## Get a list of handles that can be dragged when the object is selected.
+##
+func get_handles() -> Array[Handle]:
+	return []
