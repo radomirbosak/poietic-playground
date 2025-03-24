@@ -64,3 +64,8 @@ func arrow_points() -> PackedVector2Array:
 
 	points.append(p2)
 	return points
+
+func selection_outline() -> Array[PackedVector2Array]:
+	var points = arrow_points()
+	var polygons = Geometry2D.offset_polygon(points, selection_outline_width, Geometry2D.JOIN_ROUND)
+	return polygons

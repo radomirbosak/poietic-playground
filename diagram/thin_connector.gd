@@ -48,9 +48,10 @@ func set_endpoints(origin: Vector2, target: Vector2):
 	self.target_point = target
 	queue_redraw()
 
+const arrow_size: float = 30
+
 func draw_simple_arrow():
-	# TODO: Rewrite nicely
-	const arrow_size: float = 30
+	# TODO: Merge with selection_outline() (uses shared code)
 	var normal = (target_point - origin_point).normalized()
 
 
@@ -68,6 +69,37 @@ func draw_simple_arrow():
 		if len(points) >= 2:
 			# draw_colored_polygon(points, Color.CORAL)
 			draw_polyline(points, line_color, line_width)
+
+func selection_outline() -> Array[PackedVector2Array]:
+	# TODO: Merge with draw (uses shared code)
+	var result: Array[PackedVector2Array] = []
+
+	var normal = (target_point - origin_point).normalized()
+
+	var head_arrowhead: Arrowhead = create_arrowhead(origin_point, target_point, head_size, head_type)
+	var tail_arrowhead: Arrowhead = create_arrowhead(target_point, origin_point, head_size, tail_type)
+	var curves: Array[Curve2D] = tail_arrowhead.curves + head_arrowhead.curves
+
+	var direction = (target_point - origin_point).normalized()
+	var adjusted_origin = origin_point + (direction * tail_arrowhead.offset)
+	var adjusted_target = target_point - (direction * head_arrowhead.offset)
+
+	var line_outline = Geometry2D.offset_polyline([adjusted_origin, adjusted_target], selection_outline_width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+	result.append_array(line_outline)
+
+	for curve in curves:
+		var points = curve.tessellate()
+		if len(points) >= 2:
+			var out = Geometry2D.offset_polyline(points, selection_outline_width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
+			result.append_array(out)
+
+	if len(result) > 1:
+		var combined = result[0]
+		for index in range(1, len(result)):
+			combined = Geometry2D.merge_polygons(combined, result[index])
+		result = combined
+
+	return result
 
 
 ## Offset of the intended arrow endpoint and where it should actually connect to the arrowhead.

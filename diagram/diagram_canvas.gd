@@ -257,11 +257,11 @@ func create_edge_from(object: PoieticObject) -> DiagramConnector:
 		return null
 
 	var conn: DiagramConnector = DiagramConnector.new()
+	add_child(conn)
 	conn._set_design_object(object)
 	conn.set_connector(origin, target)	
 	conn.name = "connector" + str(object.object_id)
 	diagram_objects[object.object_id] = conn
-	add_child(conn)
 	return conn
 
 # Selection

@@ -67,7 +67,7 @@ static func _load_pictograms():
 	# TODO: Aliases
 	# _all_pictograms["FlowRate"] = _all_pictograms["Flow"]
 	
-static func get_pictogram(name: String) -> Pictogram:
+func get_pictogram(name: String) -> Pictogram:
 	var pictogram = _all_pictograms.get(name)
 	if pictogram:
 		return pictogram
@@ -76,7 +76,7 @@ static func get_pictogram(name: String) -> Pictogram:
 		return default_pictogram
 
 
-static func get_placeable_pictograms() -> Array[Pictogram]:
+func get_placeable_pictograms() -> Array[Pictogram]:
 	var result: Array[Pictogram]
 	for name in Global.metamodel.get_type_list_with_trait("DiagramNode"):
 		result.append(get_pictogram(name))
