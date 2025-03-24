@@ -144,6 +144,8 @@ func update_midpoint_handles():
 		
 		if handle_count == 0:
 			handle = Handle.new()
+			handle.color = DiagramCanvas.handle_color
+			handle.outline_color = DiagramCanvas.handle_outline_color
 			self.add_child(handle)
 		else:
 			handle = midpoint_handles[0]

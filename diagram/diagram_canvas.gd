@@ -12,6 +12,8 @@ var diagram_objects: Dictionary[int, DiagramObject] = {}
 const default_pictogram_color = Color.WHITE
 const default_label_color = Color.WHITE
 const default_selection_color: Color = Color(1.0,0.8,0)
+const handle_outline_color = Color.ROYAL_BLUE
+const handle_color = Color.DODGER_BLUE
 
 func all_diagram_node_ids() -> PackedInt64Array:
 	var result = PackedInt64Array()
@@ -315,7 +317,7 @@ func finish_drag_handle(handle: Handle, _final_position: Vector2) -> void:
 	var parent = handle.get_parent()
 
 	if parent is DiagramConnector:
-		pass
+		parent.set_midpoint(handle.index, handle.position)
 	else:
 		push_error("Unhandled handle parent: ", parent, " handle: ", handle)
 		

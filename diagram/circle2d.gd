@@ -8,4 +8,6 @@ var width: float = -1
 var filled: bool = false
 
 func _draw() -> void:
-	draw_circle(center, radius, color, filled, width)
+	if filled:
+		draw_circle(center, radius, fill_color, true, width)
+	draw_circle(center, radius, color, false, width)

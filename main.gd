@@ -143,6 +143,9 @@ func _unhandled_input(event):
 	elif event.is_action_pressed("delete"):
 		delete_selection()
 
+	elif event.is_action_pressed("debug-dump"):
+		debug_dump()
+
 func redo():
 	if Global.design.can_redo():
 		Global.design.redo()
@@ -263,6 +266,27 @@ func import_foreign_frame():
 
 func import_foreign_frame_from(path: String):
 	Global.design.import_from_path(path)
+
+func debug_dump():
+	prints("=== DEBUG DUMP BEGIN ===")
+	var ids: PackedInt64Array = []
+	if canvas.selection.is_empty():
+		ids = canvas.diagram_objects.keys()
+	else:
+		ids = canvas.selection.get_ids()
+	for key in ids:
+		var dia_object: DiagramObject = canvas.diagram_objects[key]
+		var object: PoieticObject = Global.design.get_object(dia_object.object_id)
+		if not object:
+			printerr("Canvas object without design object: ", dia_object.object_id)
+			continue
+		prints("ID: ", object.object_id, " type: ", object.type_name, " dia: ", dia_object)
+		if object.origin != null:
+			print("    edge: ", object.origin, " -> ", object.target)
+		for attr in object.get_attribute_keys():
+			var value = object.get_attribute(attr)
+			print("    ", attr, " = ", value)
+	prints("=== DEBUG DUMP END ===")
 
 func _on_file_dialog_files_selected(paths):
 	print("Files selected: ", paths)

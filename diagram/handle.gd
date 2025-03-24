@@ -10,6 +10,11 @@ const touch_shape_radius = 10
 @export var color: Color = Color.DEEP_SKY_BLUE:
 	set(value):
 		color = value
+		circle.fill_color = value
+
+@export var outline_color: Color = Color.DEEP_SKY_BLUE:
+	set(value):
+		outline_color = value
 		circle.color = value
 
 @export var shape: Shape2D
@@ -21,11 +26,14 @@ const touch_shape_radius = 10
 func _init():
 	shape = CircleShape2D.new()
 	shape.radius = size / 2
-	var node = Circle2D.new()
-	node.radius = shape.radius
-	node.width = 4
-	node.color = color
-	self.add_child(node)
+	circle = Circle2D.new()
+	circle.radius = shape.radius
+	circle.width = 4
+	circle.color = outline_color
+	circle.fill_color = color
+	circle.filled = true
+	self.z_index = 1000
+	self.add_child(circle)
 	
 func contains_point(point: Vector2):
 	var local_point = to_local(point)
