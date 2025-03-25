@@ -347,3 +347,25 @@ func delete_selection():
 
 	selection.clear()
 	queue_sync()
+
+func remove_midpoints_in_selection():
+	if selection.is_empty():
+		prints("Selection is empty") # DEBUG
+		return
+
+	var connectors: Array[DiagramConnector]
+	for id in selection.get_ids():
+		var connector = self.get_diagram_connector(id)
+		var obj: PoieticObject = Global.design.get_object(id)
+		if connector and obj.get_attribute("midpoints") != null:
+			connectors.append(connector)
+	if connectors.is_empty():
+		prints("No relevant connectors in the selection") # DEBUG
+		return
+		
+	var trans = Global.design.new_transaction()
+
+	for connector in connectors:
+		trans.set_attribute(connector.object_id, "midpoints", null)
+
+	Global.design.accept(trans)

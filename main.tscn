@@ -108,9 +108,11 @@ item_3/id = 3
 
 [node name="DiagramMenu" type="PopupMenu" parent="MenuBar"]
 title = "Diagram"
-item_count = 1
+item_count = 2
 item_0/text = "Auto-connect Parameters"
 item_0/id = 0
+item_1/text = "Reset midpoint handles"
+item_1/id = 1
 
 [node name="SimulationMenu" type="PopupMenu" parent="MenuBar"]
 auto_translate_mode = 1

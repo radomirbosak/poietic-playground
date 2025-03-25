@@ -251,8 +251,15 @@ func save_design():
 	print("Saving design to: ", path)
 	Global.design.save_to_path(path)
 
+# Diagram Menu
+# -------------------------------------------------------------------------
+
 func auto_connect_parameters():
 	Global.design.auto_connect_parameters()
+
+func remove_midpoints():
+	canvas.remove_midpoints_in_selection()
+
 
 func import_foreign_frame():
 	$FileDialog.use_native_dialog = true
@@ -319,6 +326,7 @@ func _on_edit_menu_id_pressed(id):
 func _on_diagram_menu_id_pressed(id):
 	match id:
 		0: auto_connect_parameters()
+		1: remove_midpoints()
 		_: printerr("Unknown Diagram menu id: ", id)
 
 func _on_view_menu_id_pressed(id):
