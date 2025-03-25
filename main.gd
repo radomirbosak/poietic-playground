@@ -1,6 +1,18 @@
 extends Node2D
 
-const DEFAULT_SAVE_PATH = "user://design.poietic"
+# TODO: Save/warn about changes on Open/New Design
+
+enum FileDialogMode {
+	IMPORT_FRAME,
+	OPEN_DESIGN,
+	SAVE_DESIGN,
+}
+
+@export var file_dialog_mode: FileDialogMode = FileDialogMode.OPEN_DESIGN
+@export var design_path: String = ""
+@export var last_opened_design_path: String = ""
+@export var last_import_path: String = ""
+const DEFAULT_DESIGN_PATH = "user://design.poietic"
 const SETTINGS_FILE = "user://settings.cfg"
 const default_window_size = Vector2(1280, 720)
 
@@ -13,6 +25,9 @@ func _init():
 	pass
 
 func _ready():
+	$FileDialog.use_native_dialog = true
+	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
+
 	load_settings()
 	get_viewport().connect("size_changed", _on_window_resized)
 	
@@ -131,10 +146,14 @@ func _unhandled_input(event):
 		Global.change_tool(Global.connect_tool)
 
 	# File
-	elif event.is_action_pressed("save-design"):
-		save_design()
+	elif event.is_action_pressed("new-design"):
+		new_design()
 	elif event.is_action_pressed("open-design"):
 		open_design()
+	elif event.is_action_pressed("save-design-as"):
+		save_design_as()
+	elif event.is_action_pressed("save-design"):
+		save_design()
 	elif event.is_action_pressed("import"):
 		import_foreign_frame()
 
@@ -156,6 +175,10 @@ func _unhandled_input(event):
 		toggle_run()
 	elif event.is_action_pressed("delete"):
 		delete_selection()
+
+	# View
+	elif event.is_action_pressed("zoom-actual"):
+		zoom_actual()
 
 	elif event.is_action_pressed("debug-dump"):
 		debug_dump()
@@ -203,6 +226,15 @@ func load_settings():
 	else:
 		$MenuBar/ViewMenu.set_item_checked(0, false)
 		inspector_panel.hide()
+		
+	var last_path = config.get_value("design", "last_opened_path")
+	if last_path:
+		last_opened_design_path = last_path
+
+	var last_import_path = config.get_value("design", "last_import_path")
+	if last_import_path:
+		self.last_import_path = last_import_path
+
 	DisplayServer.window_set_size(window_size)
 
 func save_settings():
@@ -215,32 +247,72 @@ func save_settings():
 	config.set_value("window", "width", window_size.x)
 	config.set_value("window", "height", window_size.y)
 	config.set_value("inspector", "visible", inspector_panel.visible)
+	if design_path != "":
+		config.set_value("design", "last_opened_path", design_path)
+	if last_import_path != "":
+		config.set_value("design", "last_import_path", last_import_path)
 	config.save(SETTINGS_FILE)
 	
 # File Menu
 # -------------------------------------------------------------------------
 
 func new_design():
+	design_path = ""
 	Global.design.new_design()
 
 func open_design():
-	var path = ProjectSettings.globalize_path(DEFAULT_SAVE_PATH)
-	print("Loading design from: ", path)
-	Global.design.load_from_path(path)
+	$FileDialog.file_mode = FileDialog.FileMode.FILE_MODE_OPEN_FILE
+	$FileDialog.title = "Open Design"
+	$FileDialog.ok_button_text = "Open"
+	if design_path != "":
+		$FileDialog.current_path = design_path
+	elif last_opened_design_path != "":
+		$FileDialog.current_path = last_opened_design_path
+	else:
+		$FileDialog.current_path = ProjectSettings.globalize_path(DEFAULT_DESIGN_PATH)
+	
+	$FileDialog.filters = ["*.poietic"]
+	self.file_dialog_mode = FileDialogMode.OPEN_DESIGN
+	$FileDialog.show()
+
+
+# Save-as
+func save_design_as():
+	print("SAVEAS")
+	$FileDialog.file_mode = FileDialog.FileMode.FILE_MODE_SAVE_FILE
+	$FileDialog.title = "Save Design"
+	$FileDialog.ok_button_text = "Save"
+	if design_path != "":
+		$FileDialog.current_path = design_path
+	elif last_opened_design_path != "":
+		$FileDialog.current_path = last_opened_design_path
+	else:
+		$FileDialog.current_path = ProjectSettings.globalize_path(DEFAULT_DESIGN_PATH)
+	
+	$FileDialog.filters = ["*.poietic"]
+	self.file_dialog_mode = FileDialogMode.SAVE_DESIGN
+	$FileDialog.show()
 
 func save_design():
-	var path = ProjectSettings.globalize_path(DEFAULT_SAVE_PATH)
-	print("Saving design to: ", path)
-	Global.design.save_to_path(path)
+	var path: String
+	if design_path != "":
+		print("Saving design: ", design_path)
+		Global.design.save_to_path(design_path)
+	else:
+		save_design_as()
 	
 func import_foreign_frame():
-	$FileDialog.use_native_dialog = true
-	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
 	$FileDialog.file_mode = FileDialog.FileMode.FILE_MODE_OPEN_ANY
 	$FileDialog.title = "Import Poietic Frame"
-	$FileDialog.ok_button_text = "Import"
-	
+	$FileDialog.ok_button_text = "Import"	
 	$FileDialog.filters = ["*.poieticframe"]
+	self.file_dialog_mode = FileDialogMode.IMPORT_FRAME
+
+	if last_import_path != "":
+		$FileDialog.current_path = last_import_path
+	else:
+		$FileDialog.current_path = ProjectSettings.globalize_path(DEFAULT_DESIGN_PATH)
+
 	$FileDialog.show()
 
 func import_foreign_frame_from(path: String):
@@ -298,6 +370,10 @@ func toggle_value_indicators():
 		$MenuBar/ViewMenu.set_item_checked(2, true)
 	save_settings()
 
+func zoom_actual():
+	canvas.zoom_level = 1.0
+	canvas.update_canvas_view()
+
 # Simulation Menu
 # -------------------------------------------------------------------------
 func toggle_run():
@@ -328,14 +404,54 @@ func debug_dump():
 	prints("=== DEBUG DUMP END ===")
 
 func _on_file_dialog_files_selected(paths):
-	print("Files selected: ", paths)
+	match file_dialog_mode:
+		FileDialogMode.IMPORT_FRAME:
+			for path in paths:
+				print("Import frame: ", path)
+				Global.design.import_from_path(path)
+				last_import_path = path
+				save_settings()
+		FileDialogMode.OPEN_DESIGN:
+			push_error("Trying to open a design from multiple paths")
+		FileDialogMode.SAVE_DESIGN:
+			push_error("Trying to save a design from multiple paths")
+		_:
+			push_warning("Unhandled file selection mode: ", file_dialog_mode)
 
-func _on_file_dialog_dir_selected(dir):
-	print("Importing: ", dir)
-	Global.design.import_from_path(dir)
+func _on_file_dialog_dir_selected(path):
+	match file_dialog_mode:
+		FileDialogMode.IMPORT_FRAME:
+			print("Import frame: ", path)
+			Global.design.import_from_path(path)
+			last_import_path = path
+			save_settings()
+		FileDialogMode.OPEN_DESIGN:
+			push_error("Trying to open a design from a directory: ", path)
+		FileDialogMode.SAVE_DESIGN:
+			push_error("Trying to save a design to a directory: ", path)
+		_:
+			push_warning("Unhandled file selection mode: ", file_dialog_mode)
 
 func _on_file_dialog_file_selected(path):
-	print("File selected: ", path) 
+	match file_dialog_mode:
+		FileDialogMode.IMPORT_FRAME:
+			print("Import frame: ", path)
+			Global.design.import_from_path(path)
+			last_import_path = path
+			save_settings()
+		FileDialogMode.OPEN_DESIGN:
+			print("Open design: ", path)
+			Global.design.load_from_path(path)
+			self.design_path = path
+			self.last_opened_design_path = path
+			save_settings()
+
+		FileDialogMode.SAVE_DESIGN:
+			print("Save design: ", path)
+			Global.design.save_to_path(path)
+			self.design_path = path
+		_:
+			push_warning("Unhandled file selection mode: ", file_dialog_mode)
 
 # Menu
 
@@ -344,6 +460,7 @@ func _on_file_menu_id_pressed(id):
 		0: new_design()
 		1: open_design()
 		2: save_design()
+		5: save_design_as()
 		4: import_foreign_frame()
 		_: printerr("Unknown File menu id: ", id)
 
