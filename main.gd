@@ -16,6 +16,8 @@ func _ready():
 	load_settings()
 	get_viewport().connect("size_changed", _on_window_resized)
 	
+	_initialize_main_menu()
+	
 	Global.initialize()
 	
 	# Initialize and connect canvas
@@ -55,6 +57,11 @@ func _ready():
 	update_status_text()
 	
 	print("Done initializing main.")
+
+func _initialize_main_menu():
+	# Add working shortcuts here
+	# $MenuBar/FileMenu.set_item_accelerator(0, KEY_MASK_META + KEY_N)
+	pass
 
 func _on_selection_changed(selection):
 	_DEBUG_update_chart()
@@ -128,11 +135,14 @@ func _unhandled_input(event):
 		import_foreign_frame()
 
 	# Edit
-	elif event.is_action_pressed("redo"):
-		redo()
 	elif event.is_action_pressed("undo"):
 		undo()
-			
+	elif event.is_action_pressed("redo"):
+		redo()
+	elif event.is_action_pressed("select-all"):
+		select_all()
+		
+	# Diagram
 	elif event.is_action_pressed("auto-connec-parameters"):
 		auto_connect_parameters()
 
@@ -145,18 +155,6 @@ func _unhandled_input(event):
 
 	elif event.is_action_pressed("debug-dump"):
 		debug_dump()
-
-func redo():
-	if Global.design.can_redo():
-		Global.design.redo()
-	else:
-		printerr("Trying to redo while having nothing to redo")
-
-func undo():
-	if Global.design.can_undo():
-		Global.design.undo()
-	else:
-		printerr("Trying to undo while having nothing to undo")
 
 func update_status_text():
 	var stats = Global.design.debug_stats
@@ -179,32 +177,8 @@ func update_status_text():
 func _on_window_resized():
 	save_settings()
 
-func toggle_inspector():
-	if inspector_panel.visible:
-		inspector_panel.hide()
-		$MenuBar/ViewMenu.set_item_checked(0, false)
-	else:
-		$MenuBar/ViewMenu.set_item_checked(0, true)
-		inspector_panel.show()
-	save_settings()
-
-func toggle_value_indicators():
-	if Global.show_value_indicators:
-		Global.show_value_indicators = false
-		$MenuBar/ViewMenu.set_item_checked(2, false)
-	else:
-		Global.show_value_indicators = true
-		$MenuBar/ViewMenu.set_item_checked(2, true)
-	save_settings()
-
-func toggle_run():
-	if Global.player.is_running:
-		Global.player.stop()
-	else:
-		Global.player.run()
-	
-func delete_selection():
-	canvas.delete_selection()
+# Settings
+# -------------------------------------------------------------------------
 
 func load_settings():
 	var config = ConfigFile.new()
@@ -237,6 +211,9 @@ func save_settings():
 	config.set_value("window", "height", window_size.y)
 	config.set_value("inspector", "visible", inspector_panel.visible)
 	config.save(SETTINGS_FILE)
+	
+# File Menu
+# -------------------------------------------------------------------------
 
 func new_design():
 	Global.design.new_design()
@@ -250,17 +227,7 @@ func save_design():
 	var path = ProjectSettings.globalize_path(DEFAULT_SAVE_PATH)
 	print("Saving design to: ", path)
 	Global.design.save_to_path(path)
-
-# Diagram Menu
-# -------------------------------------------------------------------------
-
-func auto_connect_parameters():
-	Global.design.auto_connect_parameters()
-
-func remove_midpoints():
-	canvas.remove_midpoints_in_selection()
-
-
+	
 func import_foreign_frame():
 	$FileDialog.use_native_dialog = true
 	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
@@ -273,6 +240,66 @@ func import_foreign_frame():
 
 func import_foreign_frame_from(path: String):
 	Global.design.import_from_path(path)
+
+# Edit Menu
+# -------------------------------------------------------------------------
+
+func undo():
+	if Global.design.can_undo():
+		Global.design.undo()
+	else:
+		printerr("Trying to undo while having nothing to undo")
+
+func redo():
+	if Global.design.can_redo():
+		Global.design.redo()
+	else:
+		printerr("Trying to redo while having nothing to redo")
+
+func delete_selection():
+	canvas.delete_selection()
+
+func select_all():
+	var ids = canvas.all_diagram_object_ids()
+	canvas.selection.replace(ids)
+
+# Diagram Menu
+# -------------------------------------------------------------------------
+
+func auto_connect_parameters():
+	Global.design.auto_connect_parameters()
+
+func remove_midpoints():
+	canvas.remove_midpoints_in_selection()
+
+# View Menu
+# -------------------------------------------------------------------------
+
+func toggle_inspector():
+	if inspector_panel.visible:
+		inspector_panel.hide()
+		$MenuBar/ViewMenu.set_item_checked(0, false)
+	else:
+		$MenuBar/ViewMenu.set_item_checked(0, true)
+		inspector_panel.show()
+	save_settings()
+
+func toggle_value_indicators():
+	if Global.show_value_indicators:
+		Global.show_value_indicators = false
+		$MenuBar/ViewMenu.set_item_checked(2, false)
+	else:
+		Global.show_value_indicators = true
+		$MenuBar/ViewMenu.set_item_checked(2, true)
+	save_settings()
+
+# Simulation Menu
+# -------------------------------------------------------------------------
+func toggle_run():
+	if Global.player.is_running:
+		Global.player.stop()
+	else:
+		Global.player.run()
 
 func debug_dump():
 	prints("=== DEBUG DUMP BEGIN ===")
@@ -321,6 +348,8 @@ func _on_edit_menu_id_pressed(id):
 		1: redo()
 		2: pass # separator
 		3: delete_selection()
+		4: pass # separator
+		5: select_all()
 		_: printerr("Unknown Edit menu id: ", id)
 
 func _on_diagram_menu_id_pressed(id):

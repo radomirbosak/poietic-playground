@@ -18,6 +18,9 @@ const handle_color = Color.DODGER_BLUE
 const issues_indicator_z_index = 1000
 const handle_z_index = 900
 
+func all_diagram_object_ids() -> PackedInt64Array:
+	var result = PackedInt64Array(diagram_objects.keys())
+	return result
 
 func all_diagram_node_ids() -> PackedInt64Array:
 	var result = PackedInt64Array()
