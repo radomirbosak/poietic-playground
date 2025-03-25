@@ -26,6 +26,7 @@ func _ready():
 	# Connect inspector
 	Global.design.design_changed.connect(inspector_panel._on_design_changed)
 	canvas.selection.selection_changed.connect(inspector_panel._on_selection_changed)
+	canvas.canvas_view_changed.connect(_on_canvas_view_changed)
 	# TODO: See inspector panel source comment about selection
 	inspector_panel.selection = canvas.selection
 	
@@ -84,6 +85,9 @@ func _on_simulation_success(result):
 func _on_simulation_failure():
 	# TODO: Handle this, display some error somewhere, big, red or something
 	clear_result()
+	
+func _on_canvas_view_changed(offset: Vector2, zoom_level: float):
+	update_status_text()
 
 func set_result(result):
 	Global.result = result
@@ -172,6 +176,7 @@ func update_status_text():
 	text += " edges: " + str(stats["edges"])
 	text += " | design issues: " + str(stats["design_issues"])
 	text += " object issues: " + str(stats["object_issues"])
+	text += " zoom: " + str(canvas.zoom_level)
 	$Gui/StatusText.text = text
 
 func _on_window_resized():

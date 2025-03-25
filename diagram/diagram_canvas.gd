@@ -2,6 +2,8 @@ class_name DiagramCanvas extends Node2D
 
 # TODO: Add error indicators at the canvas edges if there are objects with errors at that direction
 
+signal canvas_view_changed(offset: Vector2, zoom_level: float)
+
 var diagram_objects: Dictionary[int, DiagramObject] = {} 
 @export var selection: PoieticSelection = PoieticSelection.new()
 
@@ -9,8 +11,19 @@ var diagram_objects: Dictionary[int, DiagramObject] = {}
 @export var canvas_offset: Vector2 = Vector2.ZERO
 @export var _design_sync_needed: bool = true
 
+@export var formulas_visible: bool = false:
+	set(flag):
+		formulas_visible = flag
+		set_formulas_visible(flag)
+
+@export var labels_visible: bool = true:
+	set(flag):
+		labels_visible = flag
+		set_labels_visible(flag)
+
 const default_pictogram_color = Color.WHITE
 const default_label_color = Color.WHITE
+const default_formula_color = Color.SKY_BLUE
 const default_selection_color: Color = Color(1.0,0.8,0)
 const handle_outline_color = Color.ROYAL_BLUE
 const handle_color = Color.DODGER_BLUE
@@ -127,7 +140,7 @@ func sync_indicators(result: PoieticResult):
 func _unhandled_input(event):
 	if event is InputEventPanGesture:
 		canvas_offset += (-event.delta) * zoom_level * 10
-		update_canvas_position()
+		update_canvas_view()
 	elif event is InputEventMagnifyGesture:
 		var g_mouse = get_global_mouse_position()
 		var t_before = Transform2D().scaled(Vector2(zoom_level, zoom_level)).translated(canvas_offset)
@@ -139,7 +152,7 @@ func _unhandled_input(event):
 		var t_after = Transform2D().scaled(Vector2(zoom_level, zoom_level)).translated(canvas_offset)
 		var m_after = t_after.affine_inverse() * g_mouse
 		canvas_offset += -(m_before - m_after) * zoom_level
-		update_canvas_position()
+		update_canvas_view()
 	else: # Regular tool use
 		var tool = Global.current_tool
 		if not tool:
@@ -148,9 +161,23 @@ func _unhandled_input(event):
 		if tool.handle_intput(event):
 			get_viewport().set_input_as_handled()
 
-func update_canvas_position() -> void:
+func update_canvas_view() -> void:
 	self.position = canvas_offset
 	self.scale = Vector2(zoom_level, zoom_level)
+	canvas_view_changed.emit(canvas_offset, zoom_level)
+	
+	if zoom_level <= 1.5:
+		formulas_visible = false
+	elif zoom_level > 1.5:
+		formulas_visible = true
+
+func set_formulas_visible(flag: bool):
+	for node in self.all_diagram_nodes():
+		node.formula_text.visible = flag
+
+func set_labels_visible(flag: bool):
+	for node in self.all_diagram_nodes():
+		node.label_text.visible = flag
 
 ## Returns either a DiagramObject or a handle at given position.
 ##

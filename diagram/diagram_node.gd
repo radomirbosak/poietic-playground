@@ -2,6 +2,7 @@ class_name DiagramNode extends DiagramObject
 # Physics: extends RigidBody2D
 
 const label_offset = 10
+const formula_offset = 30
 const default_radius = 50
 const highlight_padding = 5
 
@@ -21,6 +22,7 @@ var display_value: Variant = 0.0:
 @export var image: Sprite2D
 @export var shape: Shape2D
 @export var label_text: Label
+@export var formula_text: Label
 @export var value_indicator: ValueIndicator
 @export var indicator_offset = 30
 
@@ -42,7 +44,11 @@ var target_position: Vector2 = Vector2():
 func _init():
 	shape = CircleShape2D.new()
 	shape.radius = default_radius
-	
+
+	formula_text = Label.new()
+	self.add_child(formula_text)
+	formula_text.add_theme_color_override("font_color", DiagramCanvas.default_formula_color)
+
 ## Updates the diagram node based on a design object.
 ##
 ## This method should be called whenever the source of truth is changed.
@@ -51,11 +57,18 @@ func _update_from_design_object(object: PoieticObject):
 	var position = object.get_position()
 	if position is Vector2:
 		self.position = position
+		
+	var formula = object.get_attribute("formula")
+	if formula is String:
+		formula_text.text = formula
 
 	queue_layout()
 
 func _ready():
 	update_children()
+	var canvas:DiagramCanvas = get_parent()
+	self.formula_text.visible = canvas.formulas_visible
+	self.label_text.visible = canvas.labels_visible
 
 func _draw():
 	if is_selected and selection_highlight_shape:
@@ -80,14 +93,21 @@ func update_children() -> void:
 
 	var shape_rect = shape.get_rect()
 
+	# Label
 	if object_name == null:
 		label_text.text = ""
 	else:
 		label_text.text = object_name
 		label_text.queue_redraw()
+
+	var shape_bottom = shape_rect.size.y / 2		
 	var label_size = label_text.get_minimum_size()
-	label_text.position = Vector2(-label_size.x * 0.5, shape_rect.size.y / 2 + label_offset)
-	children_needs_update = false
+	label_text.position = Vector2(-label_size.x / 2, shape_bottom + label_offset)
+
+	var formula_size = formula_text.get_minimum_size()
+	formula_text.position = Vector2(-formula_size.x / 2, shape_bottom + formula_offset)
+
+	# Indicators
 	
 	if issues_indicator == null:
 		var height: float = (sqrt(3.0) / 2.0) * default_issues_indicator_size
@@ -104,6 +124,8 @@ func update_children() -> void:
 		issues_indicator.position = Vector2(0, -shape_rect.size.y/2) + default_issues_indicator_offset
 		issues_indicator.visible = false
 		self.add_child(issues_indicator)
+		
+	children_needs_update = false
 
 func update_pictogram():
 	if image == null:
