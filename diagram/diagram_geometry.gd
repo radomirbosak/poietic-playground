@@ -1,68 +1,40 @@
 class_name DiagramGeometry extends Object
 
-# TODO: Rename to DiagramGeometry
-
-enum ArrowHeadType {
-	NONE, STICK
-}
-
-static func arrow_points(tail: Vector2, head: Vector2, type: ArrowHeadType, size: float, head_angle: float = 15) -> Array[Vector2]:
-	match type:
-		ArrowHeadType.NONE:
-			return []
-		ArrowHeadType.STICK:
-			var angle = (TAU / 360.0) * head_angle
-			var length = size
-			var line_vector = head - tail
-			var left = line_vector.rotated(angle).normalized() * length
-			var right = line_vector.rotated(-angle).normalized() * length
-			return [head - left, head, head - right]
-		_:
-			push_warning("Unknown arrowhead type: ", type)
-			return []
-
-## Get intersection points of a line with a shape.
-##
-## Used to determine touch-points of a connecting line with a shape of a diagram node.
-##
-static func intersect_line_with_shape(line_start: Vector2, line_end: Vector2, shape: Shape2D, shape_transform: Transform2D = Transform2D()) -> PackedVector2Array:
+static func intersect_line_with_shape(line_start: Vector2, line_end: Vector2, shape: Shape2D, shape_position: Vector2) -> PackedVector2Array:
 	if shape is CircleShape2D:
-		return intersect_line_with_circle(line_start, line_end, shape_transform.get_origin(), shape.radius * shape_transform.get_scale().x)
+		return intersect_line_with_circle(line_start, line_end, shape_position, shape.radius)
 	elif shape is RectangleShape2D:
 		var rect = shape.get_rect()
-		var result = intersect_line_with_rect(line_start, line_end, rect, shape_transform)
+		rect.position += shape_position
+		var result = intersect_line_with_rect(line_start, line_end, rect)
 		return result
 	elif shape is CapsuleShape2D:
 		push_warning("Not implemented: Capsule shape intersection, using circle instead")
-		return intersect_line_with_circle(line_start, line_end, shape_transform.get_origin(), shape.radius * shape_transform.get_scale().x)
+		return intersect_line_with_circle(line_start, line_end,shape_position, shape.radius)
 	return []
 
-static func intersect_line_with_rect(line_start: Vector2, line_end: Vector2, rect: Rect2, transform: Transform2D) -> PackedVector2Array:
-	# Define the rectangle's vertices in local space
-	var corners = transform * PackedVector2Array([
-		Vector2(rect.position.x, rect.position.y),
-		Vector2(rect.position.x, rect.position.y + rect.size.y),
-		Vector2(rect.position.x + rect.size.x, rect.position.y + rect.size.y),
-		Vector2(rect.position.x + rect.size.x, rect.position.y),
-	])
+static func intersect_line_with_rect(line_start: Vector2, line_end: Vector2, rect: Rect2) -> PackedVector2Array:
+	var p0 = rect.position
+	var p1 = rect.position + Vector2(rect.size.x, 0)
+	var p3 = rect.position + Vector2(0, rect.size.y)
+	var p2 = rect.end
 
 	var result: PackedVector2Array = PackedVector2Array()
-	var inter1 = Geometry2D.segment_intersects_segment(corners[0], corners[1], line_start, line_end)
+	var inter1 = Geometry2D.segment_intersects_segment(p0, p1, line_start, line_end)
 	if inter1:
 		result.append(inter1)
-	var inter2 = Geometry2D.segment_intersects_segment(corners[1], corners[2], line_start, line_end)
+	var inter2 = Geometry2D.segment_intersects_segment(p1, p2, line_start, line_end)
 	if inter2:
 		result.append(inter2)
-	var inter3 = Geometry2D.segment_intersects_segment(corners[2], corners[3], line_start, line_end)
+	var inter3 = Geometry2D.segment_intersects_segment(p2, p3, line_start, line_end)
 	if inter3:
 		result.append(inter3)
-	var inter4 = Geometry2D.segment_intersects_segment(corners[3], corners[0], line_start, line_end)
+	var inter4 = Geometry2D.segment_intersects_segment(p3, p0, line_start, line_end)
 	if inter4:
 		result.append(inter4)
 
 	return result
-	
-	
+
 static func intersect_line_with_circle(line_start: Vector2, line_end: Vector2, center: Vector2, radius: float) -> PackedVector2Array:
 	var d = line_end - line_start
 	var f = line_start - center
@@ -90,19 +62,6 @@ static func intersect_line_with_circle(line_start: Vector2, line_end: Vector2, c
 
 	return result
 
-static func rectangle_to_polygon(rect: Rect2) -> PackedVector2Array:
-	var corners: PackedVector2Array = [
-		rect.position,
-		Vector2(rect.position.x + rect.size.x, rect.position.y),
-		Vector2(rect.position.x + rect.size.x, rect.position.y + rect.size.y),
-		Vector2(rect.position.x, rect.position.y + rect.size.y),
-		rect.position,
-	]
-	return corners
-
-static func rectangle_with_center(center: Vector2, width: float, height: float) -> Rect2:
-	return Rect2(center.x - width / 2, center.y - height/2, width, height)
-
 static func grow_shape(shape: Shape2D, factor: float) -> Shape2D:
 	if shape is RectangleShape2D:
 		var new_shape = RectangleShape2D.new()
@@ -119,10 +78,11 @@ static func grow_shape(shape: Shape2D, factor: float) -> Shape2D:
 		return new_shape
 	elif shape is ConvexPolygonShape2D:
 		var new_shape = ConvexPolygonShape2D.new()
-		new_shape.points = grow_polygon(shape.points, factor)
+		var polys = grow_polygon(shape.points, factor)
+		new_shape.points = polys[0]
 		return new_shape
 	else:
-		print("Unsupported shape type: ", shape.get_class())
+		push_warning("Unsupported shape type: ", shape.get_class())
 		return shape
 
 static func offset_shape(shape: Shape2D, offset: float) -> Shape2D:
@@ -141,10 +101,11 @@ static func offset_shape(shape: Shape2D, offset: float) -> Shape2D:
 		return new_shape
 	elif shape is ConvexPolygonShape2D:
 		var new_shape = ConvexPolygonShape2D.new()
-		new_shape.points = offset_polygon(shape.points, offset)
+		var polys = offset_polygon(shape.points, offset)
+		new_shape.points = polys[0]
 		return new_shape
 	else:
-		print("Unsupported shape type: ", shape.get_class())
+		push_warning("Unsupported shape type: ", shape.get_class())
 		return shape
 
 static func grow_polygon(polygon: PackedVector2Array, factor: float) -> PackedVector2Array:

@@ -98,6 +98,7 @@ func update_children() -> void:
 			Vector2(0, height),
 			Vector2(-default_issues_indicator_size, -height),
 		]
+		issues_indicator.z_index = DiagramCanvas.issues_indicator_z_index
 		issues_indicator.polygon = polygon
 		issues_indicator.color = Color.RED
 		issues_indicator.position = Vector2(0, -shape_rect.size.y/2) + default_issues_indicator_offset

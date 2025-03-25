@@ -15,6 +15,10 @@ const default_selection_color: Color = Color(1.0,0.8,0)
 const handle_outline_color = Color.ROYAL_BLUE
 const handle_color = Color.DODGER_BLUE
 
+const issues_indicator_z_index = 1000
+const handle_z_index = 900
+
+
 func all_diagram_node_ids() -> PackedInt64Array:
 	var result = PackedInt64Array()
 	for object in diagram_objects.values():

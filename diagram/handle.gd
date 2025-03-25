@@ -32,7 +32,7 @@ func _init():
 	circle.color = outline_color
 	circle.fill_color = color
 	circle.filled = true
-	self.z_index = 1000
+	self.z_index = DiagramCanvas.handle_z_index
 	self.add_child(circle)
 	
 func contains_point(point: Vector2):

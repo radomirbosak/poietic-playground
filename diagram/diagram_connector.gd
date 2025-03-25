@@ -25,6 +25,9 @@ var has_errors: bool = false:
 var touchable_outline: Array[PackedVector2Array] = []
 var children_needs_update: bool = true
 
+## Offset of an arrow from s shape
+const pretty_arrow_offset: float = 7
+
 func _ready():
 	self.add_child(selection_outline)
 
@@ -38,7 +41,7 @@ static func create_connector(type_name: String, origin_point: Vector2 = Vector2(
 			connector.head_size = 20
 			connector.tail_size = 15
 			connector.head_type = ThinConnector.ArrowheadType.STICK
-			connector.tail_type = ThinConnector.ArrowheadType.NONE # Use BALL
+			connector.tail_type = ThinConnector.ArrowheadType.BALL
 		_:
 			connector = ThinConnector.new()
 			connector.head_size = 20
@@ -94,8 +97,6 @@ func update_connector():
 		target_shape = CircleShape2D.new()
 		target_shape.radius = 10
 
-	var orign_point = origin.position
-	# Origin
 	var origin_lead: Vector2 # Next point after the origin point
 	var target_lead: Vector2 # Last point before the target point
 	if connector.midpoints.is_empty():
@@ -105,8 +106,8 @@ func update_connector():
 		origin_lead = connector.midpoints[-1]
 		target_lead = connector.midpoints[0]
 	
-	var origin_clips = DiagramGeometry.intersect_line_with_shape(origin_lead, origin.position, origin.shape, origin.global_transform)
-	var target_clips = DiagramGeometry.intersect_line_with_shape(target_lead, target.position, target.shape, target.global_transform)
+	var origin_clips = DiagramGeometry.intersect_line_with_shape(origin_lead, origin.position, origin.shape, origin.position)
+	var target_clips = DiagramGeometry.intersect_line_with_shape(target_lead, target.position, target.shape, target.position)
 	
 	var arrow_origin: Vector2
 	var arrow_target: Vector2
@@ -121,7 +122,11 @@ func update_connector():
 	else:
 		arrow_target = target_clips[0]
 	
-	connector.set_endpoints(arrow_origin, arrow_target)
+	# Pretty offset
+	var origin_offset = arrow_origin.direction_to(origin_lead) * pretty_arrow_offset
+	var target_offset = arrow_target.direction_to(target_lead) * pretty_arrow_offset
+	
+	connector.set_endpoints(arrow_origin + origin_offset, arrow_target + target_offset)
 	
 	touchable_outline = connector.selection_outline(10)
 
@@ -152,9 +157,9 @@ func update_midpoint_handles():
 		else:
 			handle = midpoint_handles[0]
 			
-		var direction = origin.position.direction_to(target.position)
-		var length = origin.position.distance_to(target.position)
-		handle.position = (origin.position) + (direction * (length / 2))
+		var direction = connector.origin_point.direction_to(connector.target_point)
+		var length = connector.origin_point.distance_to(connector.target_point)
+		handle.position = (connector.origin_point) + (direction * (length / 2))
 		handle.index = -1
 		midpoint_handles.assign([handle])
 	else:
