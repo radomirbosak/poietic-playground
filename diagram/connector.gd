@@ -19,6 +19,18 @@ const selection_outline_width: float = 5
 		midpoints = value
 		queue_redraw()
 
+@export var outline_visible: bool = false:
+	set(value):
+		outline_visible = value
+		queue_redraw()
+
+@export var outline_color: Color = Color.BLUE:
+	set(value):
+		outline_color = value
+		queue_redraw()
+
+const outline_width = 4
+
 @export var head_size: float = 30.0
 @export var line_width: float = -1
 @export var line_color: Color = Color.WHITE

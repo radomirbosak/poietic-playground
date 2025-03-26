@@ -29,7 +29,8 @@ var children_needs_update: bool = true
 const pretty_arrow_offset: float = 7
 
 func _ready():
-	self.add_child(selection_outline)
+	pass
+	# self.add_child(selection_outline)
 
 static func create_connector(type_name: String, origin_point: Vector2 = Vector2(), target_point: Vector2 = Vector2()) -> Connector:
 	var connector: Connector
@@ -45,6 +46,7 @@ static func create_connector(type_name: String, origin_point: Vector2 = Vector2(
 		_:
 			connector = ThinConnector.new()
 			connector.head_size = 20
+	connector.outline_color = DiagramCanvas.default_selection_color
 	connector.set_endpoints(origin_point, target_point)
 	connector.line_width = 2.0
 	return connector
@@ -191,40 +193,7 @@ func set_midpoint(index: int, midpoint_position: Vector2):
 	update_connector()
 
 func update_selection():
-	if is_selected:
-		var selection_outline_width: float = 10
-		if type_name == "Flow":
-			selection_outline_width = 15
-
-		# TODO: Recycle polygons?
-		var polygons = connector.selection_outline()
-		for child in selection_outline.get_children():
-			child.queue_free()
-
-		if len(polygons) >= 1:
-			for points in polygons:
-				var fill: Polygon2D = Polygon2D.new()
-				fill.color = DiagramCanvas.default_selection_color.darkened(0.5)
-				fill.polygon = points
-				fill.z_index = 0
-				selection_outline.add_child(fill)
-				var outline: Line2D = Line2D.new()
-				outline.default_color = DiagramCanvas.default_selection_color
-				outline.closed = true
-				outline.points = points
-				outline.width = 2
-				outline.z_index = 1
-				selection_outline.add_child(outline)
-		selection_outline.visible = true
-
-		for handle in midpoint_handles:
-			handle.visible = true
-
-	else:
-		selection_outline.visible = false
-		for handle in midpoint_handles:
-			handle.visible = false
-
+	connector.outline_visible = is_selected
 	for handle in midpoint_handles:
 		handle.visible = is_selected
 

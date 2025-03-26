@@ -16,6 +16,11 @@ var diagram_objects: Dictionary[int, DiagramObject] = {}
 		formulas_visible = flag
 		set_formulas_visible(flag)
 
+@export var charts_visible: bool = false:
+	set(flag):
+		charts_visible = flag
+		set_charts_visible(flag)
+
 @export var labels_visible: bool = true:
 	set(flag):
 		labels_visible = flag
@@ -24,7 +29,7 @@ var diagram_objects: Dictionary[int, DiagramObject] = {}
 const default_pictogram_color = Color.WHITE
 const default_label_color = Color.WHITE
 const default_formula_color = Color.SKY_BLUE
-const default_selection_color: Color = Color(1.0,0.8,0)
+const default_selection_color: Color = Color(0.75,0.6,0)
 const handle_outline_color = Color.ROYAL_BLUE
 const handle_color = Color.DODGER_BLUE
 
@@ -166,6 +171,11 @@ func update_canvas_view() -> void:
 	self.scale = Vector2(zoom_level, zoom_level)
 	canvas_view_changed.emit(canvas_offset, zoom_level)
 	
+	if zoom_level > 2:
+		charts_visible = true
+	else:
+		charts_visible = false
+
 	if zoom_level <= 1.5:
 		formulas_visible = false
 	elif zoom_level > 1.5:
@@ -178,6 +188,9 @@ func set_formulas_visible(flag: bool):
 func set_labels_visible(flag: bool):
 	for node in self.all_diagram_nodes():
 		node.label_text.visible = flag
+
+func set_charts_visible(flag: bool):
+	push_warning("Visible zoomed charts are not yet implemented")
 
 ## Returns either a DiagramObject or a handle at given position.
 ##

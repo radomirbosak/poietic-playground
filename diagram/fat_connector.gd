@@ -36,6 +36,11 @@ class Arrowhead:
 
 func _draw():
 	var polygons = arrow_polygons()
+	
+	if outline_visible:
+		for points in selection_outline():
+			draw_polygon(points, [outline_color])
+	
 	for poly in polygons:
 		if poly[-1] != poly[0]:
 			poly.append(poly[0])
