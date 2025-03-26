@@ -126,14 +126,9 @@ func _DEBUG_update_chart():
 	if ids and not ids.is_empty():
 		for id in ids:
 			print("Charting ", id)
-			var series = Chart.TimeSeries.new()
-			var data = Global.design.result_time_series(id)
-			if not data:
-				printerr("No data for ID ", id)
+			var series = Global.result.time_series(id)
+			if not series:
 				continue
-			series.time_min = 0.0
-			series.time_delta = 1.0
-			series.data = data
 			chart.append_series(series)
 
 func _unhandled_input(event):
