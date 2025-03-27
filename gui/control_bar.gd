@@ -61,3 +61,17 @@ func _on_stop_button_pressed():
 func _on_loop_button_pressed():
 	Global.player.is_looping = loop_button.button_pressed
 	update_simulator_state()
+
+func _on_design_changed(has_issues: bool):
+	var params: PoieticObject = Global.design.get_simulation_parameters_object()
+	if params:
+		# TODO Set initial time
+		var initial_time = params.get_attribute("initial_time")
+		var time_delta = params.get_attribute("time_delta")
+		var end_time = params.get_attribute("end_time")
+		if end_time is float or end_time is int:
+			%EndTimeField.text = str(end_time)
+
+
+func _on_end_time_field_text_submitted(new_text):
+	pass # Replace with function body.

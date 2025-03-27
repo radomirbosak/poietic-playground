@@ -100,10 +100,11 @@ horizontal_alignment = 2
 [node name="EndTimeLabel" type="Label" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Steps"
+text = "End"
 
 [node name="EndTimeField" type="LineEdit" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "10"
 
@@ -111,3 +112,4 @@ text = "10"
 [connection signal="pressed" from="MarginContainer/HBoxContainer/StopButton" to="." method="_on_stop_button_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/RunButton" to="." method="_on_run_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/LoopButton" to="." method="_on_loop_button_pressed"]
+[connection signal="text_submitted" from="MarginContainer/HBoxContainer/EndTimeField" to="." method="_on_end_time_field_text_submitted"]

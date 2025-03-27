@@ -27,6 +27,8 @@ func _set_design_object(object: PoieticObject):
 	if self.object_id:
 		push_warning("Design object is already set")
 	self.object_id = object.object_id
+	if self.type_name:
+		assert(self.type_name == object.type_name, "Object type changes are not (yet) permitted")
 	self.type_name = object.type_name
 	self._update_from_design_object(object)
 	

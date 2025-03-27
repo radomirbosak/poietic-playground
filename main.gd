@@ -38,10 +38,16 @@ func _ready():
 	# Initialize and connect canvas
 	Global.canvas = canvas
 
-	# Connect inspector
 	Global.design.design_changed.connect(inspector_panel._on_design_changed)
+	Global.design.design_changed.connect(self._on_design_changed)
+	Global.design.design_reset.connect(self._on_design_reset)
+	Global.design.design_changed.connect(control_bar._on_design_changed)
+
 	canvas.selection.selection_changed.connect(inspector_panel._on_selection_changed)
+	canvas.selection.selection_changed.connect(self._on_selection_changed)
+
 	canvas.canvas_view_changed.connect(_on_canvas_view_changed)
+
 	# TODO: See inspector panel source comment about selection
 	inspector_panel.selection = canvas.selection
 	
@@ -49,11 +55,7 @@ func _ready():
 	Global.player = player
 	control_bar.update_simulator_state()
 	
-	# Finalize initalisation
-	Global.design.design_changed.connect(self._on_design_changed)
-	canvas.selection.selection_changed.connect(self._on_selection_changed)
 	Global.design.simulation_started.connect(self._on_simulation_started)
-
 	Global.design.simulation_finished.connect(self._on_simulation_success)
 	Global.design.simulation_finished.connect(control_bar._on_simulation_success)
 
@@ -88,6 +90,11 @@ func _on_design_changed(has_issues: bool):
 	update_status_text()
 	if has_issues:
 		clear_result()
+
+func _on_design_reset():
+	canvas.clear_design()
+	canvas.selection.clear()
+	update_status_text()
 
 func _on_simulation_started():
 	# TODO: Show some indicator to give hope.
@@ -125,7 +132,6 @@ func _DEBUG_update_chart():
 	chart.clear_series()
 	if ids and not ids.is_empty():
 		for id in ids:
-			print("Charting ", id)
 			var series = Global.result.time_series(id)
 			if not series:
 				continue
@@ -273,7 +279,6 @@ func open_design():
 
 # Save-as
 func save_design_as():
-	print("SAVEAS")
 	$FileDialog.file_mode = FileDialog.FileMode.FILE_MODE_SAVE_FILE
 	$FileDialog.title = "Save Design"
 	$FileDialog.ok_button_text = "Save"

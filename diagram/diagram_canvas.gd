@@ -222,9 +222,12 @@ func get_connectors(node: DiagramNode) -> Array[DiagramConnector]:
 			children.append(conn)
 	return children
 
+func clear_design():
+	for object in diagram_objects.values():
+		object.queue_free()
+	diagram_objects.clear()
+	
 func sync_design():
-	var DEBUG_ex_nodes = all_diagram_node_ids()
-	var DEBUG_ex_edges = all_diagram_edge_ids()
 	var diff = Global.design.get_difference(all_diagram_node_ids(), all_diagram_edge_ids())
 	
 	# We need to remove both nodes and edges first, just in case the design contains objects where
@@ -242,6 +245,7 @@ func sync_design():
 	# Current Nodes
 	for node in all_diagram_nodes():
 		var object: PoieticObject = Global.design.get_object(node.object_id)
+		assert(object.type_name == node.type_name, "Object type change is not allowed")
 		node._update_from_design_object(object)
 		var issues = Global.design.issues_for_object(node.object_id)
 		node.has_issues = !issues.is_empty()
@@ -256,7 +260,8 @@ func sync_design():
 	# Current edges
 	for conn in all_diagram_connectors():
 		var object: PoieticObject = Global.design.get_object(conn.object_id)
-		
+		assert(object.type_name == conn.type_name, "Object type change is not allowed")
+
 		var origin: DiagramNode = get_diagram_node(object.origin)
 		assert(origin)
 		conn.origin = origin
@@ -393,7 +398,6 @@ func delete_selection():
 
 func remove_midpoints_in_selection():
 	if selection.is_empty():
-		prints("Selection is empty") # DEBUG
 		return
 
 	var connectors: Array[DiagramConnector]
@@ -403,7 +407,6 @@ func remove_midpoints_in_selection():
 		if connector and obj.get_attribute("midpoints") != null:
 			connectors.append(connector)
 	if connectors.is_empty():
-		prints("No relevant connectors in the selection") # DEBUG
 		return
 		
 	var trans = Global.design.new_transaction()
