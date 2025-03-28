@@ -147,16 +147,7 @@ func _unhandled_input(event):
 		canvas_offset += (-event.delta) * zoom_level * 10
 		update_canvas_view()
 	elif event is InputEventMagnifyGesture:
-		var g_mouse = get_global_mouse_position()
-		var t_before = Transform2D().scaled(Vector2(zoom_level, zoom_level)).translated(canvas_offset)
-		var m_before = t_before.affine_inverse() * g_mouse
-
-		zoom_level *= event.factor
-		zoom_level = clamp(zoom_level, 0.1, 5.0)
-
-		var t_after = Transform2D().scaled(Vector2(zoom_level, zoom_level)).translated(canvas_offset)
-		var m_after = t_after.affine_inverse() * g_mouse
-		canvas_offset += -(m_before - m_after) * zoom_level
+		set_zoom_level(zoom_level * event.factor, get_global_mouse_position())
 		update_canvas_view()
 	else: # Regular tool use
 		var tool = Global.current_tool
@@ -165,6 +156,16 @@ func _unhandled_input(event):
 		tool.canvas = self
 		if tool.handle_intput(event):
 			get_viewport().set_input_as_handled()
+
+func set_zoom_level(level: float, keep_position: Vector2) -> void:
+	var t_before = Transform2D().scaled(Vector2(zoom_level, zoom_level)).translated(canvas_offset)
+	var m_before = t_before.affine_inverse() * keep_position
+
+	zoom_level = clamp(level, 0.1, 5.0)
+
+	var t_after = Transform2D().scaled(Vector2(zoom_level, zoom_level)).translated(canvas_offset)
+	var m_after = t_after.affine_inverse() * keep_position
+	canvas_offset += -(m_before - m_after) * zoom_level
 
 func update_canvas_view() -> void:
 	self.position = canvas_offset
@@ -370,7 +371,7 @@ func drag_handle(handle: Handle, move_delta: Vector2):
 		push_error("Unhandled handle parent: ", parent, " handle: ", handle)
 
 func finish_drag_handle(handle: Handle, _final_position: Vector2) -> void:
-	handle.position = _final_position
+	handle.position = to_local(_final_position)
 	var connector: DiagramConnector = handle.get_parent()
 
 	if connector is not DiagramConnector:

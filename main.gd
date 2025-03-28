@@ -127,6 +127,9 @@ func _on_simulation_player_step():
 	canvas.update_indicator_values()
 	
 func _DEBUG_update_chart():
+	if not Global.result:
+		printerr("Trying to make a chart without result")
+		return
 	var chart: Chart = $Gui/MakeshiftChart/Chart
 	var ids = canvas.selection.get_ids()
 	chart.clear_series()
@@ -371,7 +374,7 @@ func toggle_value_indicators():
 	save_settings()
 
 func zoom_actual():
-	canvas.zoom_level = 1.0
+	canvas.set_zoom_level(1.0, get_global_mouse_position())
 	canvas.update_canvas_view()
 
 # Simulation Menu
