@@ -36,6 +36,25 @@ const handle_color = Color.DODGER_BLUE
 const issues_indicator_z_index = 1000
 const handle_z_index = 900
 
+enum HitTargetType {
+	# Type            Object
+	OBJECT,         # Diagram object
+	HANDLE,         # Handle (parent must be diagram object)
+	NAME,           # Diagram object
+	# SECONDARY_LABEL, # Formula
+	# ERROR_INDICATOR,
+	# VALUE_INDICATOR,
+}
+
+class HitTarget:
+	var type: HitTargetType
+	var object: Node2D
+	var index: int
+	func _init(type: HitTargetType, object: Node2D, index: int = -1):
+		self.type = type
+		self.object = object
+		self.index = index
+
 func all_diagram_object_ids() -> PackedInt64Array:
 	var result = PackedInt64Array(diagram_objects.keys())
 	return result
@@ -195,26 +214,30 @@ func set_charts_visible(flag: bool):
 
 ## Returns either a DiagramObject or a handle at given position.
 ##
-func object_at_position(test_position: Vector2):
-	var candidate: Node2D = null
+func hit_target(hit_position: Vector2) -> HitTarget:
+	var target: HitTarget = null
 	
 	for child in get_children():
 		if child is not DiagramObject:
 			continue
 
 		for handle in child.get_handles():
-			if handle.visible and handle.contains_point(test_position):
-				candidate = handle
+			if handle.visible and handle.contains_point(hit_position):
+				target = HitTarget.new(HitTargetType.HANDLE, handle)
 				break
-		if candidate:
+		if target:
 			break
 			
-		if child.contains_point(test_position):
-			candidate = child
+		if child is DiagramNode and child.label_text.visible:
+			var label: Label = child.label_text
+			if label.get_rect().has_point(child.to_local(hit_position)):
+				target = HitTarget.new(HitTargetType.NAME, child)
+		if child.contains_point(hit_position):
+			target = HitTarget.new(HitTargetType.OBJECT, child)
 			if not child.is_selected:
 				break   # No handles are visible, no need to test them
 
-	return candidate
+	return target
 
 func get_connectors(node: DiagramNode) -> Array[DiagramConnector]:
 	var children: Array[DiagramConnector] = []

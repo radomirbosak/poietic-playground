@@ -86,6 +86,9 @@ func get_placeable_pictograms() -> Array[Pictogram]:
 func get_gui() -> Node:
 	return get_node("/root/Main/Gui")
 	
+func get_label_editor() -> CanvasLabelEditor:
+	return get_node("/root/Main/Gui/LabelEditor")
+
 func set_modal(node: Node):
 	if modal_node:
 		push_warning("Setting modal while having one already set")

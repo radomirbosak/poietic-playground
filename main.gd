@@ -20,6 +20,7 @@ const default_window_size = Vector2(1280, 720)
 @onready var player: PoieticPlayer = $SimulationPlayer
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
 @onready var control_bar: ControlBar = $Gui/ControlBar
+@onready var label_editor: CanvasLabelEditor = $Gui/LabelEditor
 
 func _init():
 	pass
@@ -27,7 +28,8 @@ func _init():
 func _ready():
 	$FileDialog.use_native_dialog = true
 	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
-
+	label_editor.hide()
+	
 	load_settings()
 	get_viewport().connect("size_changed", _on_window_resized)
 	
@@ -35,6 +37,9 @@ func _ready():
 	
 	Global.initialize()
 	
+	%LabelEditor.text_submitted.connect(Global.selection_tool._on_label_edit_submitted)
+	%LabelEditor.editing_cancelled.connect(Global.selection_tool._on_label_edit_cancelled)
+
 	# Initialize and connect canvas
 	Global.canvas = canvas
 
