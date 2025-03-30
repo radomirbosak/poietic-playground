@@ -187,6 +187,9 @@ func _unhandled_input(event):
 	elif event.is_action_pressed("debug-dump"):
 		debug_dump()
 
+	elif event.is_action_pressed("cancel"):
+		Global.close_modal(Global.modal_node)
+
 func update_status_text():
 	var stats = Global.design.debug_stats
 	

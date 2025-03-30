@@ -13,6 +13,7 @@ func tool_name() -> String:
 	
 func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 	var candidate = canvas.object_at_position(pointer_position)
+	Global.close_modal(Global.modal_node)
 	if candidate is DiagramObject:
 		if event.shift_pressed:
 			canvas.selection.toggle(candidate.object_id)
@@ -20,20 +21,17 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 			if canvas.selection.is_empty() or !canvas.selection.contains(candidate.object_id):
 				canvas.selection.replace(PackedInt64Array([candidate.object_id]))
 			else:
-				print("Context menu now? (not implemented)")
-
+				open_context_menu(pointer_position)
 		last_pointer_position = pointer_position
 		state = SelectToolState.OBJECT_HIT
-		return true
 	elif candidate is Handle:
 		state = SelectToolState.HANDLE_HIT
 		dragging_handle = candidate
-		return true
 	else:
 		canvas.selection.clear()
 		state = SelectToolState.OBJECT_SELECT
-		return true
 		# TODO: Initiate rubber band here
+	return true
 
 func input_moved(event: InputEvent, move_delta: Vector2) -> bool:
 	var mouse_position = event.global_position
@@ -73,3 +71,8 @@ func input_ended(_event: InputEvent, mouse_position: Vector2) -> bool:
 
 	state = SelectToolState.EMPTY
 	return true
+
+func open_context_menu(pointer_position: Vector2):
+	var menu: PanelContainer = preload("res://gui/context_menu.tscn").instantiate()
+	menu.position = pointer_position
+	Global.set_modal(menu)

@@ -93,8 +93,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_q16gx")
-text = "0
-"
+text = "0"
 horizontal_alignment = 2
 
 [node name="EndTimeLabel" type="Label" parent="MarginContainer/HBoxContainer"]
@@ -107,6 +106,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "10"
+alignment = 2
 
 [connection signal="pressed" from="MarginContainer/HBoxContainer/ResetButton" to="." method="_on_reset_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/StopButton" to="." method="_on_stop_button_pressed"]
