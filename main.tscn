@@ -29,6 +29,7 @@ anchor_bottom = 1.0
 offset_top = -23.0
 offset_right = 40.0
 grow_vertical = 0
+theme_override_font_sizes/font_size = 20
 text = "Text"
 
 [node name="InspectorPanel" parent="Gui" instance=ExtResource("4_uq7uj")]
