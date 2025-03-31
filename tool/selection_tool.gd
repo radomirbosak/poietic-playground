@@ -14,6 +14,7 @@ func tool_name() -> String:
 func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 	var target = canvas.hit_target(pointer_position)
 	if not target:
+		Global.get_label_editor().hide()
 		close_context_menu()
 		canvas.selection.clear()
 		state = SelectToolState.OBJECT_SELECT
