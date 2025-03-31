@@ -41,8 +41,8 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 			var node: DiagramNode = target.object as DiagramNode
 			canvas.selection.replace(PackedInt64Array([node.object_id]))
 			var center = Vector2(node.global_position.x, node.name_label.global_position.y)
-			node.name_label.visible = false
-			Global.get_label_editor().open(node, node.object_name, center)
+			node.begin_label_edit()
+			Global.get_label_editor().open(node.object_id, node.object_name, center)
 			
 	return true
 
@@ -102,24 +102,30 @@ func is_context_menu_open() -> bool:
 
 # Label Editor
 # ------------------------------------------------------------
-func _on_label_edit_submitted(object: DiagramObject, new_text: String):
+func _on_label_edit_submitted(object_id: int, new_text: String):
 	Global.get_label_editor().hide()
 
-	if not object is DiagramNode:
-		push_error("Only nodes can use label editor for now")
-		return
-	object.name_label.visible = true
+	assert(object_id != -1, "Editing cancelled with placeholder object ID (-1)")
+		
+	var object = canvas.get_diagram_node(object_id)
+	assert(object, "Editing finished with unknown node ID")
+	
+	object.finish_label_edit()
 
 	if object.object_name == new_text:
 		print("Name not changed")
 		return
 
 	var trans = Global.design.new_transaction()
-	trans.set_attribute(object.object_id, "name", new_text)
+	trans.set_attribute(object_id, "name", new_text)
 	Global.design.accept(trans)
 
-func _on_label_edit_cancelled(object: DiagramObject):
+func _on_label_edit_cancelled(object_id: int):
+	assert(object_id != -1, "Editing cancelled with placeholder object ID (-1)")
 	print("Cancelled")
 	Global.get_label_editor().hide()
 
-	object.name_label.visible = true
+	var object = canvas.get_diagram_node(object_id)
+	assert(object, "Editing cancelled with unknown node ID")
+
+	object.finish_label_edit()

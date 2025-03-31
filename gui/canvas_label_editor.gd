@@ -1,21 +1,22 @@
 class_name CanvasLabelEditor extends LineEdit
 
-signal editing_submitted(object: DiagramObject, new_text: String)
-signal editing_cancelled(object: DiagramObject)
+signal editing_submitted(object_id: int, new_text: String)
+signal editing_cancelled(object_id: int)
 
 @export var grow_duration: float = 0.05
 
 ## Currently edited object.
 ##
-var object: DiagramObject
+@export var edited_object_id: int = -1
 
 var _original_center: Vector2
 var _target_width: float = 0.0
 var _is_active: bool = false
 
-func open(object: DiagramObject, text: String, center: Vector2):
+func open(object_id: int, text: String, center: Vector2):
+	assert(object_id != null, "Edited object ID not provided")
+	self.edited_object_id = object_id
 	self.text = text
-	self.object = object
 	
 	_original_center = center
 	_target_width = calculate_editor_width()
@@ -29,13 +30,13 @@ func open(object: DiagramObject, text: String, center: Vector2):
 	set_process(true)
 
 func cancel():
+	if !_is_active:
+		return
 	set_process(false)
-	if _is_active:
-		editing_cancelled.emit(object)
+	editing_cancelled.emit(edited_object_id)
 	hide()
-	object = null
 	_is_active = false
-
+	edited_object_id = -1
 
 func calculate_editor_width() -> float:
 	var font = get_theme_font("font")
@@ -69,11 +70,14 @@ func _on_text_changed(new_text: String):
 	_target_width = calculate_editor_width()
 
 func _on_text_submitted(new_text: String):
+	if !_is_active:
+		return
+		
 	set_process(false)
 	hide()
-	editing_submitted.emit(object, new_text)
+	editing_submitted.emit(edited_object_id, new_text)
 	_is_active = false
-	object = null
+	edited_object_id = -1
 
 func _on_focus_exited():
 	if visible:

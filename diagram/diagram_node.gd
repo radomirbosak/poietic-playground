@@ -27,7 +27,6 @@ var display_value: Variant = 0.0:
 @export var value_indicator: ValueIndicator
 @export var indicator_offset = 30
 
-
 # TODO: Physics
 # var collision: CollisionShape2D = CollisionShape2D.new()
 
@@ -177,3 +176,9 @@ func contains_point(point: Vector2):
 	var collision_trans = self.transform.translated(local_point)
 
 	return shape.collide(self.transform, touch_shape, collision_trans)
+
+func begin_label_edit():
+	name_label.visible = false
+
+func finish_label_edit():
+	name_label.visible = true
