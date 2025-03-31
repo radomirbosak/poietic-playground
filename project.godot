@@ -48,6 +48,7 @@ diagram_nodes=""
 [gui]
 
 theme/default_theme_scale=2.0
+theme/custom="uid://dws6dqiic6wt"
 theme/custom_font="uid://6y6i5dhrvmps"
 theme/default_font_antialiasing=2
 

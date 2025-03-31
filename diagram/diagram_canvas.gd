@@ -51,6 +51,7 @@ class HitTarget:
 	var object: Node2D
 	var index: int
 	func _init(type: HitTargetType, object: Node2D, index: int = -1):
+		assert(object != null, "Hit target object must be not null")
 		self.type = type
 		self.object = object
 		self.index = index
@@ -203,14 +204,15 @@ func update_canvas_view() -> void:
 
 func set_formulas_visible(flag: bool):
 	for node in self.all_diagram_nodes():
-		node.formula_text.visible = flag
+		node.formula_label.visible = flag
 
 func set_labels_visible(flag: bool):
 	for node in self.all_diagram_nodes():
-		node.label_text.visible = flag
+		node.name_label.visible = flag
 
 func set_charts_visible(flag: bool):
-	push_warning("Visible zoomed charts are not yet implemented")
+	# push_warning("Visible zoomed charts are not yet implemented")
+	pass
 
 ## Returns either a DiagramObject or a handle at given position.
 ##
@@ -228,8 +230,8 @@ func hit_target(hit_position: Vector2) -> HitTarget:
 		if target:
 			break
 			
-		if child is DiagramNode and child.label_text.visible:
-			var label: Label = child.label_text
+		if child is DiagramNode and child.name_label.visible:
+			var label: Label = child.name_label
 			if label.get_rect().has_point(child.to_local(hit_position)):
 				target = HitTarget.new(HitTargetType.NAME, child)
 		if child.contains_point(hit_position):

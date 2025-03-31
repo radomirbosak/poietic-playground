@@ -29,7 +29,7 @@ func _ready():
 	$FileDialog.use_native_dialog = true
 	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
 	label_editor.hide()
-	
+		
 	load_settings()
 	get_viewport().connect("size_changed", _on_window_resized)
 	
@@ -202,16 +202,16 @@ func update_status_text():
 	text += "Frames: " + str(stats["frames"])
 	text += " undo: " + str(stats["undo_frames"])
 	text += " redo: " + str(stats["redo_frames"])
-	text += "\n"
-	text += "Frame: " + str(stats["current_frame"])
+	text += " | Current ID: " + str(stats["current_frame"])
 	if stats["diagram_nodes"] == stats["nodes"]:
 		text += " nodes: " + str(stats["nodes"])
 	else:
 		text += " nodes: " + str(stats["diagram_nodes"]) + "/" + str(stats["nodes"])
 	text += " edges: " + str(stats["edges"])
-	text += " | design issues: " + str(stats["design_issues"])
-	text += " object issues: " + str(stats["object_issues"])
-	text += " zoom: " + str(canvas.zoom_level)
+	text += "\n"
+	text += "Design issues: " + str(stats["design_issues"])
+	text += " / object issues: " + str(stats["object_issues"])
+	text += " | zoom: " + str(int(canvas.zoom_level * 100)) + "%"
 	$Gui/StatusText.text = text
 
 func _on_window_resized():

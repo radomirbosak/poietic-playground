@@ -12,7 +12,7 @@ func tool_name() -> String:
 	return "select"
 	
 func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
-	var target = canvas.hit_target(pointer_position)
+	var target: DiagramCanvas.HitTarget = canvas.hit_target(pointer_position)
 	if not target:
 		Global.get_label_editor().hide()
 		close_context_menu()
@@ -38,12 +38,9 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 			dragging_handle = target.object as Handle
 		DiagramCanvas.HitTargetType.NAME:
 			var node: DiagramNode = target.object as DiagramNode
-			var flag = canvas.selection.contains(node.object_id)
 			canvas.selection.replace(PackedInt64Array([node.object_id]))
-			var label = target.object.label_text
-			var label_rect = label.get_global_rect()
-			Global.get_label_editor().open(label.text, label_rect)
-				
+			var center = Vector2(node.global_position.x, node.name_label.global_position.y)
+			Global.get_label_editor().open(node.object_name, center)
 			
 	return true
 

@@ -16,6 +16,7 @@ func _on_name_button_pressed():
 
 
 func _on_formula_button_pressed():
+	print("Formula pressed")
 	pass # Replace with function body.
 
 

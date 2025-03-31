@@ -3,24 +3,30 @@ class_name CanvasLabelEditor extends LineEdit
 signal editing_submitted(new_text: String)
 signal editing_cancelled
 
-var _original_text: String
-var _original_center: Vector2
-var _min_width: float = 0.0
+@export var grow_duration: float = 0.05
 
-func open(text: String, global_rect: Rect2):
-	_original_text = text
+var _original_center: Vector2
+var _target_width: float = 0.0
+
+func open(text: String, center: Vector2):
 	self.text = text
 	
-	_original_center = global_rect.get_center()
-	_min_width = global_rect.size.x
-	
-	global_position = global_rect.position
-	size.x = _min_width
+	_original_center = center
+	_target_width = calculate_editor_width()
+	self.size.x = _target_width
+	global_position = Vector2(center.x - _target_width / 2, center.y)
 	
 	show()
 	grab_focus()
 	select_all()
 	set_process(true)
+	
+func calculate_editor_width() -> float:
+	var font = get_theme_font("font")
+	var font_size = get_theme_font_size("font_size")
+	var width = font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size).x
+	var padding = get_theme_constant("horizontal_padding", "Label") * 2
+	return max(width + padding, self.get_minimum_size().x)
 
 func _ready():
 	hide()
@@ -29,25 +35,22 @@ func _ready():
 	text_changed.connect(_on_text_changed)
 	text_submitted.connect(_on_text_submitted)
 
-func _process(_delta):
-	# Dynamic sizing while maintaining center position
-	var text_width = get_minimum_size().x
-	var new_width = max(text_width, _min_width)
-	
-	# Keep centered on original label's center
-	var new_position = Vector2(
-		_original_center.x - new_width / 2,
-		global_position.y
-	)
-	
-	# Only update if changed to avoid infinite loops
-	if size.x != new_width or global_position.x != new_position.x:
-		size.x = new_width
-		global_position.x = new_position.x
+func _process(delta):
+	var target_position = Vector2(_original_center.x - _target_width/2, global_position.y)
+
+	# Animate
+	if abs(size.x - _target_width) > 1.0:
+		var from_x = size.x
+		size.x = lerp(size.x, _target_width, delta * (1.0/grow_duration))
+		global_position.x = lerp(global_position.x,
+								 target_position.x,
+								 delta * (1.0/grow_duration))
+	else:
+		size.x = _target_width
+		global_position.x = target_position.x
 
 func _on_text_changed(new_text: String):
-	# Trigger resize on text change
-	pass  # _process handles it automatically
+	_target_width = calculate_editor_width()
 
 func _on_text_submitted(new_text: String):
 	set_process(false)
@@ -55,7 +58,7 @@ func _on_text_submitted(new_text: String):
 	editing_submitted.emit(new_text)
 
 func _on_focus_exited():
-	if visible:  # Only if still editing
+	if visible:
 		set_process(false)
 		hide()
 		editing_cancelled.emit()

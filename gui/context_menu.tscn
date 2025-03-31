@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://d2n4g00qw1ua"]
+[gd_scene load_steps=5 format=3 uid="uid://d2n4g00qw1ua"]
 
 [ext_resource type="Script" uid="uid://b3oswwsrguyar" path="res://gui/context_menu.gd" id="1_hqv6p"]
 [ext_resource type="Texture2D" uid="uid://cohqeh37sychv" path="res://resources/icons/white/delete.png" id="1_t6t3t"]
+[ext_resource type="Texture2D" uid="uid://bi5sowqe2mcj3" path="res://resources/icons/white/formula.png" id="2_tp02x"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t6t3t"]
 bg_color = Color(0.319255, 0.319255, 0.319255, 1)
@@ -18,10 +19,13 @@ visible = false
 layout_mode = 2
 text = "abc"
 
-[node name="FormulaButton" type="Button" parent="HBoxContainer"]
-visible = false
+[node name="FormulaButton" type="TextureButton" parent="HBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-text = "f(x)"
+tooltip_text = "Edit formula"
+texture_normal = ExtResource("2_tp02x")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="AutoButton" type="Button" parent="HBoxContainer"]
 visible = false
@@ -31,6 +35,7 @@ text = "auto"
 [node name="DeleteButton" type="TextureButton" parent="HBoxContainer"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
+tooltip_text = "Delete"
 texture_normal = ExtResource("1_t6t3t")
 ignore_texture_size = true
 stretch_mode = 5

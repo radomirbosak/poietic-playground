@@ -2,7 +2,7 @@ class_name DiagramNode extends DiagramObject
 # Physics: extends RigidBody2D
 
 const label_offset = 10
-const formula_offset = 30
+const formula_offset = 40
 const default_radius = 50
 const highlight_padding = 5
 
@@ -19,12 +19,14 @@ var display_value: Variant = 0.0:
 			push_warning("Invalid display value for node ID ", object_id, ": ", value)
 
 # Node Components (Children)
-@export var image: Sprite2D
 @export var shape: Shape2D
-@export var label_text: Label
-@export var formula_text: Label
+
+@export var image: Sprite2D
+@export var name_label: Label
+@export var formula_label: Label
 @export var value_indicator: ValueIndicator
 @export var indicator_offset = 30
+
 
 # TODO: Physics
 # var collision: CollisionShape2D = CollisionShape2D.new()
@@ -45,9 +47,9 @@ func _init():
 	shape = CircleShape2D.new()
 	shape.radius = default_radius
 
-	formula_text = Label.new()
-	self.add_child(formula_text)
-	formula_text.add_theme_color_override("font_color", DiagramCanvas.default_formula_color)
+	formula_label = Label.new()
+	self.add_child(formula_label)
+	formula_label.add_theme_color_override("font_color", DiagramCanvas.default_formula_color)
 
 ## Updates the diagram node based on a design object.
 ##
@@ -60,15 +62,15 @@ func _update_from_design_object(object: PoieticObject):
 		
 	var formula = object.get_attribute("formula")
 	if formula is String:
-		formula_text.text = formula
+		formula_label.text = formula
 
 	queue_layout()
 
 func _ready():
 	update_children()
 	var canvas:DiagramCanvas = get_parent()
-	self.formula_text.visible = canvas.formulas_visible
-	self.label_text.visible = canvas.labels_visible
+	self.formula_label.visible = canvas.formulas_visible
+	self.name_label.visible = canvas.labels_visible
 
 func _draw():
 	if is_selected and selection_highlight_shape:
@@ -86,26 +88,29 @@ func queue_layout():
 func update_children() -> void:
 	update_pictogram()
 	update_indicator()
-	if label_text == null:
-		label_text = Label.new()
-		self.add_child(label_text)
-		label_text.add_theme_color_override("font_color", DiagramCanvas.default_label_color)
-
+	if name_label == null:
+		name_label = Label.new()
+		self.add_child(name_label)
+		name_label.add_theme_color_override("font_color", DiagramCanvas.default_label_color)
 	var shape_rect = shape.get_rect()
 
 	# Label
-	if object_name == null:
-		label_text.text = ""
+	if not object_name:
+		var font = ThemeDB.get_project_theme().get_font("node_invalid_label_font", "Label")
+		name_label.add_theme_font_override("font", font)
+		name_label.text = "(unnamed)"
 	else:
-		label_text.text = object_name
-		label_text.queue_redraw()
+		var font = ThemeDB.get_project_theme().get_font("node_label_font", "Label")
+		name_label.add_theme_font_override("font", font)
+		name_label.text = object_name
+		name_label.queue_redraw()
 
 	var shape_bottom = shape_rect.size.y / 2		
-	var label_size = label_text.get_minimum_size()
-	label_text.position = Vector2(-label_size.x / 2, shape_bottom + label_offset)
+	var label_size = name_label.get_minimum_size()
+	name_label.position = Vector2(-label_size.x / 2, shape_bottom + label_offset)
 
-	var formula_size = formula_text.get_minimum_size()
-	formula_text.position = Vector2(-formula_size.x / 2, shape_bottom + formula_offset)
+	var formula_size = formula_label.get_minimum_size()
+	formula_label.position = Vector2(-formula_size.x / 2, shape_bottom + formula_offset)
 
 	# Indicators
 	

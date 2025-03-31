@@ -1,0 +1,18 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dws6dqiic6wt"]
+
+[ext_resource type="FontFile" uid="uid://6y6i5dhrvmps" path="res://resources/fonts/IBMPlexSansCondensed-Light.otf" id="1_vajuw"]
+[ext_resource type="FontFile" uid="uid://bf4sfp1whyleo" path="res://resources/fonts/IBMPlexSansCondensed-LightItalic.otf" id="2_7bl14"]
+
+[resource]
+Button/fonts/font = ExtResource("1_vajuw")
+Button/styles/disabled = null
+Button/styles/focus = null
+Button/styles/hover = null
+Button/styles/normal = null
+Button/styles/pressed = null
+Label/constants/horizontal_padding = 20
+Label/font_sizes/default_label_font_size = 32
+Label/font_sizes/zoom_detail_label_font_size = 24
+Label/fonts/formula_label_font = ExtResource("2_7bl14")
+Label/fonts/node_invalid_label_font = ExtResource("2_7bl14")
+Label/fonts/node_label_font = ExtResource("1_vajuw")
