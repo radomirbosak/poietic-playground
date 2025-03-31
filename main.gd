@@ -37,7 +37,7 @@ func _ready():
 	
 	Global.initialize()
 	
-	%LabelEditor.text_submitted.connect(Global.selection_tool._on_label_edit_submitted)
+	%LabelEditor.editing_submitted.connect(Global.selection_tool._on_label_edit_submitted)
 	%LabelEditor.editing_cancelled.connect(Global.selection_tool._on_label_edit_cancelled)
 
 	# Initialize and connect canvas

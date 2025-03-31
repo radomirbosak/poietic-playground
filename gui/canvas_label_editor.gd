@@ -1,26 +1,42 @@
 class_name CanvasLabelEditor extends LineEdit
 
-signal editing_submitted(new_text: String)
-signal editing_cancelled
+signal editing_submitted(object: DiagramObject, new_text: String)
+signal editing_cancelled(object: DiagramObject)
 
 @export var grow_duration: float = 0.05
 
+## Currently edited object.
+##
+var object: DiagramObject
+
 var _original_center: Vector2
 var _target_width: float = 0.0
+var _is_active: bool = false
 
-func open(text: String, center: Vector2):
+func open(object: DiagramObject, text: String, center: Vector2):
 	self.text = text
+	self.object = object
 	
 	_original_center = center
 	_target_width = calculate_editor_width()
 	self.size.x = _target_width
 	global_position = Vector2(center.x - _target_width / 2, center.y)
 	
+	_is_active = true
 	show()
 	grab_focus()
 	select_all()
 	set_process(true)
-	
+
+func cancel():
+	set_process(false)
+	if _is_active:
+		editing_cancelled.emit(object)
+	hide()
+	object = null
+	_is_active = false
+
+
 func calculate_editor_width() -> float:
 	var font = get_theme_font("font")
 	var font_size = get_theme_font_size("font_size")
@@ -55,18 +71,16 @@ func _on_text_changed(new_text: String):
 func _on_text_submitted(new_text: String):
 	set_process(false)
 	hide()
-	editing_submitted.emit(new_text)
+	editing_submitted.emit(object, new_text)
+	_is_active = false
+	object = null
 
 func _on_focus_exited():
 	if visible:
-		set_process(false)
-		hide()
-		editing_cancelled.emit()
+		cancel()
 
 func _input(event):
 	if visible and event is InputEventKey:
 		if event.keycode == KEY_ESCAPE:
-			set_process(false)
-			hide()
-			editing_cancelled.emit()
+			cancel()
 			get_viewport().set_input_as_handled()
