@@ -30,10 +30,15 @@ func tool_released():
 	pass
 
 func input_began(_event: InputEvent, pointer_position: Vector2):
-	var candidate = canvas.object_at_position(pointer_position)
-	if candidate is DiagramNode:
-		create_drag_connector(candidate, pointer_position)
-		origin = candidate
+	var target = canvas.hit_target(pointer_position)
+	if not target:
+		return
+	if target.type != DiagramCanvas.HitTargetType.OBJECT:
+		return
+		
+	if target.object is DiagramNode:
+		create_drag_connector(target.object, pointer_position)
+		origin = target.object
 		state = ConnectToolState.CONNECT
 		Input.set_default_cursor_shape(Input.CURSOR_DRAG)
 	else:
@@ -43,9 +48,13 @@ func input_began(_event: InputEvent, pointer_position: Vector2):
 func input_moved(_event: InputEvent, move_delta: Vector2):
 	if state == ConnectToolState.CONNECT:
 		dragging_connector.target_point += move_delta
-		var target = canvas.object_at_position(dragging_connector.target_point)
-		if target and target is DiagramNode:
-			if can_connect(target):
+		var target = canvas.hit_target(dragging_connector.target_point)
+		if not target:
+			return
+		elif target.type != DiagramCanvas.HitTargetType.OBJECT:
+			return
+		elif target.object is DiagramNode:
+			if can_connect(target.object):
 				Input.set_default_cursor_shape(Input.CURSOR_CAN_DROP)
 			else:
 				Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
@@ -60,10 +69,14 @@ func input_ended(_event: InputEvent, pointer_position: Vector2):
 			assert(dragging_connector != null)
 			state = ConnectToolState.EMPTY
 
-			var target = canvas.object_at_position(pointer_position)
-			if target is DiagramNode:
-				if can_connect(target):
-					create_connector(origin, target)
+			var target = canvas.hit_target(pointer_position)
+			if not target:
+				return
+			elif target.type != DiagramCanvas.HitTargetType.OBJECT:
+				return
+			elif target.object is DiagramNode:
+				if can_connect(target.object):
+					create_connector(origin, target.object)
 				else:
 					# Do some "poofffffff" animation here
 					pass
