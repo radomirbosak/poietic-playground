@@ -2,24 +2,34 @@
 
 [ext_resource type="Script" uid="uid://b3oswwsrguyar" path="res://gui/context_menu.gd" id="1_hqv6p"]
 [ext_resource type="Texture2D" uid="uid://cohqeh37sychv" path="res://resources/icons/white/delete.png" id="1_t6t3t"]
+[ext_resource type="Theme" uid="uid://dws6dqiic6wt" path="res://resources/default.tres" id="1_wmi5i"]
 [ext_resource type="Texture2D" uid="uid://bi5sowqe2mcj3" path="res://resources/icons/white/formula.png" id="2_tp02x"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t6t3t"]
-bg_color = Color(0.319255, 0.319255, 0.319255, 1)
-
 [node name="ContextMenu" type="PanelContainer"]
-theme_override_styles/panel = SubResource("StyleBoxFlat_t6t3t")
+offset_right = 132.0
+offset_bottom = 68.0
+theme = ExtResource("1_wmi5i")
+theme_type_variation = &"CanvasPrompt"
 script = ExtResource("1_hqv6p")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ItemsContainer" type="HBoxContainer" parent="MarginContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="NameButton" type="Button" parent="HBoxContainer"]
+[node name="ResetHandles" type="Button" parent="MarginContainer/ItemsContainer"]
 visible = false
 layout_mode = 2
-text = "abc"
+text = "Reset
+"
 
-[node name="FormulaButton" type="TextureButton" parent="HBoxContainer"]
+[node name="EditFormula" type="TextureButton" parent="MarginContainer/ItemsContainer"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Edit formula"
@@ -27,20 +37,23 @@ texture_normal = ExtResource("2_tp02x")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="AutoButton" type="Button" parent="HBoxContainer"]
+[node name="AutoRepair" type="Button" parent="MarginContainer/ItemsContainer"]
 visible = false
 layout_mode = 2
-text = "auto"
+text = "Repair"
 
-[node name="DeleteButton" type="TextureButton" parent="HBoxContainer"]
-custom_minimum_size = Vector2(40, 40)
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/ItemsContainer"]
+layout_mode = 2
+
+[node name="Delete" type="Button" parent="MarginContainer/ItemsContainer"]
 layout_mode = 2
 tooltip_text = "Delete"
-texture_normal = ExtResource("1_t6t3t")
-ignore_texture_size = true
-stretch_mode = 5
+text = "Delete"
+icon = ExtResource("1_t6t3t")
+alignment = 0
+expand_icon = true
 
-[connection signal="pressed" from="HBoxContainer/NameButton" to="." method="_on_name_button_pressed"]
-[connection signal="pressed" from="HBoxContainer/FormulaButton" to="." method="_on_formula_button_pressed"]
-[connection signal="pressed" from="HBoxContainer/AutoButton" to="." method="_on_auto_button_pressed"]
-[connection signal="pressed" from="HBoxContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ItemsContainer/ResetHandles" to="." method="_on_reset_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ItemsContainer/EditFormula" to="." method="_on_formula_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ItemsContainer/AutoRepair" to="." method="_on_auto_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ItemsContainer/Delete" to="." method="_on_delete_button_pressed"]

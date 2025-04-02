@@ -14,7 +14,8 @@ func open_panel(callout_position: Vector2):
 	palette.visible = true
 	# canvas.add_child(palette)
 	Global.set_modal(palette)
-	palette.set_callout_point(callout_position)
+	palette.point_side = palette.recommended_point_side(callout_position)
+	palette.set_position_with_target(callout_position)
 	palette.place_object.connect(_on_place_object)
 
 func close_panel():

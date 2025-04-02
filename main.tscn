@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://fhtvpa30rrel"]
+[gd_scene load_steps=11 format=3 uid="uid://fhtvpa30rrel"]
 
 [ext_resource type="Script" uid="uid://dr8beg2t8bd1u" path="res://main.gd" id="1_2q6io"]
 [ext_resource type="Script" uid="uid://dsl1jswuemr1e" path="res://diagram/diagram_canvas.gd" id="2_lulh0"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://dgupp2doqjm1a" path="res://inspector/inspector_panel.tscn" id="4_uq7uj"]
 [ext_resource type="Script" uid="uid://cyfyvtcdjamr3" path="res://gui/chart.gd" id="5_7mycd"]
 [ext_resource type="Script" uid="uid://ca8frkyxoem7n" path="res://gui/canvas_label_editor.gd" id="6_272bh"]
+[ext_resource type="PackedScene" uid="uid://d2n4g00qw1ua" path="res://gui/context_menu.tscn" id="7_5vw27"]
+[ext_resource type="PackedScene" uid="uid://bnmc02p3i33q2" path="res://gui/formula_prompt.tscn" id="8_kek77"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7mycd"]
 bg_color = Color(0.2484, 0.2484, 0.2484, 1)
@@ -79,6 +81,12 @@ offset_bottom = 58.0
 alignment = 1
 script = ExtResource("6_272bh")
 metadata/_custom_type_script = "uid://ca8frkyxoem7n"
+
+[node name="ContextMenu" parent="Gui" instance=ExtResource("7_5vw27")]
+visible = false
+
+[node name="FormulaPrompt" parent="Gui" instance=ExtResource("8_kek77")]
+visible = false
 
 [node name="Canvas" type="Node2D" parent="."]
 unique_name_in_owner = true

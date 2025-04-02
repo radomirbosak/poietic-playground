@@ -4,8 +4,6 @@ signal place_object(Vector2, String)
 
 @onready var item_grid: GridContainer = %ItemGrid
 
-var callout_position: Vector2 = Vector2()
-
 class ObjectPaletteItem extends TextureButton:
 	var pictogram: Pictogram
 
@@ -19,7 +17,7 @@ class ObjectPaletteItem extends TextureButton:
 func _ready():
 	update_items()
 	# call_deferred("update_items")
-	_child = $MarginContainer
+	# _child = $MarginContainer
 
 func update_items():
 	item_grid = %ItemGrid

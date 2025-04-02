@@ -56,6 +56,28 @@ class HitTarget:
 		self.object = object
 		self.index = index
 
+func selection_bounding_boxes() -> Array[Rect2]:
+	var result: Array[Rect2] = []
+	for id in self.selection.get_ids():
+		var obj: DiagramObject = diagram_objects.get(id)
+		if not obj:
+			continue
+		result.append(obj.bounding_box())
+
+	return result
+
+func selection_bounding_box() -> Rect2:
+	var boxes = selection_bounding_boxes()
+	if boxes.is_empty():
+		return Rect2()
+	var result = boxes[0]
+	for box in boxes:
+		result = result.merge(box)
+	return result
+
+func selection_convex_hull() -> PackedVector2Array:
+	return DiagramGeometry.convex_hull_from_rects(selection_bounding_boxes())
+
 func all_diagram_object_ids() -> PackedInt64Array:
 	var result = PackedInt64Array(diagram_objects.keys())
 	return result
@@ -111,7 +133,19 @@ func _process(_delta):
 	if _design_sync_needed:
 		sync_design()
 
+func _draw():
+	if not selection.is_empty():
+		var points = selection_convex_hull()
+		var polygons = Geometry2D.offset_polygon(points, 10, Geometry2D.JOIN_ROUND)
+		for polygon in polygons:
+			polygon.append(polygon[0])
+			draw_polyline(polygon, DiagramCanvas.default_selection_color, 3.0)
+			var color = DiagramCanvas.default_selection_color
+			color.a = 0.1
+			draw_polygon(polygon, [color])
+
 func _on_selection_changed(objects):
+	queue_redraw()
 	sync_selection()
 
 func queue_sync():
@@ -316,7 +350,8 @@ func sync_selection():
 	var selected_ids = selection.get_ids()
 	for child in self.get_children():
 		if child is DiagramObject:
-			child.is_selected = selected_ids.has(child.object_id)	
+			child.is_selected = selected_ids.has(child.object_id)
+	queue_redraw()
 
 func create_node_from(object: PoieticObject) -> DiagramNode:
 	var node: DiagramNode = DiagramNode.new()
@@ -369,6 +404,8 @@ func begin_drag_selection(_mouse_position: Vector2):
 func drag_selection(move_delta: Vector2):
 	for node in get_selected_nodes():
 		node.position += move_delta
+	queue_redraw()
+
 
 func finish_drag_selection(_final_position: Vector2) -> void:
 	var nodes_to_move: Array[DiagramNode] = get_selected_nodes()
@@ -382,6 +419,7 @@ func finish_drag_selection(_final_position: Vector2) -> void:
 		var object = Global.design.get_object(node.object_id)
 		trans.set_attribute(node.object_id, "position", node.position)
 	Global.design.accept(trans)
+	queue_redraw()
 
 func begin_drag_handle(handle: Handle, _mouse_position: Vector2):
 	pass # Nothing to do for now
@@ -441,3 +479,9 @@ func remove_midpoints_in_selection():
 		trans.set_attribute(connector.object_id, "midpoints", null)
 
 	Global.design.accept(trans)
+
+func open_formula_prompt(node_id: int):
+	var node = get_diagram_node(node_id)
+	assert(node, "Invalid node ID for formula prompt")
+	
+	prints("Open formula prompt for ", node)

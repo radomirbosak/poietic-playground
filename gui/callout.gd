@@ -15,11 +15,11 @@ const padding: float = 10
 @export var border_width: float = 2.0
 @export var border_color: Color = Color.WHITE
 
-var _child: Control = null
+var callout_position: Vector2 = Vector2()
+
 
 func _ready():
 	if get_child_count() > 0:
-		_child = get_child(0)
 		_update_size()
 		queue_sort()
 
@@ -28,25 +28,28 @@ func _notification(notif):
 		_update_size()
 
 func _update_size():
-	if _child:
-		var child_size = _child.get_combined_minimum_size()
-		var new_size = Vector2(child_size.x + padding * 2, child_size.y + padding * 2)
+	if get_child_count() == 0:
+		return
+	var child = get_child(0)
 
-		match point_side:
-			PointSide.TOP, PointSide.BOTTOM:
-				new_size.y += triangle_height
-			PointSide.LEFT, PointSide.RIGHT:
-				new_size.x += triangle_height
+	var child_size = child.get_combined_minimum_size()
+	var new_size = Vector2(child_size.x + padding * 2, child_size.y + padding * 2)
 
-		custom_minimum_size = new_size
-		var child_rect = Rect2(Vector2(padding, padding), child_size)
-		if point_side == PointSide.TOP:
-			child_rect.position.y += triangle_height
-		elif point_side == PointSide.LEFT:
-			child_rect.position.x += triangle_height
+	match point_side:
+		PointSide.TOP, PointSide.BOTTOM:
+			new_size.y += triangle_height
+		PointSide.LEFT, PointSide.RIGHT:
+			new_size.x += triangle_height
 
-		fit_child_in_rect(_child, child_rect)
-		queue_redraw()
+	custom_minimum_size = new_size
+	var child_rect = Rect2(Vector2(padding, padding), child_size)
+	if point_side == PointSide.TOP:
+		child_rect.position.y += triangle_height
+	elif point_side == PointSide.LEFT:
+		child_rect.position.x += triangle_height
+
+	fit_child_in_rect(child, child_rect)
+	queue_redraw()
 		
 func _draw():
 	var rect = Rect2(Vector2.ZERO, self.size)
@@ -116,10 +119,7 @@ func _draw():
 			]
 	draw_polyline(bubble, border_color, border_width)
 
-func set_callout_point(target_position: Vector2):
-	assert(self.is_inside_tree())
-
-	self.callout_position = target_position
+func recommended_point_side(target_position: Vector2) -> PointSide:
 	var viewport_size: Vector2 = get_viewport_rect().size
 	var grid_x: int = int((target_position.x / viewport_size.x) * 3)
 	var grid_y: int = int((target_position.y / viewport_size.y) * 3)
@@ -138,10 +138,19 @@ func set_callout_point(target_position: Vector2):
 	else:
 		point_side = PointSide.TOP  # Default
 
-	# HACK: Force size recalculation. This is necessary in Godot 4.3. 
-	# Not sure what is going on here, but when we assign to position then the size
-	# of the control is recalculated.
+	return point_side
+	
+func set_position_with_target(target_position: Vector2):
+	assert(self.is_inside_tree())
+
+	self.callout_position = target_position
+
+	# HACK: Force size recalculation. This is necessary in Godot 4.4. 
+	# Not sure what is going on here, but when we assign to the `position` then
+	# the size of the control is recalculated.
+	prints("BEFORE: ", self.size, self.get_minimum_size())
 	position = position
+	prints("AFTER: ", self.size, self.get_minimum_size())
 
 	match point_side:
 		PointSide.TOP:

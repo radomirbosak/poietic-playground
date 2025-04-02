@@ -20,7 +20,9 @@ const default_window_size = Vector2(1280, 720)
 @onready var player: PoieticPlayer = $SimulationPlayer
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
 @onready var control_bar: ControlBar = $Gui/ControlBar
+
 @onready var label_editor: CanvasLabelEditor = $Gui/LabelEditor
+@onready var context_menu: ContextMenu = $Gui/ContextMenu
 
 func _init():
 	pass
@@ -29,6 +31,9 @@ func _ready():
 	$FileDialog.use_native_dialog = true
 	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
 	label_editor.hide()
+	label_editor.set_process(false)
+	context_menu.hide()
+	context_menu.set_process(false)
 		
 	load_settings()
 	get_viewport().connect("size_changed", _on_window_resized)
@@ -355,7 +360,7 @@ func select_all():
 # -------------------------------------------------------------------------
 
 func auto_connect_parameters():
-	Global.design.auto_connect_parameters()
+	Global.design.auto_connect_parameters([])
 
 func remove_midpoints():
 	canvas.remove_midpoints_in_selection()

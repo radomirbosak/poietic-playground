@@ -29,7 +29,7 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 			else:
 				if canvas.selection.is_empty() or !canvas.selection.contains(object.object_id):
 					canvas.selection.replace(PackedInt64Array([object.object_id]))
-				elif not is_context_menu_open():
+				else:
 					open_context_menu(pointer_position)
 			last_pointer_position = pointer_position
 			state = SelectToolState.OBJECT_HIT
@@ -90,12 +90,22 @@ func input_ended(_event: InputEvent, mouse_position: Vector2) -> bool:
 # Context Menu
 # ------------------------------------------------------------
 func open_context_menu(pointer_position: Vector2):
-	var menu: PanelContainer = preload("res://gui/context_menu.tscn").instantiate()
-	menu.position = pointer_position
-	Global.set_modal(menu)
+	# var menu: PanelContainer = preload("res://gui/context_menu.tscn").instantiate()
+	var menu: ContextMenu = Global.get_context_menu()
+	var size = menu.get_rect().size
+	
+	var box = canvas.selection_bounding_box()
+	
+	menu.global_position = Vector2(box.get_center().x - size.x/2, box.end.y)
+	menu.update_for_selection(canvas.selection)
+	prints("--- open context at: ", pointer_position)
+	menu.set_process(true)
+	menu.show()
 
 func close_context_menu():
-	Global.close_modal(Global.modal_node)
+	var menu: ContextMenu = Global.get_context_menu()
+	menu.set_process(false)
+	menu.hide()
 
 func is_context_menu_open() -> bool:
 	return Global.modal_node != null

@@ -197,3 +197,14 @@ func merge_multiple_polygons(polygons: Array[PackedVector2Array]) -> Array[Packe
 		merged = new_merged
 	
 	return merged
+
+static func convex_hull_from_rects(rects: Array[Rect2]) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	
+	for rect in rects:
+		points.append(rect.position)
+		points.append(rect.position + Vector2(rect.size.x, 0))
+		points.append(rect.position + rect.size)
+		points.append(rect.position + Vector2(0, rect.size.y))
+	
+	return Geometry2D.convex_hull(points)

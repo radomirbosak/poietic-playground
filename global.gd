@@ -89,6 +89,9 @@ func get_gui() -> Node:
 func get_label_editor() -> CanvasLabelEditor:
 	return get_node("/root/Main/Gui/LabelEditor")
 
+func get_context_menu() -> ContextMenu:
+	return get_node("/root/Main/Gui/ContextMenu")
+
 func set_modal(node: Node):
 	if modal_node:
 		push_warning("Setting modal while having one already set")
@@ -111,17 +114,6 @@ func change_tool(tool: CanvasTool) -> void:
 	current_tool = tool
 	current_tool.tool_selected()
 	tool_changed.emit(tool)
-
-func open_object_context_menu(object: Variant, position: Vector2):
-	var menu = CallOut.new()
-	var box = HBoxContainer.new()
-	menu.add_child(box)
-	var b1 = Button.new()
-	b1.text = "one"
-	box.add_child(b1)
-	menu.set_callout_point(position)
-	# canvas.add_child(palette)
-	Global.set_modal(menu)
 
 func _notification(what):
 	if what == Node.NOTIFICATION_WM_CLOSE_REQUEST:

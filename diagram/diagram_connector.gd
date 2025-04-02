@@ -54,17 +54,26 @@ static func create_connector(type_name: String, origin_point: Vector2 = Vector2(
 func _process(_delta: float) -> void:
 	assert(origin)
 	assert(target)
-		
-	var new_origin_pos = to_local(origin.global_position)
-	var new_target_pos = to_local(target.global_position)
+	var new_origin_pos = to_local(origin.position)
+	var new_target_pos = to_local(target.position)
 	if new_origin_pos != previous_origin_pos or new_target_pos != previous_target_pos:
-		# TODO: [IMPORTANT] Track position change differently, this gets trigger on rounding errors when changing scale.
 		previous_origin_pos = new_origin_pos
 		previous_target_pos = new_target_pos
 		update_connector()
 
 func get_handles() -> Array[Handle]:
 	return midpoint_handles
+
+func bounding_box() -> Rect2:
+	var min_point := connector.origin_point.min(connector.target_point)
+	var max_point := connector.origin_point.max(connector.target_point)
+	
+	for handle in midpoint_handles:
+		min_point = min_point.min(handle.position)  # Expands the rect to include each point
+		max_point = max_point.max(handle.position)
+	
+	return Rect2(min_point, max_point - min_point)
+
 
 ## Updates the diagram node based on a design object.
 ##

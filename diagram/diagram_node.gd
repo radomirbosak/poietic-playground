@@ -72,6 +72,8 @@ func _ready():
 	self.name_label.visible = canvas.labels_visible
 
 func _draw():
+	return
+	# FIXME: Should we keep drawing the selection like this?
 	if is_selected and selection_highlight_shape:
 		DiagramGeometry.draw_shape(self, selection_highlight_shape, DiagramCanvas.default_selection_color, 2)
 		
@@ -81,6 +83,11 @@ func _process(_delta):
 		children_needs_update = false
 	value_indicator.visible = Global.show_value_indicators
 
+func bounding_box() -> Rect2:
+	var rect = shape.get_rect()
+	rect.position = Vector2(position.x - rect.size.x / 2, position.y - rect.size.y / 2)
+	return rect
+	
 func queue_layout():
 	children_needs_update = true
 
