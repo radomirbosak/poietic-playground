@@ -71,18 +71,16 @@ func input_ended(_event: InputEvent, pointer_position: Vector2):
 
 			var target = canvas.hit_target(pointer_position)
 			if not target:
-				return
+				cancel_drag_connector()
 			elif target.type != DiagramCanvas.HitTargetType.OBJECT:
-				return
+				cancel_drag_connector()
 			elif target.object is DiagramNode:
 				if can_connect(target.object):
 					create_connector(origin, target.object)
 				else:
 					# Do some "poofffffff" animation here
 					pass
-			dragging_connector.free()
-			dragging_connector = null
-			origin = null
+				cancel_drag_connector()
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 
 func create_drag_connector(origin: DiagramNode, pointer_position: Vector2):
@@ -95,6 +93,11 @@ func create_drag_connector(origin: DiagramNode, pointer_position: Vector2):
 	dragging_connector.target_point = canvas.to_local(pointer_position)
 	# TODO: Clip at origin border
 	dragging_connector.origin_point = origin.position
+
+func cancel_drag_connector():
+	dragging_connector.free()
+	dragging_connector = null
+	origin = null
 
 func can_connect(target: DiagramNode) -> bool:
 	if target == origin:

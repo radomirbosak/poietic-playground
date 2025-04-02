@@ -181,6 +181,8 @@ func _unhandled_input(event):
 		redo()
 	elif event.is_action_pressed("select-all"):
 		select_all()
+	elif event.is_action_pressed("delete"):
+		delete_selection()
 		
 	# Diagram
 	elif event.is_action_pressed("auto-connec-parameters"):
@@ -188,10 +190,15 @@ func _unhandled_input(event):
 
 	elif event.is_action_pressed("inspector-toggle"):
 		toggle_inspector()
+
+	elif event.is_action_pressed("edit-formula"):
+		edit_formula()
+	elif event.is_action_pressed("edit-name"):
+		edit_name()
+
+	# Simulation
 	elif event.is_action_pressed("run"):
 		toggle_run()
-	elif event.is_action_pressed("delete"):
-		delete_selection()
 
 	# View
 	elif event.is_action_pressed("zoom-actual"):
@@ -202,6 +209,7 @@ func _unhandled_input(event):
 
 	elif event.is_action_pressed("cancel"):
 		Global.close_modal(Global.modal_node)
+
 
 func update_status_text():
 	var stats = Global.design.debug_stats
@@ -367,6 +375,33 @@ func auto_connect_parameters():
 
 func remove_midpoints():
 	canvas.remove_midpoints_in_selection()
+
+func edit_formula():
+	# TODO: Beep
+	var ids = Global.canvas.selection.get_ids()
+	if len(ids) != 1:
+		return
+	var object = Global.design.get_object(ids[0])
+	if not object:
+		return
+	if not object.has_trait("Formula"):
+		return
+
+	Global.canvas.open_formula_prompt(ids[0])
+
+func edit_name():
+	# TODO: Beep
+	var ids = Global.canvas.selection.get_ids()
+	if len(ids) != 1:
+		return
+	var object = Global.design.get_object(ids[0])
+	if not object:
+		return
+	if not object.has_trait("Name"):
+		return
+
+	var node: DiagramNode = Global.canvas.get_diagram_node(ids[0])
+	canvas.open_name_editor(node)
 
 # View Menu
 # -------------------------------------------------------------------------
