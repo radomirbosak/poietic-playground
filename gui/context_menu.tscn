@@ -41,6 +41,7 @@ stretch_mode = 5
 visible = false
 layout_mode = 2
 text = "Repair"
+flat = true
 
 [node name="VSeparator" type="VSeparator" parent="MarginContainer/ItemsContainer"]
 layout_mode = 2
@@ -50,6 +51,7 @@ layout_mode = 2
 tooltip_text = "Delete"
 text = "Delete"
 icon = ExtResource("1_t6t3t")
+flat = true
 alignment = 0
 expand_icon = true
 

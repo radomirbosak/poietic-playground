@@ -15,12 +15,13 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 	var target: DiagramCanvas.HitTarget = canvas.hit_target(pointer_position)
 	if not target:
 		Global.get_label_editor().cancel()
+		Global.get_formula_prompt().close()
 		close_context_menu()
 		canvas.selection.clear()
 		state = SelectToolState.OBJECT_SELECT
 		return true
 
-	Global.get_label_editor().cancel()
+	canvas.cancel_name_editor()
 	match target.type:
 		DiagramCanvas.HitTargetType.OBJECT:
 			var object: DiagramObject = target.object as DiagramObject
@@ -40,17 +41,14 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 			# TODO: Move this to Canvas
 			var node: DiagramNode = target.object as DiagramNode
 			canvas.selection.replace(PackedInt64Array([node.object_id]))
-			var center = Vector2(node.global_position.x, node.name_label.global_position.y)
-			node.begin_label_edit()
-			Global.get_label_editor().open(node.object_id, node.object_name, center)
-			
+			canvas.open_name_editor(node)
 	return true
 
 func input_moved(event: InputEvent, move_delta: Vector2) -> bool:
 	var mouse_position = event.global_position
 	last_pointer_position += move_delta
 	close_context_menu()
-	Global.get_label_editor().cancel()
+	canvas.cancel_name_editor()
 	match state:
 		SelectToolState.OBJECT_SELECT:
 			pass
@@ -115,7 +113,7 @@ func is_context_menu_open() -> bool:
 func _on_label_edit_submitted(object_id: int, new_text: String):
 	Global.get_label_editor().hide()
 
-	assert(object_id != -1, "Editing cancelled with placeholder object ID (-1)")
+	assert(object_id != -1, "Editing submitted with placeholder object ID (-1)")
 		
 	var object = canvas.get_diagram_node(object_id)
 	assert(object, "Editing finished with unknown node ID")
@@ -139,3 +137,26 @@ func _on_label_edit_cancelled(object_id: int):
 	assert(object, "Editing cancelled with unknown node ID")
 
 	object.finish_label_edit()
+
+# Formula Editor
+# ------------------------------------------------------------
+func _on_formula_edit_submitted(object_id: int, new_text: String):
+	Global.get_formula_prompt().close()
+
+	assert(object_id != -1, "Formula submitted with placeholder object ID (-1)")
+
+	var object: PoieticObject = Global.design.get_object(object_id)
+	assert(object, "Formula submitted with unknown node ID")
+
+	if object.get_attribute("formula") == new_text:
+		print("Formula not changed")
+		return
+
+	var trans = Global.design.new_transaction()
+	trans.set_attribute(object_id, "formula", new_text)
+	Global.design.accept(trans)
+
+func _on_formula_edit_cancelled(object_id: int):
+	assert(object_id != -1, "Editing cancelled with placeholder object ID (-1)")
+	print("Cancelled")
+	Global.get_formula_prompt().close()

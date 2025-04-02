@@ -62,6 +62,10 @@ func update_for_selection(selection: PoieticSelection):
 		child.visible = flag
 	self.reset_size()
 
+func close():
+	self.set_process(false)
+	self.hide()
+
 func _on_name_button_pressed():
 	pass
 
@@ -72,17 +76,20 @@ func _on_formula_button_pressed():
 	if len(ids) != 1:
 		push_warning("Requested formula edit for multiple objects, using first one in the selection")
 
+	self.close()
 	Global.canvas.open_formula_prompt(ids[0])
 
-
 func _on_auto_button_pressed():
+	self.close()
 	Global.design.auto_connect_parameters(Global.canvas.selection.get_ids())
 
 
 func _on_delete_button_pressed():
+	self.close()
 	Global.canvas.delete_selection()
 	Global.close_modal(Global.modal_node)
 
 
 func _on_reset_button_pressed():
+	self.close()
 	Global.canvas.remove_midpoints_in_selection()

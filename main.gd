@@ -42,8 +42,11 @@ func _ready():
 	
 	Global.initialize()
 	
+	# FIXME: Move methods to canvas
 	%LabelEditor.editing_submitted.connect(Global.selection_tool._on_label_edit_submitted)
 	%LabelEditor.editing_cancelled.connect(Global.selection_tool._on_label_edit_cancelled)
+	%FormulaPrompt.formula_editing_submitted.connect(Global.selection_tool._on_formula_edit_submitted)
+	%FormulaPrompt.formula_editing_cancelled.connect(Global.selection_tool._on_formula_edit_cancelled)
 
 	# Initialize and connect canvas
 	Global.canvas = canvas

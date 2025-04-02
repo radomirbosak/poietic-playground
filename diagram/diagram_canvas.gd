@@ -480,8 +480,20 @@ func remove_midpoints_in_selection():
 
 	Global.design.accept(trans)
 
+func open_name_editor(node: DiagramNode):
+		var center = Vector2(node.global_position.x, node.name_label.global_position.y)
+		node.begin_label_edit()
+		Global.get_label_editor().open(node.object_id, node.object_name, center)
+
+func cancel_name_editor():
+	Global.get_label_editor().cancel()
+
 func open_formula_prompt(node_id: int):
 	var node = get_diagram_node(node_id)
+	var center = Vector2(node.global_position.x, node.name_label.global_position.y)
 	assert(node, "Invalid node ID for formula prompt")
+	var object: PoieticObject = Global.design.get_object(node_id)
+	var formula = object.get_attribute("formula")
+	Global.get_formula_prompt().open(node_id, formula, center)
 	
 	prints("Open formula prompt for ", node)

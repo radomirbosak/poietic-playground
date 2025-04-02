@@ -89,6 +89,9 @@ func get_gui() -> Node:
 func get_label_editor() -> CanvasLabelEditor:
 	return get_node("/root/Main/Gui/LabelEditor")
 
+func get_formula_prompt() -> FormulaPrompt:
+	return get_node("/root/Main/Gui/FormulaPrompt")
+
 func get_context_menu() -> ContextMenu:
 	return get_node("/root/Main/Gui/ContextMenu")
 

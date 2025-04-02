@@ -86,6 +86,7 @@ metadata/_custom_type_script = "uid://ca8frkyxoem7n"
 visible = false
 
 [node name="FormulaPrompt" parent="Gui" instance=ExtResource("8_kek77")]
+unique_name_in_owner = true
 visible = false
 
 [node name="Canvas" type="Node2D" parent="."]
