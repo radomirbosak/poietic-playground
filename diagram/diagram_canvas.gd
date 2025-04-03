@@ -479,7 +479,7 @@ func remove_midpoints_in_selection():
 
 	Global.design.accept(trans)
 
-func get_formula_prompt_position(node_id: int) -> Vector2:
+func default_prompt_position(node_id: int) -> Vector2:
 	var node = get_diagram_node(node_id)
 	var center = Vector2(node.global_position.x, node.name_label.global_position.y)
 	return center
@@ -516,4 +516,24 @@ func _on_formula_edit_submitted(object_id: int, new_text: String):
 	Global.design.accept(trans)
 
 func _on_formula_edit_cancelled(object_id: int):
+	pass
+
+# Attribute Editor
+# ------------------------------------------------------------
+func _on_attribute_edit_submitted(object_id: int, attribute: String, new_text: String):
+	var object: PoieticObject = Global.design.get_object(object_id)
+	var current_value = object.get_attribute(attribute)
+
+	if current_value and str(current_value) == new_text:
+		print("Attribute ", attribute, " not changed in ", object_id)
+		return
+
+	var trans = Global.design.new_transaction()
+	if trans.set_numeric_attribute_from_string(object_id, attribute, new_text):
+		Global.design.accept(trans)
+	else:
+		push_error("Numeric attribute '",attribute,"' was not set: '", new_text, "'")
+		Global.design.discard(trans)
+
+func _on_attribute_edit_cancelled(object_id: int):
 	pass

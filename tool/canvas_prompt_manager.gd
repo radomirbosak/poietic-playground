@@ -7,7 +7,8 @@
 class_name CanvasPromptManager extends Node
 
 @onready var formula_prompt: FormulaPrompt = $FormulaPrompt
-@onready var label_editor: CanvasLabelEditor = $LabelEditor
+@onready var label_prompt: CanvasLabelPrompt = $LabelPrompt
+@onready var attribute_prompt: AttributePrompt = $AttributePrompt
 @onready var context_menu: ContextMenu = $ContextMenu
 
 var current_prompt: Control = null
@@ -16,18 +17,20 @@ var canvas: DiagramCanvas = null
 func initialize(canvas: DiagramCanvas):
 	self.canvas = canvas
 	formula_prompt.initialize(canvas, self)
-	label_editor.initialize(canvas, self)
+	label_prompt.initialize(canvas, self)
 	context_menu.initialize(canvas, self)
+	attribute_prompt.initialize(canvas, self)
 
-	label_editor.editing_submitted.connect(canvas._on_label_edit_submitted)
-	label_editor.editing_cancelled.connect(canvas._on_label_edit_cancelled)
+	label_prompt.editing_submitted.connect(canvas._on_label_edit_submitted)
+	label_prompt.editing_cancelled.connect(canvas._on_label_edit_cancelled)
 	formula_prompt.formula_editing_submitted.connect(canvas._on_formula_edit_submitted)
 	formula_prompt.formula_editing_cancelled.connect(canvas._on_formula_edit_cancelled)
+	attribute_prompt.attribute_editing_submitted.connect(canvas._on_attribute_edit_submitted)
 
 func open_label_editor(object_id: int, text: String, center: Vector2):
 	close()
-	current_prompt = label_editor
-	label_editor.open(object_id, text, center)
+	current_prompt = label_prompt
+	label_prompt.open(object_id, text, center)
 
 func open_name_editor_for(object_id: int):
 	var node = canvas.get_diagram_node(object_id)
@@ -43,10 +46,28 @@ func open_formula_editor(object_id: int, text: String, center: Vector2):
 	formula_prompt.open(object_id, text, center)
 
 func open_formula_editor_for(object_id: int):
-	var position = canvas.get_formula_prompt_position(object_id)
+	var position = canvas.default_prompt_position(object_id)
 	var object: PoieticObject = Global.design.get_object(object_id)
 	var formula = object.get_attribute("formula")
 	open_formula_editor(object_id, formula, position)
+
+func open_attribute_editor(object_id: int, text: String, center: Vector2, attribute: String):
+	close()
+	current_prompt = attribute_prompt
+	
+	attribute_prompt.set_label(attribute)
+	attribute_prompt.open(object_id, text, center, attribute)
+
+func open_attribute_editor_for(object_id: int, attribute: String):
+	var position = canvas.default_prompt_position(object_id)
+	var object: PoieticObject = Global.design.get_object(object_id)
+	var value = object.get_attribute(attribute)
+	var string_value: String
+	if value:
+		string_value = str(value)
+	else:
+		string_value = ""
+	open_attribute_editor(object_id, string_value, position, attribute)
 
 func open_context_menu(selection: PoieticSelection, desired_position: Vector2):
 	# var menu: PanelContainer = preload("res://gui/context_menu.tscn").instantiate()

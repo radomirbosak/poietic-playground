@@ -34,6 +34,8 @@ class ContextItem:
 static var context_items: Array[ContextItem] = [
 	ContextItem.new("ResetHandles", ["DiagramConnector"], true),
 	ContextItem.new("EditFormula", ["Formula"], false),
+	ContextItem.new("EditDelay", ["Delay"], false),
+	ContextItem.new("EditSmoothWindow", ["Smooth"], false),
 	ContextItem.new("AutoRepair", ["Formula"], true, true),
 #	ContextItem.new("Delete", [], true),
 ]
@@ -96,3 +98,24 @@ func _on_reset_button_pressed():
 	self.close()
 	# FIXME: [REFACTORING] Move to change controller
 	canvas.remove_midpoints_in_selection()
+
+
+func _on_edit_delay_pressed():
+	var ids = canvas.selection.get_ids()
+	assert(len(ids)> 0)
+	if len(ids) != 1:
+		push_warning("Requested value edit for multiple objects, using first one in the selection")
+
+	self.close()
+
+	prompt_manager.open_attribute_editor_for(ids[0], "delay_duration")
+
+func _on_edit_smooth_window_pressed():
+	var ids = canvas.selection.get_ids()
+	assert(len(ids)> 0)
+	if len(ids) != 1:
+		push_warning("Requested value edit for multiple objects, using first one in the selection")
+
+	self.close()
+
+	prompt_manager.open_attribute_editor_for(ids[0], "window_time")

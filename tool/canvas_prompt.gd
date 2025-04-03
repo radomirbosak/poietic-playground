@@ -8,6 +8,7 @@ class_name CanvasPrompt extends Control
 
 @export var canvas: DiagramCanvas
 @export var prompt_manager: CanvasPromptManager
+@export var is_active: bool
 
 func initialize(canvas: DiagramCanvas, manager: CanvasPromptManager):
 	self.canvas = canvas

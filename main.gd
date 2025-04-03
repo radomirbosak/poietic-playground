@@ -184,7 +184,7 @@ func _unhandled_input(event):
 		toggle_inspector()
 
 	elif event.is_action_pressed("edit-formula"):
-		edit_formula()
+		edit_primary_attribute()
 	elif event.is_action_pressed("edit-name"):
 		edit_name()
 
@@ -369,18 +369,21 @@ func auto_connect_parameters():
 func remove_midpoints():
 	canvas.remove_midpoints_in_selection()
 
-func edit_formula():
+func edit_primary_attribute():
 	# TODO: Beep
 	var ids = canvas.selection.get_ids()
 	if len(ids) != 1:
 		return
 	var object = Global.design.get_object(ids[0])
+	
 	if not object:
 		return
-	if not object.has_trait("Formula"):
-		return
-
-	prompt_manager.open_formula_editor_for(ids[0])
+	elif object.has_trait("Formula"):
+		prompt_manager.open_formula_editor_for(ids[0])
+	elif object.has_trait("Delay"):
+		prompt_manager.open_attribute_editor_for(ids[0], "delay_duration")
+	elif object.has_trait("Smooth"):
+		prompt_manager.open_attribute_editor_for(ids[0], "window_time")
 
 func edit_name():
 	# TODO: Beep
@@ -446,7 +449,8 @@ func debug_dump():
 			print("    edge: ", object.origin, " -> ", object.target)
 		for attr in object.get_attribute_keys():
 			var value = object.get_attribute(attr)
-			print("    ", attr, " = ", value)
+			if value != null:
+				print("    ", attr, " = ", value)
 	prints("=== DEBUG DUMP END ===")
 
 func _on_file_dialog_files_selected(paths):

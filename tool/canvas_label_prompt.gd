@@ -1,4 +1,4 @@
-class_name CanvasLabelEditor extends LineEdit
+class_name CanvasLabelPrompt extends LineEdit
 # FIXME: [REFACTORING] Convert this to CanvasPrompt type
 
 signal editing_submitted(object_id: int, new_text: String)
@@ -46,7 +46,7 @@ func close():
 		return
 
 	var node = canvas.get_diagram_node(edited_object_id)
-	node.begin_label_edit()
+	node.finish_label_edit()
 
 	set_process(false)
 	editing_cancelled.emit(edited_object_id)
