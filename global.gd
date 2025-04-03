@@ -1,7 +1,6 @@
 extends Node
 
 # View Preferences
-
 var show_value_indicators: bool = true
 
 # Canvas Tools
@@ -9,12 +8,9 @@ var selection_tool = SelectionTool.new()
 var place_tool = PlaceTool.new()
 var connect_tool = ConnectTool.new()
 
-# Poietic: Data
-var metamodel: PoieticMetamodel
-var result: PoieticResult
-
-# Poietic: Controllers/Managers/Functioning components
+# Poietic Backend
 var design: PoieticDesignController
+var result: PoieticResult
 var player: PoieticPlayer
 
 # Application State
@@ -27,16 +23,21 @@ signal tool_changed(tool: CanvasTool)
 static var _all_pictograms: Dictionary[String,Pictogram] = {}
 static var default_pictogram: Pictogram
 
-func initialize():
+func initialize(design: PoieticDesignController, player: PoieticPlayer):
+	# TODO: Refactor
 	print("Initializing globals ...")
+
+	self.design = design
+	self.player = player
 
 	InspectorTraitPanel._initialize_panels()
 	self._load_pictograms()
 
-	metamodel = PoieticMetamodel.new()
-	design = PoieticDesignController.new()
+func initialize_tools(canvas: DiagramCanvas, prompt_manager: CanvasPromptManager):
+	selection_tool.initialize(canvas, self.design, prompt_manager)
+	place_tool.initialize(canvas, self.design, prompt_manager)
+	connect_tool.initialize(canvas, self.design, prompt_manager)
 	
-	print("Done initializing globals.")
 
 static func _load_pictograms():
 	# TODO: Adjust the scales based on the rules for the pictogram sizes (not yet defined)
@@ -78,7 +79,7 @@ func get_pictogram(name: String) -> Pictogram:
 
 func get_placeable_pictograms() -> Array[Pictogram]:
 	var result: Array[Pictogram]
-	for name in Global.metamodel.get_type_list_with_trait("DiagramNode"):
+	for name in Global.design.metamodel.get_type_list_with_trait("DiagramNode"):
 		result.append(get_pictogram(name))
 	return result
 

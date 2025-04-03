@@ -13,15 +13,13 @@ func tool_name() -> String:
 	
 func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 	var target: DiagramCanvas.HitTarget = canvas.hit_target(pointer_position)
+	# TODO: Do not close formula editor
+	prompt_manager.close()
 	if not target:
-		Global.get_label_editor().cancel()
-		Global.get_formula_prompt().close()
-		close_context_menu()
 		canvas.selection.clear()
 		state = SelectToolState.OBJECT_SELECT
 		return true
 
-	canvas.cancel_name_editor()
 	match target.type:
 		DiagramCanvas.HitTargetType.OBJECT:
 			var object: DiagramObject = target.object as DiagramObject
@@ -31,7 +29,11 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 				if canvas.selection.is_empty() or !canvas.selection.contains(object.object_id):
 					canvas.selection.replace(PackedInt64Array([object.object_id]))
 				else:
-					open_context_menu(pointer_position)
+					# FIXME: [REFACTORING] Make this DesignCanvas.get_context_menu_position(click_position)
+					var box = canvas.selection_bounding_box()
+					var position = 	Vector2(box.get_center().x, box.end.y)
+					prompt_manager.open_context_menu(canvas.selection, position)
+
 			last_pointer_position = pointer_position
 			state = SelectToolState.OBJECT_HIT
 		DiagramCanvas.HitTargetType.HANDLE:
@@ -41,14 +43,14 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 			# TODO: Move this to Canvas
 			var node: DiagramNode = target.object as DiagramNode
 			canvas.selection.replace(PackedInt64Array([node.object_id]))
-			canvas.open_name_editor(node)
+			prompt_manager.open_name_editor_for(node.object_id)
 	return true
 
 func input_moved(event: InputEvent, move_delta: Vector2) -> bool:
 	var mouse_position = event.global_position
 	last_pointer_position += move_delta
-	close_context_menu()
-	canvas.cancel_name_editor()
+	prompt_manager.close()
+
 	match state:
 		SelectToolState.OBJECT_SELECT:
 			pass
@@ -84,79 +86,3 @@ func input_ended(_event: InputEvent, mouse_position: Vector2) -> bool:
 
 	state = SelectToolState.EMPTY
 	return true
-
-# Context Menu
-# ------------------------------------------------------------
-func open_context_menu(pointer_position: Vector2):
-	# var menu: PanelContainer = preload("res://gui/context_menu.tscn").instantiate()
-	var menu: ContextMenu = Global.get_context_menu()
-	var size = menu.get_rect().size
-	
-	var box = canvas.selection_bounding_box()
-	
-	menu.global_position = Vector2(box.get_center().x - size.x/2, box.end.y)
-	menu.update_for_selection(canvas.selection)
-	prints("--- open context at: ", pointer_position)
-	menu.set_process(true)
-	menu.show()
-
-func close_context_menu():
-	var menu: ContextMenu = Global.get_context_menu()
-	menu.set_process(false)
-	menu.hide()
-
-func is_context_menu_open() -> bool:
-	return Global.modal_node != null
-
-# Label Editor
-# ------------------------------------------------------------
-func _on_label_edit_submitted(object_id: int, new_text: String):
-	Global.get_label_editor().hide()
-
-	assert(object_id != -1, "Editing submitted with placeholder object ID (-1)")
-		
-	var object = canvas.get_diagram_node(object_id)
-	assert(object, "Editing finished with unknown node ID")
-	
-	object.finish_label_edit()
-
-	if object.object_name == new_text:
-		print("Name not changed")
-		return
-
-	var trans = Global.design.new_transaction()
-	trans.set_attribute(object_id, "name", new_text)
-	Global.design.accept(trans)
-
-func _on_label_edit_cancelled(object_id: int):
-	assert(object_id != -1, "Editing cancelled with placeholder object ID (-1)")
-	print("Cancelled")
-	Global.get_label_editor().hide()
-
-	var object = canvas.get_diagram_node(object_id)
-	assert(object, "Editing cancelled with unknown node ID")
-
-	object.finish_label_edit()
-
-# Formula Editor
-# ------------------------------------------------------------
-func _on_formula_edit_submitted(object_id: int, new_text: String):
-	Global.get_formula_prompt().close()
-
-	assert(object_id != -1, "Formula submitted with placeholder object ID (-1)")
-
-	var object: PoieticObject = Global.design.get_object(object_id)
-	assert(object, "Formula submitted with unknown node ID")
-
-	if object.get_attribute("formula") == new_text:
-		print("Formula not changed")
-		return
-
-	var trans = Global.design.new_transaction()
-	trans.set_attribute(object_id, "formula", new_text)
-	Global.design.accept(trans)
-
-func _on_formula_edit_cancelled(object_id: int):
-	assert(object_id != -1, "Editing cancelled with placeholder object ID (-1)")
-	print("Cancelled")
-	Global.get_formula_prompt().close()

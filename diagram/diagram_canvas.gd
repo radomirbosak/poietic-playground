@@ -179,7 +179,6 @@ func clear_indicators():
 ##
 func sync_indicators(result: PoieticResult):
 	for id in Global.design.get_diagram_nodes():
-		var object = Global.design.get_object(id)
 		var diagram_node = get_diagram_node(id)
 		# We might get null node when sync is queued and we do not have a canvas node yet
 		if diagram_node:
@@ -480,20 +479,41 @@ func remove_midpoints_in_selection():
 
 	Global.design.accept(trans)
 
-func open_name_editor(node: DiagramNode):
-		var center = Vector2(node.global_position.x, node.name_label.global_position.y)
-		node.begin_label_edit()
-		Global.get_label_editor().open(node.object_id, node.object_name, center)
-
-func cancel_name_editor():
-	Global.get_label_editor().cancel()
-
-func open_formula_prompt(node_id: int):
+func get_formula_prompt_position(node_id: int) -> Vector2:
 	var node = get_diagram_node(node_id)
 	var center = Vector2(node.global_position.x, node.name_label.global_position.y)
-	assert(node, "Invalid node ID for formula prompt")
-	var object: PoieticObject = Global.design.get_object(node_id)
-	var formula = object.get_attribute("formula")
-	Global.get_formula_prompt().open(node_id, formula, center)
+	return center
 	
-	prints("Open formula prompt for ", node)
+# Label Editor
+# ------------------------------------------------------------
+func _on_label_edit_submitted(object_id: int, new_text: String):
+	var object = get_diagram_node(object_id)
+	object.finish_label_edit()
+
+	if object.object_name == new_text:
+		print("Name not changed in ", object_id)
+		return
+
+	var trans = Global.design.new_transaction()
+	trans.set_attribute(object_id, "name", new_text)
+	Global.design.accept(trans)
+
+func _on_label_edit_cancelled(object_id: int):
+	var object = get_diagram_node(object_id)
+	object.finish_label_edit()
+
+# Formula Editor
+# ------------------------------------------------------------
+func _on_formula_edit_submitted(object_id: int, new_text: String):
+	var object: PoieticObject = Global.design.get_object(object_id)
+
+	if object.get_attribute("formula") == new_text:
+		print("Formula not changed in ", object_id)
+		return
+
+	var trans = Global.design.new_transaction()
+	trans.set_attribute(object_id, "formula", new_text)
+	Global.design.accept(trans)
+
+func _on_formula_edit_cancelled(object_id: int):
+	pass

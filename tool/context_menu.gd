@@ -1,4 +1,4 @@
-class_name ContextMenu extends PanelContainer
+class_name ContextMenu extends CanvasPrompt
 
 # signal context_menu_item_selected(item: int)
 # signal context_menu_cancelled()
@@ -38,13 +38,7 @@ static var context_items: Array[ContextItem] = [
 #	ContextItem.new("Delete", [], true),
 ]
 
-func _ready():
-	pass
-
-func _process(delta):
-	pass
-
-func update_for_selection(selection: PoieticSelection):
+func open(selection: PoieticSelection, desired_position: Vector2):
 	var traits = Global.design.get_shared_traits(selection)
 	var count = selection.count()
 	var has_issues = false
@@ -60,7 +54,12 @@ func update_for_selection(selection: PoieticSelection):
 			continue
 		var flag = item.matches(traits, count > 1, has_issues)
 		child.visible = flag
+
 	self.reset_size()
+
+	self.global_position = Vector2(desired_position.x - get_rect().size.x/2, desired_position.y)
+	self.set_process(true)
+	self.show()
 
 func close():
 	self.set_process(false)
@@ -71,25 +70,29 @@ func _on_name_button_pressed():
 
 func _on_formula_button_pressed():
 	print("Formula pressed")
-	var ids = Global.canvas.selection.get_ids()
+	var ids = canvas.selection.get_ids()
 	assert(len(ids)> 0)
 	if len(ids) != 1:
 		push_warning("Requested formula edit for multiple objects, using first one in the selection")
 
 	self.close()
-	Global.canvas.open_formula_prompt(ids[0])
 
+	prompt_manager.open_formula_editor_for(ids[0])
+	
 func _on_auto_button_pressed():
 	self.close()
-	Global.design.auto_connect_parameters(Global.canvas.selection.get_ids())
+	# FIXME: [REFACTORING] Move to change controller
+	# FIXME: [REFACTORING] Use selection as provided originally (IMPORTANT!)
+	Global.design.auto_connect_parameters(canvas.selection.get_ids())
 
 
 func _on_delete_button_pressed():
 	self.close()
-	Global.canvas.delete_selection()
-	Global.close_modal(Global.modal_node)
+	# FIXME: [REFACTORING] Move to change controller
+	canvas.delete_selection()
 
 
 func _on_reset_button_pressed():
 	self.close()
-	Global.canvas.remove_midpoints_in_selection()
+	# FIXME: [REFACTORING] Move to change controller
+	canvas.remove_midpoints_in_selection()

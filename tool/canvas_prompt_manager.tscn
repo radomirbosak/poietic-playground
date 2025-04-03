@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://d0a2hpaex46gj"]
+
+[ext_resource type="Script" uid="uid://ddhmgh5paca6m" path="res://tool/canvas_prompt_manager.gd" id="1_wilto"]
+[ext_resource type="PackedScene" uid="uid://bnmc02p3i33q2" path="res://tool/formula_prompt.tscn" id="2_5jmky"]
+[ext_resource type="PackedScene" uid="uid://d2n4g00qw1ua" path="res://tool/context_menu.tscn" id="3_sbbhr"]
+[ext_resource type="Script" uid="uid://ca8frkyxoem7n" path="res://tool/canvas_label_editor.gd" id="4_6aihm"]
+
+[node name="CanvasPromptManager" type="Node"]
+script = ExtResource("1_wilto")
+
+[node name="FormulaPrompt" parent="." instance=ExtResource("2_5jmky")]
+visible = false
+offset_right = 372.0
+offset_bottom = 86.0
+
+[node name="ContextMenu" parent="." instance=ExtResource("3_sbbhr")]
+visible = false
+
+[node name="LabelEditor" type="LineEdit" parent="."]
+visible = false
+offset_right = 200.0
+offset_bottom = 58.0
+alignment = 1
+script = ExtResource("4_6aihm")
+metadata/_custom_type_script = "uid://ca8frkyxoem7n"

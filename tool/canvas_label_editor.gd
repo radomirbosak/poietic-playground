@@ -1,4 +1,5 @@
 class_name CanvasLabelEditor extends LineEdit
+# FIXME: [REFACTORING] Convert this to CanvasPrompt type
 
 signal editing_submitted(object_id: int, new_text: String)
 signal editing_cancelled(object_id: int)
@@ -9,14 +10,25 @@ signal editing_cancelled(object_id: int)
 ##
 @export var edited_object_id: int = -1
 
+@export var canvas: DiagramCanvas
+@export var prompt_manager: CanvasPromptManager
+
 var _original_center: Vector2
 var _target_width: float = 0.0
 var _is_active: bool = false
+
+
+func initialize(canvas: DiagramCanvas, manager: CanvasPromptManager):
+	self.canvas = canvas
+	self.prompt_manager = manager
 
 func open(object_id: int, text: String, center: Vector2):
 	assert(object_id != null, "Edited object ID not provided")
 	self.edited_object_id = object_id
 	self.text = text
+	
+	var node = canvas.get_diagram_node(object_id)
+	node.begin_label_edit()
 	
 	_original_center = center
 	_target_width = calculate_editor_width()
@@ -29,9 +41,13 @@ func open(object_id: int, text: String, center: Vector2):
 	select_all()
 	set_process(true)
 
-func cancel():
+func close():
 	if !_is_active:
 		return
+
+	var node = canvas.get_diagram_node(edited_object_id)
+	node.begin_label_edit()
+
 	set_process(false)
 	editing_cancelled.emit(edited_object_id)
 	hide()
@@ -81,10 +97,10 @@ func _on_text_submitted(new_text: String):
 
 func _on_focus_exited():
 	if visible:
-		cancel()
+		close()
 
 func _input(event):
 	if visible and event is InputEventKey:
 		if event.keycode == KEY_ESCAPE:
-			cancel()
+			close()
 			get_viewport().set_input_as_handled()

@@ -1,8 +1,18 @@
 class_name CanvasTool extends Node
 
+# FIXME: REFACTORING BEGIN
 var canvas: DiagramCanvas
+var design: PoieticDesignController
+var prompt_manager: CanvasPromptManager
+# FIXME: REFACTORING END
+
 var initial_pointer_position: Vector2 = Vector2()
 var is_engaged: bool = false
+
+func initialize(canvas: DiagramCanvas, design: PoieticDesignController, prompt_manager: CanvasPromptManager):
+	self.canvas = canvas
+	self.design = design
+	self.prompt_manager = prompt_manager
 
 func tool_name() -> String:
 	return "default"

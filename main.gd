@@ -16,13 +16,12 @@ const DEFAULT_DESIGN_PATH = "user://design.poietic"
 const SETTINGS_FILE = "user://settings.cfg"
 const default_window_size = Vector2(1280, 720)
 
-@onready var canvas: DiagramCanvas = %Canvas
+@onready var canvas: DiagramCanvas = $Canvas
+@onready var prompt_manager: CanvasPromptManager = $Gui/CanvasPromptManager
+
 @onready var player: PoieticPlayer = $SimulationPlayer
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
 @onready var control_bar: ControlBar = $Gui/ControlBar
-
-@onready var label_editor: CanvasLabelEditor = $Gui/LabelEditor
-@onready var context_menu: ContextMenu = $Gui/ContextMenu
 
 func _init():
 	pass
@@ -30,50 +29,43 @@ func _init():
 func _ready():
 	$FileDialog.use_native_dialog = true
 	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
-	label_editor.hide()
-	label_editor.set_process(false)
-	context_menu.hide()
-	context_menu.set_process(false)
 		
 	load_settings()
 	get_viewport().connect("size_changed", _on_window_resized)
 	
 	_initialize_main_menu()
 	
-	Global.initialize()
+	var design_ctrl = PoieticDesignController.new()
 	
-	# FIXME: Move methods to canvas
-	%LabelEditor.editing_submitted.connect(Global.selection_tool._on_label_edit_submitted)
-	%LabelEditor.editing_cancelled.connect(Global.selection_tool._on_label_edit_cancelled)
-	%FormulaPrompt.formula_editing_submitted.connect(Global.selection_tool._on_formula_edit_submitted)
-	%FormulaPrompt.formula_editing_cancelled.connect(Global.selection_tool._on_formula_edit_cancelled)
-
-	# Initialize and connect canvas
-	Global.canvas = canvas
-
-	Global.design.design_changed.connect(inspector_panel._on_design_changed)
-	Global.design.design_changed.connect(self._on_design_changed)
-	Global.design.design_reset.connect(self._on_design_reset)
-	Global.design.design_changed.connect(control_bar._on_design_changed)
-
+	Global.initialize(design_ctrl, player)
+	Global.initialize_tools(canvas, prompt_manager)	
+	prompt_manager.initialize(canvas)
+	
+	# Initialize and connect Inspector
+	design_ctrl.design_changed.connect(inspector_panel._on_design_changed)
 	canvas.selection.selection_changed.connect(inspector_panel._on_selection_changed)
-	canvas.selection.selection_changed.connect(self._on_selection_changed)
 
-	canvas.canvas_view_changed.connect(_on_canvas_view_changed)
+	# Initialize and connect Canvas
+
+	design_ctrl.design_changed.connect(self._on_design_changed)
+	design_ctrl.design_reset.connect(self._on_design_reset)
+	design_ctrl.design_changed.connect(control_bar._on_design_changed)
+
+	canvas.selection.selection_changed.connect(self._on_selection_changed)
+	canvas.canvas_view_changed.connect(self._on_canvas_view_changed)
 
 	# TODO: See inspector panel source comment about selection
 	inspector_panel.selection = canvas.selection
 	
 	# Simulation Player and Control Bar
-	Global.player = player
 	control_bar.update_simulator_state()
 	
-	Global.design.simulation_started.connect(self._on_simulation_started)
-	Global.design.simulation_finished.connect(self._on_simulation_success)
-	Global.design.simulation_finished.connect(control_bar._on_simulation_success)
+	design_ctrl.simulation_started.connect(self._on_simulation_started)
+	design_ctrl.simulation_finished.connect(self._on_simulation_success)
+	design_ctrl.simulation_finished.connect(control_bar._on_simulation_success)
 
-	Global.design.simulation_failed.connect(self._on_simulation_failure)
-	Global.design.simulation_failed.connect(control_bar._on_simulation_failure)
+	design_ctrl.simulation_failed.connect(self._on_simulation_failure)
+	design_ctrl.simulation_failed.connect(control_bar._on_simulation_failure)
 
 	# Load demo design
 	var path = ""
@@ -208,6 +200,7 @@ func _unhandled_input(event):
 		debug_dump()
 
 	elif event.is_action_pressed("cancel"):
+		prompt_manager.close()
 		Global.close_modal(Global.modal_node)
 
 
@@ -378,7 +371,7 @@ func remove_midpoints():
 
 func edit_formula():
 	# TODO: Beep
-	var ids = Global.canvas.selection.get_ids()
+	var ids = canvas.selection.get_ids()
 	if len(ids) != 1:
 		return
 	var object = Global.design.get_object(ids[0])
@@ -387,11 +380,11 @@ func edit_formula():
 	if not object.has_trait("Formula"):
 		return
 
-	Global.canvas.open_formula_prompt(ids[0])
+	prompt_manager.open_formula_editor_for(ids[0])
 
 func edit_name():
 	# TODO: Beep
-	var ids = Global.canvas.selection.get_ids()
+	var ids = canvas.selection.get_ids()
 	if len(ids) != 1:
 		return
 	var object = Global.design.get_object(ids[0])
@@ -400,8 +393,7 @@ func edit_name():
 	if not object.has_trait("Name"):
 		return
 
-	var node: DiagramNode = Global.canvas.get_diagram_node(ids[0])
-	canvas.open_name_editor(node)
+	prompt_manager.open_name_editor_for(ids[0])
 
 # View Menu
 # -------------------------------------------------------------------------

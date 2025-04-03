@@ -25,7 +25,7 @@ func close_panel():
 		palette.place_object.disconnect(_on_place_object)
 
 func _on_place_object(position: Vector2, type_name: String):
-	if !Global.metamodel.has_type(type_name):
+	if !Global.design.metamodel.has_type(type_name):
 		push_error("Unknown design object type: ", type_name)
 		return
 	var trans = Global.design.new_transaction()

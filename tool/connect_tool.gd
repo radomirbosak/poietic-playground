@@ -107,7 +107,7 @@ func can_connect(target: DiagramNode) -> bool:
 
 
 func create_connector(origin: DiagramNode, target: DiagramNode):
-	if !Global.metamodel.has_type(type_name):
+	if !Global.design.metamodel.has_type(type_name):
 		push_error("Unknown connector type: ", type_name)
 		return
 	var trans = Global.design.new_transaction()
