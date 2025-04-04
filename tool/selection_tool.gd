@@ -1,5 +1,10 @@
 class_name SelectionTool extends CanvasTool
 
+# TODO: Target Priority
+# 1. Selection -> Handles
+# 2. Objects
+# 3. Prompts
+
 var last_pointer_position = Vector2()
 enum SelectToolState {
 	EMPTY, OBJECT_HIT, OBJECT_SELECT, OBJECT_MOVE, HANDLE_HIT, HANDLE_MOVE
@@ -32,7 +37,7 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 					# FIXME: [REFACTORING] Make this DesignCanvas.get_context_menu_position(click_position)
 					var box = canvas.selection_bounding_box()
 					var position = 	Vector2(box.get_center().x, box.end.y)
-					prompt_manager.open_context_menu(canvas.selection, position)
+					prompt_manager.open_context_menu(canvas.selection, canvas.to_global(position))
 
 			last_pointer_position = pointer_position
 			state = SelectToolState.OBJECT_HIT

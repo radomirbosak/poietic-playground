@@ -23,9 +23,9 @@ func _init(name: String, shape: Shape2D, magnets: Array[Magnet] = []):
 	self.name = name
 	self.shape = shape
 	self.magnets = magnets
-	var path = "res://resources/pictograms/" + name + ".svg"
-	self.svg_buffer = FileAccess.get_file_as_bytes(path)
-
+	var relative_path = name + ".svg"
+	var path: String
+	self.svg_buffer = FileAccess.get_file_as_bytes("res://resources/pictograms/" + relative_path)
 
 var _image_cache: Dictionary[float, Image] = {}
 

@@ -68,12 +68,9 @@ func _ready():
 	design_ctrl.simulation_failed.connect(control_bar._on_simulation_failure)
 
 	# Load demo design
-	var path = ""
-	if OS.has_feature("editor"):
-		path = ProjectSettings.globalize_path("res://resources/new_canvas_demo_design.json")
-	else:
-		path = OS.get_executable_path().get_base_dir().path_join("resources").path_join("new_canvas_demo_design.json")
-	import_foreign_frame_from(path)
+	var path = "res://resources/new_canvas_demo_design.json"
+	var data = FileAccess.get_file_as_bytes(path)
+	import_foreign_frame_from_data(data)
 	
 	# Tell everyone about demo design
 	# Global.design.design_changed.emit()
@@ -337,6 +334,9 @@ func import_foreign_frame():
 
 func import_foreign_frame_from(path: String):
 	Global.design.import_from_path(path)
+
+func import_foreign_frame_from_data(data: PackedByteArray):
+	Global.design.import_from_data(data)
 
 # Edit Menu
 # -------------------------------------------------------------------------

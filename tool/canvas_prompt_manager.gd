@@ -73,7 +73,22 @@ func open_context_menu(selection: PoieticSelection, desired_position: Vector2):
 	# var menu: PanelContainer = preload("res://gui/context_menu.tscn").instantiate()
 	close()
 	current_prompt = context_menu
-	context_menu.open(selection, desired_position)
+	context_menu.open(selection, adjust_position(context_menu, desired_position))
+
+func adjust_position(prompt, position: Vector2) -> Vector2:
+	var result: Vector2 = position
+	var prompt_size = prompt.get_size()
+	var vp_size = get_viewport().size
+	if result.x < 0:
+		result.x = 0
+	if result.y < 0:
+		result.y = 0
+	if result.x + prompt_size.x > vp_size.x:
+		result.x = vp_size.x - prompt_size.x
+	if result.y + prompt_size.y > vp_size.y:
+		result.y = vp_size.y - prompt_size.y
+	prints(prompt_size, vp_size, position, result)
+	return result
 
 func close():
 	if current_prompt:
