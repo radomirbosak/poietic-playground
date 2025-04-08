@@ -7,6 +7,7 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xnvk4"]
 bg_color = Color(0.1812, 0.1812, 0.1812, 1)
 border_width_left = 4
+border_width_top = 4
 
 [node name="ResultPanel" type="PanelContainer" groups=["live_charts"]]
 custom_minimum_size = Vector2(250, 0)

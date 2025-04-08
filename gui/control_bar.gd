@@ -76,6 +76,9 @@ func _on_loop_button_pressed():
 	update_player_state()
 
 func _on_design_changed(has_issues: bool):
+	update_simulation_times()
+	
+func update_simulation_times():
 	var params: PoieticObject = design_ctrl.get_simulation_parameters_object()
 	if params:
 		# TODO Set initial time
@@ -87,4 +90,20 @@ func _on_design_changed(has_issues: bool):
 			pass
 
 func _on_end_time_field_text_submitted(new_text):
-	pass # Replace with function body.
+	if not new_text.is_valid_float():
+		update_simulation_times()
+		return
+	var end_time = float(new_text)
+	var params: PoieticObject = design_ctrl.get_simulation_parameters_object()
+
+	if params and params.get_attribute("end_time") == end_time:
+		return
+
+	var trans: PoieticTransaction = Global.design.new_transaction()
+
+	if params:
+		trans.set_attribute(params.object_id, "end_time", end_time)
+	else:
+		trans.create_object("Simulation", {"end_time": end_time})
+
+	Global.design.accept(trans)

@@ -36,6 +36,7 @@ layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
