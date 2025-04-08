@@ -154,13 +154,13 @@ func queue_sync():
 ## Update indicators from the player.
 ##
 ## This method is typically called on simulation player step.
-func update_indicator_values():
+func update_indicator_values(player: PoieticPlayer):
 	for id in Global.design.get_diagram_nodes():
 		var object = Global.design.get_object(id)
 		var diagram_node = get_diagram_node(id)
 		# We might get null node when sync is queued and we do not have a canvas node yet
 		if diagram_node:
-			diagram_node.display_value = Global.player.numeric_value(id)
+			diagram_node.display_value = player.numeric_value(id)
 
 ## Remove values from indicators
 ##

@@ -3,6 +3,16 @@ class_name Chart extends Control
 var plot_offset: Vector2 = Vector2()
 var _plot_rect: Rect2 = Rect2()
 
+## IDs of objects representing time series.
+##
+## `series_ids` is used when data needs to be refreshed automatically.
+## The attribute is not required if the chart content is managed manually.
+##
+## Note that the series_ids might contain IDs that might not be currently
+## present in the simulation result or a design frame. They should be
+## gracefuly ignored or the user should be non-intrusively notified.
+##
+var series_ids: PackedInt64Array = PackedInt64Array()
 var data: Array[PoieticTimeSeries] = []
 
 # Styling

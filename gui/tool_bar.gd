@@ -3,23 +3,23 @@ class_name ToolBar extends PanelContainer
 const empty_options_tab = 0
 const connect_options_tab = 1
 
-@onready var undo_button: TextureButton = %UndoButton
-@onready var redo_button: TextureButton = %RedoButton
+@onready var undo_button: Button = %UndoButton
+@onready var redo_button: Button = %RedoButton
 
-@onready var selection_tool_button: IconButton = %SelectionToolButton
-@onready var place_tool_button: IconButton = %PlaceToolButton
-@onready var connection_tool_button: IconButton = %ConnectToolButton
+@onready var selection_tool_button: Button = %SelectionToolButton
+@onready var place_tool_button: Button = %PlaceToolButton
+@onready var connection_tool_button: Button = %ConnectToolButton
 
 @onready var tool_options: TabContainer = %ToolOptions
-@onready var options_separator: VSeparator = %OptionsSeparator
+@onready var options_separator: Control = %OptionsSeparator
 
 func _ready():
 	_initialize_connector_types()
-	tool_options.visible = false
 
 	Global.tool_changed.connect(_on_tool_changed)
 	Global.change_tool(Global.selection_tool)
-
+	_on_parameter_connection_type_button_pressed()
+	
 func _initialize_connector_types():
 	var connector_types: Array[String] = ["Flow", "Parameter", "Comment"]
 	for type in connector_types:
@@ -43,9 +43,6 @@ func _on_tool_changed(tool: CanvasTool):
 		tool_options.current_tab = connect_options_tab
 	else:
 		push_error("Unknown tool: ", tool)
-	selection_tool_button.update_shader()
-	place_tool_button.update_shader()
-	connection_tool_button.update_shader()
 
 func _on_selection_tool_button_pressed():
 	Global.change_tool(Global.selection_tool)
@@ -68,12 +65,6 @@ func _on_redo_button_pressed():
 		Global.design.redo()
 	else:
 		printerr("Trying to redo while having nothing to redo")
-
-
-func _on_tool_options_button_toggled(toggled_on):
-	tool_options.visible = toggled_on
-	options_separator.visible = toggled_on
-	print("Tool options toggled: ", toggled_on)
 
 
 func _on_flow_connection_type_button_pressed():

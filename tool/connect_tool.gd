@@ -5,15 +5,11 @@ enum ConnectToolState {
 }
 
 var state: ConnectToolState
+var type_name: String = "Parameter"
 
 var last_pointer_position = Vector2()
-
 var origin: DiagramNode
-
 var dragging_connector: Connector = null
-
-var palette: ObjectPalette
-var type_name: String = "Parameter"
 
 func tool_name() -> String:
 	return "connect"
@@ -22,9 +18,7 @@ func set_type(type_name: String):
 	self.type_name = type_name
 	
 func tool_selected():
-	if not palette:
-		palette = ObjectPalette.new()
-		palette.point_side = CallOut.PointSide.LEFT
+	pass
 	
 func tool_released():
 	pass

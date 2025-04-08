@@ -19,9 +19,11 @@ const default_window_size = Vector2(1280, 720)
 @onready var canvas: DiagramCanvas = $Canvas
 @onready var prompt_manager: CanvasPromptManager = $Gui/CanvasPromptManager
 
-@onready var player: PoieticPlayer = $SimulationPlayer
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
-@onready var control_bar: ControlBar = $Gui/ControlBar
+
+@onready var result_panel: PanelContainer = %ResultPanel
+@onready var player: PoieticPlayer = $SimulationPlayer
+@onready var control_bar: PanelContainer = %PlayerControlBar
 
 func _init():
 	pass
@@ -39,8 +41,10 @@ func _ready():
 	
 	Global.initialize(design_ctrl, player)
 	Global.initialize_tools(canvas, prompt_manager)	
+	control_bar.initialize(design_ctrl, player)
+	result_panel.initialize(design_ctrl, player, canvas)
 	prompt_manager.initialize(canvas)
-	
+
 	# Initialize and connect Inspector
 	design_ctrl.design_changed.connect(inspector_panel._on_design_changed)
 	canvas.selection.selection_changed.connect(inspector_panel._on_selection_changed)
@@ -49,23 +53,16 @@ func _ready():
 
 	design_ctrl.design_changed.connect(self._on_design_changed)
 	design_ctrl.design_reset.connect(self._on_design_reset)
-	design_ctrl.design_changed.connect(control_bar._on_design_changed)
 
-	canvas.selection.selection_changed.connect(self._on_selection_changed)
 	canvas.canvas_view_changed.connect(self._on_canvas_view_changed)
 
 	# TODO: See inspector panel source comment about selection
 	inspector_panel.selection = canvas.selection
 	
-	# Simulation Player and Control Bar
-	control_bar.update_simulator_state()
-	
 	design_ctrl.simulation_started.connect(self._on_simulation_started)
 	design_ctrl.simulation_finished.connect(self._on_simulation_success)
-	design_ctrl.simulation_finished.connect(control_bar._on_simulation_success)
 
 	design_ctrl.simulation_failed.connect(self._on_simulation_failure)
-	design_ctrl.simulation_failed.connect(control_bar._on_simulation_failure)
 
 	# Load demo design
 	var path = "res://resources/new_canvas_demo_design.json"
@@ -82,9 +79,6 @@ func _initialize_main_menu():
 	# Add working shortcuts here
 	# $MenuBar/FileMenu.set_item_accelerator(0, KEY_MASK_META + KEY_N)
 	pass
-
-func _on_selection_changed(selection):
-	_DEBUG_update_chart()
 
 func _on_design_changed(has_issues: bool):
 	# FIXME: Fix selection so that object IDs match
@@ -117,7 +111,7 @@ func set_result(result):
 	Global.result = result
 	player.result = result
 	canvas.sync_indicators(result)
-	_DEBUG_update_chart()
+
 
 func clear_result():
 	Global.player.stop()
@@ -126,22 +120,8 @@ func clear_result():
 	canvas.clear_indicators()
 	
 func _on_simulation_player_step():
-	canvas.update_indicator_values()
+	canvas.update_indicator_values(player)
 	
-func _DEBUG_update_chart():
-	if not Global.result:
-		printerr("Trying to make a chart without result")
-		return
-	var chart: Chart = $Gui/MakeshiftChart/Chart
-	var ids = canvas.selection.get_ids()
-	chart.clear_series()
-	if ids and not ids.is_empty():
-		for id in ids:
-			var series = Global.result.time_series(id)
-			if not series:
-				continue
-			chart.append_series(series)
-
 func _unhandled_input(event):
 	# TODO: Document inputs
 	if event.is_action_pressed("selection-tool"):

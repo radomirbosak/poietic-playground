@@ -44,6 +44,7 @@ version_control/autoload_on_startup=true
 
 diagram_connections=""
 diagram_nodes=""
+live_charts=""
 
 [gui]
 

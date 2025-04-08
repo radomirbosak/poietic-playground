@@ -1,32 +1,27 @@
-[gd_scene load_steps=9 format=3 uid="uid://c3kn0jiqoe5fm"]
+[gd_scene load_steps=8 format=3 uid="uid://c3kn0jiqoe5fm"]
 
 [ext_resource type="Script" uid="uid://fn2607eaa17" path="res://gui/control_bar.gd" id="1_bjxsy"]
 [ext_resource type="Texture2D" uid="uid://cmcv8bhmmjv" path="res://resources/icons/white/restart.png" id="2_tgswo"]
-[ext_resource type="Script" uid="uid://dacwotscya1ub" path="res://gui/icon_button.gd" id="3_8fam1"]
 [ext_resource type="Texture2D" uid="uid://blyuxdonhje62" path="res://resources/icons/white/stop.png" id="4_bs54y"]
 [ext_resource type="Texture2D" uid="uid://b50sv6fav5owi" path="res://resources/icons/white/run.png" id="5_4wq8j"]
 [ext_resource type="Texture2D" uid="uid://d2qqq8u8a1pho" path="res://resources/icons/white/loop.png" id="6_6btlt"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7v4cc"]
-bg_color = Color(0.10862, 0.111979, 0.110691, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2a3yf"]
+bg_color = Color(0.205117, 0.205118, 0.205117, 1)
 border_width_left = 4
-border_width_right = 4
 border_width_bottom = 4
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q16gx"]
 bg_color = Color(0.171875, 0.171875, 0.171875, 1)
 
 [node name="ControlBar" type="PanelContainer"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -231.0
-offset_right = 230.0
-offset_bottom = 60.0
-grow_horizontal = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_7v4cc")
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -381.0
+offset_bottom = 126.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_2a3yf")
 script = ExtResource("1_bjxsy")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -36,59 +31,59 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="ResetButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Reset"
-texture_normal = ExtResource("2_tgswo")
-ignore_texture_size = true
-stretch_mode = 5
-script = ExtResource("3_8fam1")
+theme_type_variation = &"SelectableToolbarItem"
+icon = ExtResource("2_tgswo")
+expand_icon = true
 
-[node name="StopButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="StopButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Stop"
-toggle_mode = true
-texture_normal = ExtResource("4_bs54y")
-ignore_texture_size = true
-stretch_mode = 5
-script = ExtResource("3_8fam1")
+theme_type_variation = &"SelectableToolbarItem"
+icon = ExtResource("4_bs54y")
+expand_icon = true
 
-[node name="RunButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="RunButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Run"
+theme_type_variation = &"SelectableToolbarItem"
 toggle_mode = true
-texture_normal = ExtResource("5_4wq8j")
-ignore_texture_size = true
-stretch_mode = 5
-script = ExtResource("3_8fam1")
+icon = ExtResource("5_4wq8j")
+expand_icon = true
 
-[node name="LoopButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="LoopButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Loop"
+theme_type_variation = &"SelectableToolbarItem"
 toggle_mode = true
-texture_normal = ExtResource("6_6btlt")
-ignore_texture_size = true
-stretch_mode = 5
-script = ExtResource("3_8fam1")
+icon = ExtResource("6_6btlt")
+expand_icon = true
 
-[node name="TimeLabel" type="Label" parent="MarginContainer/HBoxContainer"]
-unique_name_in_owner = true
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TimeLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 text = "Time"
 horizontal_alignment = 2
 
-[node name="Time" type="Label" parent="MarginContainer/HBoxContainer"]
+[node name="TimeField" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
@@ -96,20 +91,19 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_q16gx")
 text = "0"
 horizontal_alignment = 2
 
-[node name="EndTimeLabel" type="Label" parent="MarginContainer/HBoxContainer"]
-unique_name_in_owner = true
+[node name="EndTimeLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 text = "End"
 
-[node name="EndTimeField" type="LineEdit" parent="MarginContainer/HBoxContainer"]
+[node name="EndTimeField" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "10"
 alignment = 2
 
-[connection signal="pressed" from="MarginContainer/HBoxContainer/ResetButton" to="." method="_on_reset_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/StopButton" to="." method="_on_stop_button_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/RunButton" to="." method="_on_run_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/LoopButton" to="." method="_on_loop_button_pressed"]
-[connection signal="text_submitted" from="MarginContainer/HBoxContainer/EndTimeField" to="." method="_on_end_time_field_text_submitted"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/ResetButton" to="." method="_on_reset_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/StopButton" to="." method="_on_stop_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/RunButton" to="." method="_on_run_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/LoopButton" to="." method="_on_loop_button_pressed"]
+[connection signal="text_submitted" from="MarginContainer/VBoxContainer/HBoxContainer2/EndTimeField" to="." method="_on_end_time_field_text_submitted"]
