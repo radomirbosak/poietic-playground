@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=4 format=3 uid="uid://dws6dqiic6wt"]
+[gd_resource type="Theme" load_steps=6 format=3 uid="uid://dws6dqiic6wt"]
 
 [ext_resource type="FontFile" uid="uid://6y6i5dhrvmps" path="res://resources/fonts/IBMPlexSansCondensed-Light.otf" id="1_vajuw"]
 [ext_resource type="FontFile" uid="uid://bf4sfp1whyleo" path="res://resources/fonts/IBMPlexSansCondensed-LightItalic.otf" id="2_7bl14"]
@@ -16,6 +16,25 @@ corner_radius_bottom_left = 10
 shadow_size = 20
 shadow_offset = Vector2(10, 10)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hrfyl"]
+bg_color = Color(0.18359, 0.18359, 0.18359, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vajuw"]
+bg_color = Color(0.480989, 0.400399, 0.191445, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.779619, 0.664936, 0.381717, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [resource]
 Button/fonts/font = ExtResource("1_vajuw")
 Button/styles/disabled = null
@@ -31,3 +50,9 @@ Label/font_sizes/zoom_detail_label_font_size = 24
 Label/fonts/formula_label_font = ExtResource("2_7bl14")
 Label/fonts/node_invalid_label_font = ExtResource("2_7bl14")
 Label/fonts/node_label_font = ExtResource("1_vajuw")
+ResultChartItem/base_type = &"PanelContainer"
+ResultChartItem/styles/panel = SubResource("StyleBoxFlat_hrfyl")
+ResultItemTitle/base_type = &"Label"
+ResultItemTitle/font_sizes/font_size = 20
+SelectableToolbarItem/base_type = &"Button"
+SelectableToolbarItem/styles/pressed = SubResource("StyleBoxFlat_vajuw")
