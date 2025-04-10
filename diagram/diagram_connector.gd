@@ -37,6 +37,7 @@ static func create_connector(type_name: String, origin_point: Vector2 = Vector2(
 	match type_name:
 		"Flow":
 			connector = FatConnector.new()
+			connector.head_size = 40
 		"Parameter":
 			connector = ThinConnector.new()
 			connector.head_size = 20

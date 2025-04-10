@@ -86,8 +86,7 @@ func update_simulation_times():
 		var time_delta = params.get_attribute("time_delta")
 		var end_time = params.get_attribute("end_time")
 		if end_time is float or end_time is int:
-			# FIXME %EndTimeField.text = str(end_time)
-			pass
+			%EndTimeField.text = str(end_time)
 
 func _on_end_time_field_text_submitted(new_text):
 	if not new_text.is_valid_float():

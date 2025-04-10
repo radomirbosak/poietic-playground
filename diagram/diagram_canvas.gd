@@ -11,7 +11,8 @@ var diagram_objects: Dictionary[int, DiagramObject] = {}
 @export var canvas_offset: Vector2 = Vector2.ZERO
 @export var _design_sync_needed: bool = true
 
-@export var formulas_visible: bool = false:
+@export var formulas_visible_zoom_level: float = 1.0
+@export var formulas_visible: bool = true:
 	set(flag):
 		formulas_visible = flag
 		set_formulas_visible(flag)
@@ -41,7 +42,7 @@ enum HitTargetType {
 	OBJECT,         # Diagram object
 	HANDLE,         # Handle (parent must be diagram object)
 	NAME,           # Diagram object
-	# SECONDARY_LABEL, # Formula
+	PRIMARY_ATTRIBUTE, # Formula
 	# ERROR_INDICATOR,
 	# VALUE_INDICATOR,
 }
@@ -134,6 +135,7 @@ func _process(_delta):
 		sync_design()
 
 func _draw():
+	return
 	if not selection.is_empty():
 		var points = selection_convex_hull()
 		var polygons = Geometry2D.offset_polygon(points, 10, Geometry2D.JOIN_ROUND)
@@ -230,9 +232,9 @@ func update_canvas_view() -> void:
 	else:
 		charts_visible = false
 
-	if zoom_level <= 1.5:
+	if zoom_level < formulas_visible_zoom_level:
 		formulas_visible = false
-	elif zoom_level > 1.5:
+	else:
 		formulas_visible = true
 
 func set_formulas_visible(flag: bool):
@@ -264,9 +266,12 @@ func hit_target(hit_position: Vector2) -> HitTarget:
 			break
 			
 		if child is DiagramNode and child.name_label.visible:
-			var label: Label = child.name_label
-			if label.get_rect().has_point(child.to_local(hit_position)):
+			if child.name_label.get_rect().has_point(child.to_local(hit_position)):
 				target = HitTarget.new(HitTargetType.NAME, child)
+
+			if child.formula_label.get_rect().has_point(child.to_local(hit_position)):
+				target = HitTarget.new(HitTargetType.PRIMARY_ATTRIBUTE, child)
+
 		if child.contains_point(hit_position):
 			target = HitTarget.new(HitTargetType.OBJECT, child)
 			if not child.is_selected:

@@ -2,7 +2,7 @@ class_name DiagramNode extends DiagramObject
 # Physics: extends RigidBody2D
 
 const label_offset = 10
-const formula_offset = 40
+const formula_offset = 45
 const default_radius = 50
 const highlight_padding = 5
 
@@ -46,10 +46,13 @@ func _init():
 	shape = CircleShape2D.new()
 	shape.radius = default_radius
 
-	formula_label = Label.new()
-	self.add_child(formula_label)
-	formula_label.add_theme_color_override("font_color", DiagramCanvas.default_formula_color)
+	name_label = Label.new()
+	name_label.theme_type_variation = "NodeNameLabel"
+	self.add_child(name_label)
 
+	formula_label = Label.new()
+	formula_label.theme_type_variation = "NodeFormulaLabel"
+	self.add_child(formula_label)
 ## Updates the diagram node based on a design object.
 ##
 ## This method should be called whenever the source of truth is changed.
@@ -72,10 +75,21 @@ func _ready():
 	self.name_label.visible = canvas.labels_visible
 
 func _draw():
-	return
 	# FIXME: Should we keep drawing the selection like this?
+	# TODO: Move to pictogram or somewhere. This can be computed only once
 	if is_selected and selection_highlight_shape:
-		DiagramGeometry.draw_shape(self, selection_highlight_shape, DiagramCanvas.default_selection_color, 2)
+		var curve = DiagramGeometry.shape_outline(shape)
+		var points = curve.tessellate()
+		var polygons = Geometry2D.offset_polygon(points, 10, Geometry2D.JOIN_ROUND)
+		var color = DiagramCanvas.default_selection_color
+		color.a = 0.1
+
+		for poly in polygons:
+			draw_polygon(poly, [color])
+			poly.append(poly[0])
+			draw_polyline(poly, DiagramCanvas.default_selection_color, 3)
+
+		# DiagramGeometry.draw_shape(self, selection_highlight_shape, DiagramCanvas.default_selection_color, 2)
 		
 func _process(_delta):
 	if children_needs_update:
@@ -92,22 +106,21 @@ func queue_layout():
 	children_needs_update = true
 
 func update_children() -> void:
+	var theme = ThemeDB.get_project_theme()
 	update_pictogram()
 	update_indicator()
-	if name_label == null:
-		name_label = Label.new()
-		self.add_child(name_label)
-		name_label.add_theme_color_override("font_color", DiagramCanvas.default_label_color)
 	var shape_rect = shape.get_rect()
 
 	# Label
 	if not object_name:
-		var font = ThemeDB.get_project_theme().get_font("node_invalid_label_font", "Label")
-		name_label.add_theme_font_override("font", font)
+		var font = theme.get_font(&"missing_name_font", &"NodeNameLabel")
+		name_label.add_theme_font_override(&"font", font)
+		var color = theme.get_color(&"missing_name_color", &"NodeNameLabel")
+		name_label.add_theme_color_override(&"font_color", color)
 		name_label.text = "(unnamed)"
 	else:
-		var font = ThemeDB.get_project_theme().get_font("node_label_font", "Label")
-		name_label.add_theme_font_override("font", font)
+		name_label.remove_theme_font_override(&"font")
+		name_label.remove_theme_color_override(&"font_color")
 		name_label.text = object_name
 		name_label.queue_redraw()
 
@@ -117,7 +130,6 @@ func update_children() -> void:
 
 	var formula_size = formula_label.get_minimum_size()
 	formula_label.position = Vector2(-formula_size.x / 2, shape_bottom + formula_offset)
-
 	# Indicators
 	
 	if issues_indicator == null:

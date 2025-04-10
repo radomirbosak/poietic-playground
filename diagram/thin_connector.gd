@@ -87,16 +87,35 @@ func arrow_curves() -> Array[Curve2D]:
 
 	var curves: Array[Curve2D] = tail_arrowhead.curves + head_arrowhead.curves
 
+	var line: Curve2D
+	if midpoints.is_empty():
+		line = straight_arrow_line(clipped_origin, clipped_target, midpoints)
+	else:
+		line = curved_arrow_line(clipped_origin, clipped_target, midpoints[0])
+	curves.append(line)
+
+	return curves
+
+func straight_arrow_line(origin: Vector2, target: Vector2, midpoints: PackedVector2Array) -> Curve2D:
 	var line: Curve2D = Curve2D.new()
-	line.add_point(clipped_origin)
+	line.add_point(origin)
 	
 	for point in midpoints:
 		line.add_point(point)
 	
-	line.add_point(clipped_target)
-	curves.append(line)
+	line.add_point(target)
+	return line
 
-	return curves
+func curved_arrow_line(origin: Vector2, target: Vector2, midpoint: Vector2) -> Curve2D:
+	# Catmull-Rom Style Interpolation	
+	var curve = Curve2D.new()
+	var alpha = 0.5
+	var beta  = 0.5
+	curve.add_point(origin, Vector2.ZERO, (midpoint - origin) / 6.0)
+	curve.add_point(midpoint, -(target - origin) / 6.0, + (target-origin) / 6.0)
+	curve.add_point(target, -(target - midpoint) / 6.0, Vector2.ZERO)
+	
+	return curve
 	
 func selection_outline(width: float = selection_outline_width) -> Array[PackedVector2Array]:
 	# TODO: Merge with draw (uses shared code)
@@ -202,12 +221,12 @@ func create_arrowhead(head_point: Vector2, direction: Vector2, size: float = 10.
 		ArrowheadType.BALL:
 			var radius = size / 2
 			var centre = head_point - direction * radius
-			curve = create_circle_curve(centre, radius)
+			curve = DiagramGeometry.circle_curve(centre, radius)
 	
 		ArrowheadType.BALL_CENTER:
 			var radius = size / 2
 			var centre = head_point
-			curve = create_circle_curve(centre, radius)
+			curve = DiagramGeometry.circle_curve(centre, radius)
 
 	curves.append(curve)
 	var arrowhead = Arrowhead.new(curves, get_touch_point_offset(size,type))
@@ -293,24 +312,3 @@ func create_arrowhead(head_point: Vector2, direction: Vector2, size: float = 10.
 #
 	#return curve.tesselate()
 	#
-func create_circle_curve(center: Vector2, radius: float) -> Curve2D:
-	# https://spencermortensen.com/articles/bezier-BALL/
-	# P0=(0,a), P1=(b,c), P2=(c,b), P3=(a,0)
-	var curve = Curve2D.new()
-	var magic = radius * 0.552285  # Approximation factor for Bézier control points
-	var a=1.00005519
-	var b=0.55342686
-	# var c=0.99873585
-
-	var p1: Vector2 = Vector2()
-	var p2: Vector2 = Vector2()
-	
-	p1 = Vector2(b, 0) * radius
-	p2 = Vector2(0, b) * radius
-	curve.add_point(center + (Vector2(0, a) * radius), Vector2.ZERO, p1)
-	curve.add_point(center + (Vector2(a, 0) * radius), p2, -p2)
-	curve.add_point(center + (Vector2(0, -a) * radius), p1, -p1)
-	curve.add_point(center + (Vector2(-a, 0) * radius), -p2, p2)
-	curve.add_point(center + (Vector2(0, a) * radius), -p1, Vector2.ZERO)
-
-	return curve

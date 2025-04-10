@@ -13,7 +13,8 @@ class_name FatConnector extends Connector
 		queue_redraw()
 
 # Outline (move to separate node type)
-@export var width: float = 5.0
+@export var width: float = 10.0
+@export var fill_color: Color = Color.DARK_GRAY
 
 enum ArrowStyle {
 	STRAIGHT,
@@ -34,6 +35,10 @@ class Arrowhead:
 		self.polygon = polygon
 		self.offset = offset
 
+func _init():
+	self.fill_color = Color.DIM_GRAY
+	self.fill_color.a = 0.5
+
 func _draw():
 	var polygons = arrow_polygons()
 	
@@ -44,6 +49,7 @@ func _draw():
 	for poly in polygons:
 		if poly[-1] != poly[0]:
 			poly.append(poly[0])
+		draw_polygon(poly, [fill_color])
 		draw_polyline(poly, line_color, line_width)
 
 ## Create an arrowhead that will be combined with the rest of the line outline.

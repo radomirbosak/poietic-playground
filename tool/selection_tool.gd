@@ -49,6 +49,13 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 			var node: DiagramNode = target.object as DiagramNode
 			canvas.selection.replace(PackedInt64Array([node.object_id]))
 			prompt_manager.open_name_editor_for(node.object_id)
+		DiagramCanvas.HitTargetType.PRIMARY_ATTRIBUTE:
+			# TODO: Not sure whether this is a good idea, but it is only directly visible way
+			var node: DiagramNode = target.object as DiagramNode
+			canvas.selection.replace(PackedInt64Array([node.object_id]))
+			prompt_manager.open_formula_editor_for(node.object_id)
+		_ :
+			push_warning("Unhandled hit target type: ", target.type)
 	return true
 
 func input_moved(event: InputEvent, move_delta: Vector2) -> bool:

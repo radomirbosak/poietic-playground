@@ -140,10 +140,54 @@ static func offset_polygon(polygon: PackedVector2Array, offset: float) -> Packed
 
 	return scaled_polygon
 
+static func circle_curve(center: Vector2, radius: float) -> Curve2D:
+	# https://spencermortensen.com/articles/bezier-BALL/
+	# P0=(0,a), P1=(b,c), P2=(c,b), P3=(a,0)
+	var curve = Curve2D.new()
+	var magic = radius * 0.552285  # Approximation factor for Bézier control points
+	var a=1.00005519
+	var b=0.55342686
+	# var c=0.99873585
+
+	var p1: Vector2 = Vector2()
+	var p2: Vector2 = Vector2()
+	
+	p1 = Vector2(b, 0) * radius
+	p2 = Vector2(0, b) * radius
+	curve.add_point(center + (Vector2(0, a) * radius), Vector2.ZERO, p1)
+	curve.add_point(center + (Vector2(a, 0) * radius), p2, -p2)
+	curve.add_point(center + (Vector2(0, -a) * radius), p1, -p1)
+	curve.add_point(center + (Vector2(-a, 0) * radius), -p2, p2)
+	curve.add_point(center + (Vector2(0, a) * radius), -p1, Vector2.ZERO)
+
+	return curve
+
+static func shape_outline(shape: Shape2D) -> Curve2D:
+	var curve: Curve2D
+	if shape is RectangleShape2D:
+		curve = Curve2D.new()
+		var half_size: Vector2 = shape.size / 2
+		curve.add_point(-half_size)
+		curve.add_point(Vector2(half_size.x, -half_size.y))
+		curve.add_point(half_size)
+		curve.add_point(Vector2(-half_size.x, +half_size.y))
+		curve.add_point(-half_size)
+	elif shape is CircleShape2D:
+		curve = circle_curve(Vector2.ZERO, shape.radius)
+	elif shape is CapsuleShape2D:
+		var radius = shape.radius
+		var height = shape.height
+		pass
+	elif shape is ConvexPolygonShape2D:
+		var points = shape.points
+		pass
+	else:
+		print("Unsupported shape type: ", shape.get_class())
+	return curve
+
 static func draw_shape(canvas: CanvasItem, shape: Shape2D, color: Color = Color.WHITE, width: float = -1):
 	if shape is RectangleShape2D:
-		var extents = shape.extents
-		canvas.draw_rect(Rect2(-extents, extents * 2), color, false, width)
+		canvas.draw_rect(Rect2(-shape.size/2, shape.size), color, false, width)
 	elif shape is CircleShape2D:
 		canvas.draw_circle(Vector2.ZERO, shape.radius, color, false, width)
 	elif shape is CapsuleShape2D:
