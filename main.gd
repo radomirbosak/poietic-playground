@@ -16,6 +16,8 @@ const DEFAULT_DESIGN_PATH = "user://design.poietic"
 const SETTINGS_FILE = "user://settings.cfg"
 const default_window_size = Vector2(1280, 720)
 
+var design_ctrl: PoieticDesignController
+
 @onready var canvas: DiagramCanvas = $Canvas
 @onready var prompt_manager: CanvasPromptManager = $Gui/CanvasPromptManager
 
@@ -37,10 +39,10 @@ func _ready():
 	
 	_initialize_main_menu()
 	
-	var design_ctrl = PoieticDesignController.new()
+	design_ctrl = PoieticDesignController.new()
 	
 	Global.initialize(design_ctrl, player)
-	Global.initialize_tools(canvas, prompt_manager)	
+	initialize_tools()
 	control_bar.initialize(design_ctrl, player)
 	result_panel.initialize(design_ctrl, player, canvas)
 	prompt_manager.initialize(canvas)
@@ -74,6 +76,15 @@ func _ready():
 	update_status_text()
 	
 	print("Done initializing main.")
+
+func initialize_tools():
+	$Gui/ObjectPanel.hide()
+	Global.selection_tool.initialize(canvas, design_ctrl, prompt_manager)
+	Global.selection_tool.object_panel = $Gui/ObjectPanel
+	Global.place_tool.initialize(canvas, design_ctrl, prompt_manager)
+	Global.place_tool.object_panel = $Gui/ObjectPanel
+	Global.connect_tool.initialize(canvas, design_ctrl, prompt_manager)
+	Global.connect_tool.object_panel = $Gui/ObjectPanel
 
 func _initialize_main_menu():
 	# Add working shortcuts here
@@ -207,6 +218,7 @@ func _on_window_resized():
 # -------------------------------------------------------------------------
 
 func load_settings():
+	var actual_window_position = DisplayServer.window_get_position()
 	var config = ConfigFile.new()
 	var load_result = config.load(SETTINGS_FILE)
 	if load_result != OK:
@@ -216,6 +228,10 @@ func load_settings():
 	var window_size = Vector2(
 		config.get_value("window", "width", default_window_size.x),
 		config.get_value("window", "height", default_window_size.y)
+		)
+	var window_position = Vector2(
+		config.get_value("window", "x", actual_window_position.x),
+		config.get_value("window", "y", actual_window_position.y)
 		)
 
 	if config.get_value("inspector", "visible", true):
@@ -234,14 +250,18 @@ func load_settings():
 		self.last_import_path = last_import_path
 
 	DisplayServer.window_set_size(window_size)
-
+	DisplayServer.window_set_position(window_position)
+	
 func save_settings():
+	var window_position = DisplayServer.window_get_position()
 	var window_size = DisplayServer.window_get_size()
 	var config = ConfigFile.new()
 	if config.load(SETTINGS_FILE) != OK:
 		# Just warn, do not return, but proceed with new settings.
 		push_warning("Unable to load settings")
 	
+	config.set_value("window", "x", window_position.x)
+	config.set_value("window", "y", window_position.y)
 	config.set_value("window", "width", window_size.x)
 	config.set_value("window", "height", window_size.y)
 	config.set_value("inspector", "visible", inspector_panel.visible)

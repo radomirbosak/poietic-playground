@@ -33,6 +33,7 @@ gdscript/warnings/shadowed_global_identifier=0
 
 window/size/viewport_width=1280
 window/size/viewport_height=800
+window/size/initial_position_type=0
 window/stretch/aspect="ignore"
 
 [editor]

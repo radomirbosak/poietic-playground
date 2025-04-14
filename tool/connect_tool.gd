@@ -18,10 +18,20 @@ func set_type(type_name: String):
 	self.type_name = type_name
 	
 func tool_selected():
-	pass
-	
+	object_panel.show()
+	object_panel.load_connector_pictograms()
+	if last_selected_object_identifier:
+		object_panel.selected_item = last_selected_object_identifier
+	else:
+		object_panel.selected_item = "Flow"
+	object_panel.selection_changed.connect(_on_object_selection_changed)
+
 func tool_released():
-	pass
+	last_selected_object_identifier = object_panel.selected_item
+	object_panel.selection_changed.disconnect(_on_object_selection_changed)
+
+func _on_object_selection_changed(identifier: String):
+	type_name = identifier
 
 func input_began(_event: InputEvent, pointer_position: Vector2):
 	var target = canvas.hit_target(pointer_position)

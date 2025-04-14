@@ -33,12 +33,6 @@ func initialize(design: PoieticDesignController, player: PoieticPlayer):
 	InspectorTraitPanel._initialize_panels()
 	self._load_pictograms()
 
-func initialize_tools(canvas: DiagramCanvas, prompt_manager: CanvasPromptManager):
-	selection_tool.initialize(canvas, self.design, prompt_manager)
-	place_tool.initialize(canvas, self.design, prompt_manager)
-	connect_tool.initialize(canvas, self.design, prompt_manager)
-	
-
 static func _load_pictograms():
 	# TODO: Adjust the scales based on the rules for the pictogram sizes (not yet defined)
 	var circle = CircleShape2D.new()

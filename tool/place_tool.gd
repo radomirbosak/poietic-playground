@@ -8,6 +8,20 @@ var palette: ObjectPalette
 func tool_name() -> String:
 	return "place"
 
+func tool_selected():
+	object_panel.show()
+	object_panel.load_node_pictograms()
+
+	if last_selected_object_identifier:
+		object_panel.selected_item = last_selected_object_identifier
+	else:
+		object_panel.selected_item = "Stock"
+
+func tool_released():
+	last_selected_object_identifier = object_panel.selected_item
+	close_panel()
+
+# TODO: Remove or re-purpose
 func open_panel(callout_position: Vector2):
 	if palette == null:
 		palette = palette_scene.instantiate()
@@ -25,27 +39,28 @@ func close_panel():
 		palette.place_object.disconnect(_on_place_object)
 
 func _on_place_object(position: Vector2, type_name: String):
-	var trans = Global.design.new_transaction()
-	var count = len(Global.design.get_diagram_nodes())
+	place_object(position, type_name)
+	close_panel()
+
+func place_object(position: Vector2, type_name: String):
+	var trans = design.new_transaction()
+	var count = len(design.get_diagram_nodes())
 	var name = type_name.to_snake_case() + str(count)
 	var local_position = canvas.to_local(position)
-	print("Create object of type: ", type_name, " name: ", name, " at: ", position, )
 	var node = trans.create_node(type_name, name, {"position": local_position})
-	print("Object created: ", node)
-	Global.design.accept(trans)
+	print("Created object of type: ", type_name, " name: ", name, " at: ", position, )
+	design.accept(trans)
 	canvas.selection.replace(PackedInt64Array([node]))
-	close_panel()
 
 
 func input_began(_event: InputEvent, pointer_position: Vector2):
-	open_panel(pointer_position)
-	Global.set_modal(palette)
+	# TODO: Add shadow (also on input moved)
+	# open_panel(pointer_position)
+	# Global.set_modal(palette)
+	pass
 	
 func input_ended(_event: InputEvent, pointer_position: Vector2):
-	pass
+	place_object(pointer_position, object_panel.selected_item)
 	
 func input_moved(_event: InputEvent, move_delta: Vector2):
 	pass
-
-func tool_released():
-	close_panel()

@@ -4,6 +4,10 @@ class_name CanvasTool extends Node
 var canvas: DiagramCanvas
 var design: PoieticDesignController
 var prompt_manager: CanvasPromptManager
+
+var object_panel: ObjectPanel
+var last_selected_object_identifier: String = ""
+
 # FIXME: REFACTORING END
 
 var initial_pointer_position: Vector2 = Vector2()
@@ -35,7 +39,8 @@ func handle_intput(event: InputEvent) -> bool:
 	return is_consumed
 
 func tool_selected():
-	pass
+	if object_panel:
+		object_panel.hide()
 
 func input_began(_event: InputEvent, _pointer_position: Vector2) -> bool:
 	return false

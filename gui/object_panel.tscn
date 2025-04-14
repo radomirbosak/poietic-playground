@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbsf0e6jye3uf"]
+
+[ext_resource type="Script" uid="uid://1ookh01l10y8" path="res://gui/object_panel.gd" id="1_owprn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kek77"]
+bg_color = Color(0.190762, 0.190762, 0.190762, 1)
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+
+[node name="ObjectPanel" type="PanelContainer"]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 49.0
+offset_top = -252.0
+offset_right = 169.0
+offset_bottom = 145.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_kek77")
+script = ExtResource("1_owprn")
+
+[node name="ObjectList" type="GridContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
