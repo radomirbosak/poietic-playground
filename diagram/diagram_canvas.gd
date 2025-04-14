@@ -401,6 +401,14 @@ func get_selected_nodes() -> Array[DiagramNode]:
 			result.append(node)
 	return result
 
+func get_selected_connectors() -> Array[DiagramConnector]:
+	var result: Array[DiagramConnector] = []
+	for id in selection.get_ids():
+		var object = self.get_diagram_connector(id)
+		if object:
+			result.append(object)
+	return result
+
 func begin_drag_selection(_mouse_position: Vector2):
 	for node in get_selected_nodes():
 		node.is_dragged = true
@@ -408,6 +416,15 @@ func begin_drag_selection(_mouse_position: Vector2):
 func drag_selection(move_delta: Vector2):
 	for node in get_selected_nodes():
 		node.position += move_delta
+	for connector in get_selected_connectors():
+		var midpoints = connector.connector.midpoints
+		if midpoints.is_empty():
+			continue
+		var new_mids: PackedVector2Array = PackedVector2Array()
+		for point in midpoints:
+			new_mids.append(point + move_delta)
+		connector.connector.midpoints = new_mids
+		connector.update_midpoint_handles()
 	queue_redraw()
 
 
@@ -420,8 +437,14 @@ func finish_drag_selection(_final_position: Vector2) -> void:
 	
 	for node in get_selected_nodes():
 		node.is_dragged = false
-		var object = Global.design.get_object(node.object_id)
 		trans.set_attribute(node.object_id, "position", node.position)
+
+	for connector in get_selected_connectors():
+		var midpoints = connector.connector.midpoints
+		if midpoints.is_empty():
+			continue
+		trans.set_attribute(connector.object_id, "midpoints", midpoints)
+
 	Global.design.accept(trans)
 	queue_redraw()
 
