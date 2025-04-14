@@ -20,11 +20,11 @@ func set_type(type_name: String):
 func tool_selected():
 	object_panel.show()
 	object_panel.load_connector_pictograms()
+	object_panel.selection_changed.connect(_on_object_selection_changed)
 	if last_selected_object_identifier:
 		object_panel.selected_item = last_selected_object_identifier
 	else:
 		object_panel.selected_item = "Flow"
-	object_panel.selection_changed.connect(_on_object_selection_changed)
 
 func tool_released():
 	last_selected_object_identifier = object_panel.selected_item

@@ -8,9 +8,13 @@ var palette: ObjectPalette
 func tool_name() -> String:
 	return "place"
 
+func wants_hover_events() -> bool:
+	return true
+
 func tool_selected():
 	object_panel.show()
 	object_panel.load_node_pictograms()
+	object_panel.selection_changed.connect(_on_object_selection_changed)
 
 	if last_selected_object_identifier:
 		object_panel.selected_item = last_selected_object_identifier
@@ -19,7 +23,15 @@ func tool_selected():
 
 func tool_released():
 	last_selected_object_identifier = object_panel.selected_item
+	object_panel.selection_changed.disconnect(_on_object_selection_changed)
+	remove_intent_shadow()
 	close_panel()
+
+func _on_object_selection_changed(identifier: String):
+	if intent_shadow:
+		remove_intent_shadow()
+	create_intent_shadow(identifier, Vector2.ZERO)
+
 
 # TODO: Remove or re-purpose
 func open_panel(callout_position: Vector2):
@@ -57,10 +69,38 @@ func input_began(_event: InputEvent, pointer_position: Vector2):
 	# TODO: Add shadow (also on input moved)
 	# open_panel(pointer_position)
 	# Global.set_modal(palette)
+	# create_intent_shadow(object_panel.selected_item, pointer_position)
 	pass
 	
 func input_ended(_event: InputEvent, pointer_position: Vector2):
 	place_object(pointer_position, object_panel.selected_item)
+	# remove_intent_shadow()
 	
 func input_moved(_event: InputEvent, move_delta: Vector2):
-	pass
+	if intent_shadow:
+		intent_shadow.position += canvas.to_local(move_delta)
+		return true
+
+func input_hover(event: InputEvent, pointer_position: Vector2) -> bool:
+	if intent_shadow:
+		intent_shadow.position = canvas.to_local(pointer_position)
+	return true
+
+var intent_shadow: Node2D = null
+
+func create_intent_shadow(type_name: String, pointer_position: Vector2):
+	print("Creating shadow of type ", type_name)
+	assert(canvas != null)
+	assert(intent_shadow == null)
+	
+	intent_shadow = Sprite2D.new()
+	var pictogram: Pictogram = Global.get_pictogram(type_name)
+	intent_shadow.texture = ImageTexture.create_from_image(pictogram.get_image())
+	intent_shadow.modulate = Color(0.5, 0.5, 0.1, 0.8) 
+	canvas.add_child(intent_shadow)
+	intent_shadow.position = canvas.to_local(pointer_position)
+
+func remove_intent_shadow():
+	if not intent_shadow:
+		return
+	intent_shadow.free()

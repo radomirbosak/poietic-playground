@@ -21,6 +21,9 @@ func initialize(canvas: DiagramCanvas, design: PoieticDesignController, prompt_m
 func tool_name() -> String:
 	return "default"
 
+func wants_hover_events() -> bool:
+	return false # Override this
+
 func handle_intput(event: InputEvent) -> bool:
 	var is_consumed: bool = false
 	if event is InputEventMouseButton:
@@ -31,8 +34,11 @@ func handle_intput(event: InputEvent) -> bool:
 		elif event.is_released():
 			is_consumed = input_ended(event, mouse_position)
 			initial_pointer_position = Vector2()
-	elif event is InputEventMouseMotion and event.button_mask == MOUSE_BUTTON_LEFT:
-		is_consumed = input_moved(event, event.relative / canvas.zoom_level)
+	elif event is InputEventMouseMotion:
+		if event.button_mask == MOUSE_BUTTON_LEFT:
+			is_consumed = input_moved(event, event.relative / canvas.zoom_level)
+		elif wants_hover_events():  # Only process hover if tool wants it
+			is_consumed = input_hover(event, event.global_position)
 	elif event.is_canceled():
 		is_consumed = input_cancelled(event)
 		initial_pointer_position = Vector2()
@@ -53,6 +59,9 @@ func input_moved(_event: InputEvent, _move_delta: Vector2) -> bool:
 	
 func input_cancelled(_event: InputEvent) -> bool:
 	return false
+
+func input_hover(_event: InputEvent, _pointer_position: Vector2) -> bool:
+	return false  # Default implementation consumes nothing
 
 ## Release the tool.
 ## Called when another tools is selected.
