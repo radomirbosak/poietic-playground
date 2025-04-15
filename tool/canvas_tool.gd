@@ -24,7 +24,7 @@ func tool_name() -> String:
 func wants_hover_events() -> bool:
 	return false # Override this
 
-func handle_intput(event: InputEvent) -> bool:
+func handle_input(event: InputEvent) -> bool:
 	var is_consumed: bool = false
 	if event is InputEventMouseButton:
 		var mouse_position = event.global_position

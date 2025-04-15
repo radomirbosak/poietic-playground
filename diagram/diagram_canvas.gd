@@ -43,7 +43,7 @@ enum HitTargetType {
 	HANDLE,         # Handle (parent must be diagram object)
 	NAME,           # Diagram object
 	PRIMARY_ATTRIBUTE, # Formula
-	# ERROR_INDICATOR,
+	ERROR_INDICATOR,
 	# VALUE_INDICATOR,
 }
 
@@ -209,7 +209,7 @@ func _unhandled_input(event):
 		if not tool:
 			return
 		tool.canvas = self
-		if tool.handle_intput(event):
+		if tool.handle_input(event):
 			get_viewport().set_input_as_handled()
 
 func set_zoom_level(level: float, keep_position: Vector2) -> void:
@@ -265,6 +265,10 @@ func hit_target(hit_position: Vector2) -> HitTarget:
 		if target:
 			break
 			
+		if child is DiagramNode and child.issues_indicator.visible:
+			if child.issues_indicator.get_rect().has_point(child.to_local(hit_position)):
+				target = HitTarget.new(HitTargetType.ERROR_INDICATOR, child)
+				break
 		if child is DiagramNode and child.name_label.visible:
 			if child.name_label.get_rect().has_point(child.to_local(hit_position)):
 				target = HitTarget.new(HitTargetType.NAME, child)

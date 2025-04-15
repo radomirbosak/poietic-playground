@@ -10,6 +10,7 @@ class_name CanvasPromptManager extends Node
 @onready var label_prompt: CanvasLabelPrompt = $LabelPrompt
 @onready var attribute_prompt: AttributePrompt = $AttributePrompt
 @onready var context_menu: ContextMenu = $ContextMenu
+@onready var issue_prompt: IssuePrompt = $IssuePrompt
 
 var current_prompt: Control = null
 var canvas: DiagramCanvas = null
@@ -74,6 +75,17 @@ func open_context_menu(selection: PoieticSelection, desired_position: Vector2):
 	close()
 	current_prompt = context_menu
 	context_menu.open(selection, adjust_position(context_menu, desired_position))
+
+
+func open_issues_for(object_id: int):
+	close()
+	current_prompt = issue_prompt
+
+	var position = canvas.default_prompt_position(object_id)
+	var object: PoieticObject = Global.design.get_object(object_id)
+	var issues = Global.design.issues_for_object(object_id)
+	
+	issue_prompt.open(object_id, issues, position)
 
 func adjust_position(prompt, position: Vector2) -> Vector2:
 	var result: Vector2 = position

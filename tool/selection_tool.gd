@@ -15,6 +15,10 @@ var dragging_handle: Handle = null
 
 func tool_name() -> String:
 	return "select"
+
+func tool_released():
+	if prompt_manager:
+		prompt_manager.close()
 	
 func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 	var target: DiagramCanvas.HitTarget = canvas.hit_target(pointer_position)
@@ -54,6 +58,10 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 			var node: DiagramNode = target.object as DiagramNode
 			canvas.selection.replace(PackedInt64Array([node.object_id]))
 			prompt_manager.open_formula_editor_for(node.object_id)
+		DiagramCanvas.HitTargetType.ERROR_INDICATOR:
+			var node: DiagramNode = target.object as DiagramNode
+			canvas.selection.replace(PackedInt64Array([node.object_id]))
+			prompt_manager.open_issues_for(node.object_id)
 		_ :
 			push_warning("Unhandled hit target type: ", target.type)
 	return true

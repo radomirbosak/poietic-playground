@@ -10,7 +10,7 @@ var object_name: Variant # String
 		if issues_indicator:
 			issues_indicator.visible = has_issues
 
-@export var issues_indicator: Polygon2D
+@export var issues_indicator: Node2D
 var default_issues_indicator_size: float = 10.0
 var default_issues_indicator_offset: Vector2 = Vector2(0, -10)
 

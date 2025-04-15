@@ -133,19 +133,20 @@ func update_children() -> void:
 	# Indicators
 	
 	if issues_indicator == null:
-		var height: float = (sqrt(3.0) / 2.0) * default_issues_indicator_size
-		issues_indicator = Polygon2D.new()
-		var polygon: PackedVector2Array = [
-			Vector2(-default_issues_indicator_size, -height),
-			Vector2(+default_issues_indicator_size, -height),
-			Vector2(0, height),
-			Vector2(-default_issues_indicator_size, -height),
-		]
-		issues_indicator.z_index = DiagramCanvas.issues_indicator_z_index
-		issues_indicator.polygon = polygon
-		issues_indicator.color = Color.RED
-		issues_indicator.position = Vector2(0, -shape_rect.size.y/2) + default_issues_indicator_offset
-		issues_indicator.visible = false
+		#var height: float = (sqrt(3.0) / 2.0) * default_issues_indicator_size
+		#issues_indicator = Polygon2D.new()
+		#var polygon: PackedVector2Array = [
+			#Vector2(-default_issues_indicator_size, -height),
+			#Vector2(+default_issues_indicator_size, -height),
+			#Vector2(0, height),
+			#Vector2(-default_issues_indicator_size, -height),
+		#]
+		#issues_indicator.z_index = DiagramCanvas.issues_indicator_z_index
+		#issues_indicator.polygon = polygon
+		#issues_indicator.color = Color.RED
+		#issues_indicator.position = Vector2(0, -shape_rect.size.y/2) + default_issues_indicator_offset
+		#issues_indicator.visible = false
+		issues_indicator = IssueIndicator.new()
 		self.add_child(issues_indicator)
 		
 	children_needs_update = false
