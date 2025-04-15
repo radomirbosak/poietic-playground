@@ -52,13 +52,11 @@ func input_began(_event: InputEvent, pointer_position: Vector2):
 func input_moved(_event: InputEvent, move_delta: Vector2):
 	if state == ConnectToolState.CONNECT:
 		dragging_connector.target_point += move_delta
-		var target = canvas.hit_target(dragging_connector.target_point)
+		var target = canvas.hit_object(dragging_connector.target_point)
 		if not target:
 			return
-		elif target.type != DiagramCanvas.HitTargetType.OBJECT:
-			return
-		elif target.object is DiagramNode:
-			if can_connect(target.object):
+		if target is DiagramNode:
+			if can_connect(target):
 				Input.set_default_cursor_shape(Input.CURSOR_CAN_DROP)
 			else:
 				Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
@@ -73,14 +71,12 @@ func input_ended(_event: InputEvent, pointer_position: Vector2):
 			assert(dragging_connector != null)
 			state = ConnectToolState.EMPTY
 
-			var target = canvas.hit_target(pointer_position)
+			var target = canvas.hit_object(pointer_position)
 			if not target:
 				cancel_drag_connector()
-			elif target.type != DiagramCanvas.HitTargetType.OBJECT:
-				cancel_drag_connector()
-			elif target.object is DiagramNode:
-				if can_connect(target.object):
-					create_connector(origin, target.object)
+			elif target is DiagramNode:
+				if can_connect(target):
+					create_connector(origin, target)
 				else:
 					# Do some "poofffffff" animation here
 					pass

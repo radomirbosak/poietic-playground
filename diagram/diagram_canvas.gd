@@ -249,7 +249,9 @@ func set_charts_visible(flag: bool):
 	# push_warning("Visible zoomed charts are not yet implemented")
 	pass
 
-## Returns either a DiagramObject or a handle at given position.
+## Returns a target `HitTargetType` under position, which can be an object, handle or an indicator.
+##
+## See also: `hit_object(hit_position)`
 ##
 func hit_target(hit_position: Vector2) -> HitTarget:
 	var target: HitTarget = null
@@ -282,6 +284,18 @@ func hit_target(hit_position: Vector2) -> HitTarget:
 				break   # No handles are visible, no need to test them
 
 	return target
+	
+## Returns an object under given position.
+##
+## See also: `hit_target(hit_position)`
+##
+func hit_object(hit_position: Vector2) -> DiagramObject:
+	for child in get_children():
+		if child is not DiagramObject:
+			continue
+		if child.contains_point(hit_position):
+			return child
+	return null
 
 func get_connectors(node: DiagramNode) -> Array[DiagramConnector]:
 	var children: Array[DiagramConnector] = []
