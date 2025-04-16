@@ -364,7 +364,7 @@ func select_all():
 # -------------------------------------------------------------------------
 
 func auto_connect_parameters():
-	Global.design.auto_connect_parameters([])
+	Global.design.auto_connect_parameters(PackedInt64Array())
 
 func remove_midpoints():
 	canvas.remove_midpoints_in_selection()
