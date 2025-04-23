@@ -99,7 +99,6 @@ func adjust_position(prompt, position: Vector2) -> Vector2:
 		result.x = vp_size.x - prompt_size.x
 	if result.y + prompt_size.y > vp_size.y:
 		result.y = vp_size.y - prompt_size.y
-	prints(prompt_size, vp_size, position, result)
 	return result
 
 func close():
