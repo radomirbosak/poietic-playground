@@ -1,21 +1,33 @@
 class_name InspectorPanel extends PanelContainer
 
-@onready var inspector_title_label = %InspectorTitle
+@onready var title_label = %InspectorTitle
+@onready var subtitle_label = %InspectorSubtitle
+@onready var chart = %Chart
+@onready var primary_attribute_label = %PrimaryAttributeLabel
+@onready var primary_attribute_icon = %PrimaryAttributeIcon
 @onready var traits_container = %TraitsContainer
 
-## Panel for inspecting diagram elements.
-##
-
-# TODO: Do we need new selection? We should query the canvas one.
 var selection: PoieticSelection
 
-func get_type_id(type_name: String):
-	match type_name:
-		"stock": return 1
-		"flow": return 2
-		"auxiliary": return 3
-		_: return 0
-		
+@export var design_ctrl: PoieticDesignController
+@export var player: PoieticPlayer
+@export var canvas: DiagramCanvas
+
+func initialize(design_ctrl: PoieticDesignController, player: PoieticPlayer, canvas: DiagramCanvas):
+	self.design_ctrl = design_ctrl
+	self.player = player
+	self.canvas = canvas
+	
+	design_ctrl.simulation_finished.connect(_on_simulation_success)
+	design_ctrl.simulation_failed.connect(_on_simulation_failed)
+	canvas.selection.selection_changed.connect(_on_selection_changed)
+
+func _on_simulation_success(result):
+	chart.update_from_result(result)
+	
+func _on_simulation_failed():
+	chart.update_from_result(player.result)
+
 func _on_selection_changed(new_selection):
 	# TODO: Do we need new selection? We should query the canvas one.
 	set_selection(new_selection)
@@ -26,26 +38,52 @@ func _on_design_changed(success: bool):
 
 func set_selection(new_selection):
 	self.selection = new_selection
-	prints("Selection changed: ", selection.count(), " nodes selected: ", selection.get_ids())
 	
+	var type_label: String = ""
 	var type_names = Global.design.get_distinct_types(selection)
-
+	
 	if len(type_names) == 0:
-		inspector_title_label.text = "nothing selected"
+		subtitle_label.text = ""
 	elif len(type_names) == 1:
-		var text: String = type_names[0]
-		if selection.count() > 1:
-			text += " (" + str(selection.count()) + " selected)"
-		inspector_title_label.text = text
+		subtitle_label.text = type_names[0]
+		type_label = type_names[0]
 	else:
-		var text = "Multiple types (" + str(selection.count()) + " selected)"
-		inspector_title_label.text = text
+		type_label = "multiple types"
+		subtitle_label.text = type_label
+	
+	
+	var distinct_names = Global.design.get_distinct_values(selection, "name")
+
+	if selection.is_empty():
+		inspect_design()
+		return
+	elif selection.count() == 1:
+		var object: PoieticObject = Global.design.get_object(selection.get_ids()[0])
+		if object and object.object_name:
+			title_label.text = object.object_name
+		else:
+			title_label.text = "Unnamed"
+	else:
+		title_label.text = str(selection.count()) + " of " + type_label
+	
 	
 	var traits = Global.design.get_shared_traits(selection)
 	set_traits(traits)
 	
 	for panel in traits_container.get_children():
 		panel.set_selection(new_selection)
+
+	# Chart
+	# TODO: Check whether having a chart is relevant
+	var ids = selection.get_ids()
+	if ids:
+		chart.series_ids = ids
+	else:
+		chart.series_ids = []
+
+	chart.show()
+	chart.update_from_result(player.result)
+
 
 func set_traits(traits: Array[String]):
 	for child in traits_container.get_children():
@@ -62,17 +100,22 @@ func set_traits(traits: Array[String]):
 		if panel:
 			traits_container.add_child(panel)
 
-static func group_with_name(name: String) -> Container:
-	match name:
-		"Name":
-			var container: VBoxContainer = VBoxContainer.new()
-			var label: Label = Label.new()
-			var field: LineEdit = LineEdit.new()
-			
-			container.add_child(label)
-			container.add_child(field)
-				
-			return container
-		_:
-			return null
-			
+func inspect_design():
+	for child in traits_container.get_children():
+		traits_container.remove_child(child)
+
+	
+	# TODO: Use Global.design.get_design_object()
+	# Design Info Attributes:
+	#	- title
+	#   - abstract
+	#   - author
+	#   - date
+	
+	title_label.text = "Design"
+	subtitle_label.text = "Design"
+	chart.hide()
+	var panel = InspectorTraitPanel.panel_for_trait("Design")
+	if not panel:
+		return
+	traits_container.add_child(panel)

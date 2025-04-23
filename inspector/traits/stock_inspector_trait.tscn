@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://cg1515wjfp04s"]
+
+[ext_resource type="Script" uid="uid://bjgio5fmql37x" path="res://inspector/traits/stock_inspector_trait.gd" id="1_sl5ee"]
+[ext_resource type="Script" uid="uid://dq551sb5tha7p" path="res://gui/tristate_check_button.gd" id="3_pu7ig"]
+
+[node name="StockInspectorTrait" type="PanelContainer"]
+offset_right = 67.0
+offset_bottom = 58.0
+size_flags_horizontal = 3
+script = ExtResource("1_sl5ee")
+
+[node name="VBoxContainer" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 2
+
+[node name="AllowsNegativeLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Allows negative"
+
+[node name="AllowsNegativeCheck" type="CheckButton" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("3_pu7ig")
+state = 2
+metadata/_custom_type_script = "uid://dq551sb5tha7p"
+
+[connection signal="toggled" from="VBoxContainer/AllowsNegativeCheck" to="." method="_on_allows_negative_check_toggled"]

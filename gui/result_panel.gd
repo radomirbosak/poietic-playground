@@ -54,7 +54,7 @@ func update_selection_chart(result: PoieticResult):
 	else:
 		chart.series_ids = []
 		
-	update_chart(chart, result)
+	chart.update_from_result(result)
 
 func update_pinned_charts(result: PoieticResult):
 	var items = %ChartContainer.get_children()
@@ -64,7 +64,7 @@ func update_pinned_charts(result: PoieticResult):
 		update_chart_item(item, result)
 
 func update_chart_item(item: ResultChartItem, result: PoieticResult):
-	update_chart(item.chart, result)
+	item.chart.update_from_result(result)
 	var names: Array[String] = []
 	for id in item.chart.series_ids:
 		var object: PoieticObject = design_ctrl.get_object(id)
@@ -78,14 +78,6 @@ func update_chart_item(item: ResultChartItem, result: PoieticResult):
 		item.chart_label.text = "(empty)"
 	else:
 		item.chart_label.text = ", ".join(names)
-
-func update_chart(chart: Chart, result: PoieticResult) -> void:
-	chart.clear_series()
-	for id in chart.series_ids:
-		var series = result.time_series(id)
-		if not series:
-			continue
-		chart.append_series(series)
 
 func _on_add_chart_button_pressed():
 	var ids = canvas.selection.get_ids()

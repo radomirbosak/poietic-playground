@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://4f4b1qk6w8aa"]
+
+[ext_resource type="Script" uid="uid://cannkicwfp825" path="res://inspector/traits/delay_inspector_trait.gd" id="1_7h36t"]
+[ext_resource type="Script" uid="uid://dsl7j5cnrmkl7" path="res://gui/indeterminate_spin_box.gd" id="2_jcdu7"]
+
+[node name="DelayInspectorTrait" type="PanelContainer"]
+offset_right = 67.0
+offset_bottom = 58.0
+size_flags_horizontal = 3
+script = ExtResource("1_7h36t")
+
+[node name="VBoxContainer" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 2
+
+[node name="DurationLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Delay time units"
+
+[node name="DurationInput" type="SpinBox" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Number of time units (steps) to delay input value by"
+max_value = 999999.0
+rounded = true
+allow_greater = true
+script = ExtResource("2_jcdu7")
+metadata/_custom_type_script = "uid://dsl7j5cnrmkl7"
+
+[connection signal="value_changed" from="VBoxContainer/DurationInput" to="." method="_on_duration_input_value_changed"]

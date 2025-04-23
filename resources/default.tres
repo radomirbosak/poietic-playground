@@ -1,7 +1,8 @@
-[gd_resource type="Theme" load_steps=7 format=3 uid="uid://dws6dqiic6wt"]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://dws6dqiic6wt"]
 
 [ext_resource type="FontFile" uid="uid://6y6i5dhrvmps" path="res://resources/fonts/IBMPlexSansCondensed-Light.otf" id="1_vajuw"]
 [ext_resource type="FontFile" uid="uid://bf4sfp1whyleo" path="res://resources/fonts/IBMPlexSansCondensed-LightItalic.otf" id="2_7bl14"]
+[ext_resource type="FontFile" uid="uid://0tkw3rs84eeo" path="res://resources/fonts/IBMPlexSansCondensed-Bold.otf" id="3_7bl14"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7bl14"]
 bg_color = Color(0.28485, 0.28485, 0.28485, 1)
@@ -52,6 +53,12 @@ Button/styles/normal = null
 Button/styles/pressed = null
 CanvasPrompt/base_type = &"PanelContainer"
 CanvasPrompt/styles/panel = SubResource("StyleBoxFlat_7bl14")
+InspectorSubtitle/base_type = &"Label"
+InspectorSubtitle/font_sizes/font_size = 24
+InspectorSubtitle/fonts/font = ExtResource("2_7bl14")
+InspectorTitle/base_type = &"Label"
+InspectorTitle/font_sizes/font_size = 40
+InspectorTitle/fonts/font = ExtResource("3_7bl14")
 Label/constants/horizontal_padding = 20
 NodeFormulaLabel/base_type = &"Label"
 NodeFormulaLabel/colors/font_color = Color(0.483595, 0.748613, 0.924655, 1)

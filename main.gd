@@ -45,6 +45,7 @@ func _ready():
 	initialize_tools()
 	control_bar.initialize(design_ctrl, player)
 	result_panel.initialize(design_ctrl, player, canvas)
+	inspector_panel.initialize(design_ctrl, player, canvas)
 	prompt_manager.initialize(canvas)
 
 	# Initialize and connect Inspector

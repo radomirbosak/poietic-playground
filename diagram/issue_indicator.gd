@@ -1,6 +1,6 @@
 class_name IssueIndicator extends Node2D
 
-var size: float = 48
+var size: float = 40
 var icon: Sprite2D
 var icon_scale: float
 

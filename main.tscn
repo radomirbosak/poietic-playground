@@ -38,11 +38,10 @@ text = "Text"
 
 [node name="InspectorPanel" parent="Gui" instance=ExtResource("4_uq7uj")]
 unique_name_in_owner = true
-visible = false
 anchors_preset = 6
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
+offset_left = -419.0
 offset_top = -200.0
 offset_right = 0.0
 offset_bottom = 200.0
@@ -77,6 +76,7 @@ metadata/_custom_type_script = "uid://cyfyvtcdjamr3"
 [node name="CanvasPromptManager" parent="Gui" instance=ExtResource("6_272bh")]
 
 [node name="SidePanel" type="PanelContainer" parent="Gui"]
+visible = false
 anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0

@@ -153,3 +153,13 @@ func tick_marks(min: float, max: float, step: float) -> PackedFloat32Array:
 
 func _data_changed():
 	pass
+
+func update_from_result(result: PoieticResult) -> void:
+	if not result: # FIXME NOW!!!!!!!
+		return
+	clear_series()
+	for id in series_ids:
+		var series = result.time_series(id)
+		if not series:
+			continue
+		append_series(series)

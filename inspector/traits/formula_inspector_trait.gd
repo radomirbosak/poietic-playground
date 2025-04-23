@@ -5,10 +5,6 @@ var _is_updating: bool = false
 @onready var label: Label = $VBoxContainer/Label
 @onready var formula_field: TextEdit = $VBoxContainer/FormulaField
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
 func on_selection_changed():
 	var distinct_values = Global.design.get_distinct_values(selection, "formula")
 
