@@ -1,0 +1,3 @@
+[submodule "poietic-godot"]
+	path = poietic-godot
+	url = https://github.com/OpenPoiesis/poietic-godot.git
