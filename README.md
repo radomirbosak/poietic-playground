@@ -1,32 +1,56 @@
 # Poietic Playground
 
-Experimental playground for creating and running models.
+An educational tool, a virtual laboratory for modelling and simulation of
+dynamical systems using the [Stock and Flow](https://en.wikipedia.org/wiki/Stock_and_flow)
+methodology.
 
-Idea is to have a virtual laboratory as an educational tool/toy for modelling,
-simulation and reasoning.
+![Poietic Playground prototype screenshot](docs/screenshots/PoieticPlayground-prototype-screenshot-2025-04-23.png?raw=true)
 
-See [Open Poiesis](https://www.poietic.org) for more information.
+Part of the [Open Poiesis](https://www.poietic.org) project.
+
+## Primers
+
+The following literature is a good start with the methodology used in the playground:
+
+- [Thinking In Systems: A Primer](https://www.goodreads.com/book/show/3828902-thinking-in-systems) by Donella Meadows
+- [Business Dynamics: Systems Thinking and Modeling for a Complex World](https://www.goodreads.com/book/show/808680.Business_Dynamics?ref=nav_sb_ss_1_36) by John D. Sterman
 
 ## Reqiurements
 
-This is a [Godot](http://godotengine.org) application that is using SwiftGodot plug-in for simulation
-libraries written in Swift.
+This is a **[Godot](http://godotengine.org)** application which uses the
+Poietic Stock and Flow simulation engine plugin written in **[Swift](https://www.swift.org/)**.
 
-- [Godot Engine](https://godotengine.org) (version >= 4.3)
-- [Poietic Godot extension](https://github.com/OpenPoiesis/poietic-godot)
+### Instructions
 
-Automatic dependencies (no need to install):
+1. Download the Godot Engine using one of the following methods:
+	- [Download Webpage](https://godotengine.org/download) (version >= 4.4)
+	- On MacOS use `brew install godot`
+2. Install Swift:
+	- On MacOS: [Install Xcode](https://developer.apple.com/xcode/).
+	- On other platforms: [Install Swift](https://www.swift.org/getting-started/)
+
+## Build from Sources
+
+Get the Poietic Playground sources with submodules and run the `build` script:
+
+```sh
+git clone --recurse-submodules https://github.com/OpenPoiesis/poietic-playground.git
+./build
+```
+
+The `build` script does the following:
 	
-- [SwiftGodot](https://github.com/migueldeicaza/SwiftGodot)
-- [Poietic Flows](https://github.com/OpenPoiesis/poietic-flows)
-- [Poietic Core](https://github.com/OpenPoiesis/poietic-core)
+- Updates the submodule.
+- Builds the Swift Godot plugin
+- Copies the artifacts into the `./bin` directory.
 
-## Build
+### Dependencies
 
-The build process is a bit convoluted right now. Process will be simplified
-and described here.
-
-For now, follow Poietic Godot and Swift Godot instructions linked above.
+- Poietic
+	- [Core](https://github.com/OpenPoiesis/poietic-core) – Model and design representation library
+	- [Flows](https://github.com/OpenPoiesis/poietic-flows) – Stock and Flow simulation library
+	- [Godot](https://github.com/OpenPoiesis/poietic-godot) – Godot plugin that wraps the Poietic flows simulator
+- [SwiftGodot](https://github.com/migueldeicaza/SwiftGodot) – Bridge for Godot plugins written in Swift
 
 ## Authors
 
