@@ -17,11 +17,6 @@ func initialize(design_ctrl: PoieticDesignController, player: PoieticPlayer, can
 	design_ctrl.simulation_failed.connect(_on_simulation_failed)
 	canvas.selection.selection_changed.connect(_on_selection_changed)
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
@@ -30,31 +25,13 @@ func _on_design_changed():
 	pass
 
 func _on_simulation_success(result):
-	update_selection_chart(result)
 	update_pinned_charts(result)
 	
 func _on_simulation_failed():
-	# TODO: Godot does not seem to infer the player.result type correctly.
-	update_selection_chart(player.result)
+	pass
 	
 func _on_selection_changed(selection):
-	# TODO: Godot does not seem to infer the player.result type correctly.
-	update_selection_chart(player.result)
-
-func update_selection_chart(result: PoieticResult):
-	var chart: Chart = %SelectionChart
-	chart.clear_series()
-
-	if not result:
-		return
-
-	var ids = canvas.selection.get_ids()
-	if ids:
-		chart.series_ids = ids
-	else:
-		chart.series_ids = []
-		
-	chart.update_from_result(result)
+	pass
 
 func update_pinned_charts(result: PoieticResult):
 	var items = %ChartContainer.get_children()
@@ -88,6 +65,7 @@ func _on_add_chart_button_pressed():
 	var chart_item: ResultChartItem = load("res://gui/result_chart_item.tscn").instantiate()
 	%ChartContainer.add_child(chart_item)
 	var chart: Chart = chart_item.chart
+	chart.custom_minimum_size.x = 300
 	chart.custom_minimum_size.y = 200
 	chart.add_to_group(&"live_charts")
 	chart.series_ids = ids

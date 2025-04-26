@@ -18,6 +18,11 @@ script = ExtResource("1_2q6io")
 
 [node name="MainBar" parent="Gui" instance=ExtResource("2_kek77")]
 
+[node name="PlayerControlBar" parent="Gui" instance=ExtResource("7_kek77")]
+unique_name_in_owner = true
+offset_left = -377.0
+offset_bottom = 134.0
+
 [node name="ToolBar" parent="Gui" instance=ExtResource("3_qq1bh")]
 anchors_preset = 0
 anchor_top = 0.0
@@ -75,24 +80,16 @@ metadata/_custom_type_script = "uid://cyfyvtcdjamr3"
 
 [node name="CanvasPromptManager" parent="Gui" instance=ExtResource("6_272bh")]
 
-[node name="SidePanel" type="PanelContainer" parent="Gui"]
-visible = false
-anchors_preset = 11
-anchor_left = 1.0
+[node name="BottomPanel" type="PanelContainer" parent="Gui"]
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -250.0
-grow_horizontal = 0
-grow_vertical = 2
+offset_top = -235.0
+grow_horizontal = 2
+grow_vertical = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Gui/SidePanel"]
-layout_mode = 2
-
-[node name="ResultPanel" parent="Gui/SidePanel/VBoxContainer" instance=ExtResource("5_272bh")]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="PlayerControlBar" parent="Gui/SidePanel/VBoxContainer" instance=ExtResource("7_kek77")]
+[node name="ResultPanel" parent="Gui/BottomPanel" instance=ExtResource("5_272bh")]
 unique_name_in_owner = true
 layout_mode = 2
 
