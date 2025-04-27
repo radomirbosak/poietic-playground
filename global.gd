@@ -36,13 +36,13 @@ func initialize(design: PoieticDesignController, player: PoieticPlayer):
 static func _load_pictograms():
 	# TODO: Adjust the scales based on the rules for the pictogram sizes (not yet defined)
 	var circle = CircleShape2D.new()
-	circle.radius = Pictogram.tile_size / Pictogram.default_image_scale
+	circle.radius = Pictogram.tile_size / 2
 	var square = RectangleShape2D.new()
 	square.size = Vector2(Pictogram.tile_size, Pictogram.tile_size)
 	var rectangle = RectangleShape2D.new()
 	rectangle.size = Vector2(Pictogram.tile_size * 3, Pictogram.tile_size * 2)
 	var flow_shape = CircleShape2D.new()
-	flow_shape.radius = Pictogram.tile_size * 0.8
+	flow_shape.radius = Pictogram.tile_size * 0.7
 	
 	_all_pictograms.clear()
 	

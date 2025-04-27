@@ -31,7 +31,7 @@ const selection_outline_width: float = 5
 
 const outline_width = 4
 
-@export var head_size: float = 30.0
+@export var head_size: float = 500
 @export var line_width: float = -1
 @export var line_color: Color = Color.WHITE
 

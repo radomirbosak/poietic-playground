@@ -87,7 +87,7 @@ func _draw():
 		for poly in polygons:
 			draw_polygon(poly, [color])
 			poly.append(poly[0])
-			draw_polyline(poly, DiagramCanvas.default_selection_color, 3)
+			draw_polyline(poly, DiagramCanvas.default_selection_color, 2)
 
 		# DiagramGeometry.draw_shape(self, selection_highlight_shape, DiagramCanvas.default_selection_color, 2)
 		

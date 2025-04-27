@@ -7,8 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://ijgs3brho08s" path="res://resources/icons/white/ok.png" id="4_fl0tg"]
 
 [node name="FormulaPrompt" type="PanelContainer"]
-offset_right = 364.0
-offset_bottom = 78.0
+offset_right = 262.0
+offset_bottom = 58.0
 theme = ExtResource("1_xuxp2")
 theme_type_variation = &"CanvasPrompt"
 script = ExtResource("1_dqs07")
@@ -25,7 +25,7 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 texture = ExtResource("2_o6d35")
 expand_mode = 1
@@ -33,19 +33,20 @@ stretch_mode = 5
 
 [node name="FormulaField" type="LineEdit" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+text = "1 + 1"
 
 [node name="RejectFormulaButton" type="Button" parent="MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 icon = ExtResource("3_xuxp2")
 icon_alignment = 1
 expand_icon = true
 
 [node name="AcceptFormulaButton" type="Button" parent="MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 icon = ExtResource("4_fl0tg")
 icon_alignment = 1

@@ -26,7 +26,7 @@ func _ready():
 	item.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 	item.expand_icon = true
 	item.theme_type_variation = "ObjectListItem"
-	item.custom_minimum_size = Vector2(120,100)
+	item.custom_minimum_size = Vector2(60,50)
 	item.toggle_mode = true
 	
 	prototype_item = item

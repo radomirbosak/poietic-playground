@@ -2,8 +2,8 @@ class_name Pictogram extends Object
 
 const placeable_nodes = ["Stock", "FlowRate", "Auxiliary", "GraphicalFunction", "Smooth", "Delay"]
 
-const tile_size = 50
-const default_image_scale = 1.7
+const tile_size = 30
+const default_image_scale = 1.0
 
 var name: String
 var shape: Shape2D

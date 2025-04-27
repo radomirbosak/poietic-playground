@@ -4,13 +4,16 @@
 [ext_resource type="Script" uid="uid://cyfyvtcdjamr3" path="res://gui/chart.gd" id="2_rgco1"]
 
 [node name="InspectorPanel" type="PanelContainer"]
-anchors_preset = 1
+anchors_preset = 6
 anchor_left = 1.0
+anchor_top = 0.5
 anchor_right = 1.0
-offset_left = -1280.0
-offset_right = -912.0
-offset_bottom = 400.0
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -202.0
+offset_bottom = 88.0
 grow_horizontal = 0
+grow_vertical = 2
 size_flags_horizontal = 10
 size_flags_vertical = 2
 theme_type_variation = &"CanvasPrompt"
@@ -60,7 +63,7 @@ layout_mode = 2
 
 [node name="Chart" type="Control" parent="MarginContainer/MainContainer/TabContainer/Overview/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 200)
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 script = ExtResource("2_rgco1")
 metadata/_custom_type_script = "uid://cyfyvtcdjamr3"

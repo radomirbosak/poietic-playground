@@ -48,8 +48,8 @@ func sync_charts():
 		var chart_item: ResultChartItem = load("res://gui/result_chart_item.tscn").instantiate()
 		chart_container.add_child(chart_item)
 		var chart: Chart = chart_item.chart
-		chart.custom_minimum_size.x = 300
-		chart.custom_minimum_size.y = 200
+		chart.custom_minimum_size.x = 200
+		chart.custom_minimum_size.y = 120
 		chart.add_to_group(&"live_charts")
 		sync_chart_from(chart_item, chart_object)
 

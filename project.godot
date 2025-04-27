@@ -31,9 +31,11 @@ gdscript/warnings/shadowed_global_identifier=0
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
+window/size/viewport_width=1280
+window/size/viewport_height=960
 window/size/initial_position_type=0
+window/stretch/aspect="ignore"
+window/dpi/allow_hidpi=false
 
 [editor]
 
@@ -48,10 +50,11 @@ live_charts=""
 
 [gui]
 
-theme/default_theme_scale=2.0
 theme/custom="uid://dws6dqiic6wt"
 theme/custom_font="uid://6y6i5dhrvmps"
 theme/default_font_antialiasing=2
+theme/default_font_multichannel_signed_distance_field=true
+theme/default_font_generate_mipmaps=true
 
 [input]
 

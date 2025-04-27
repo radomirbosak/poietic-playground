@@ -18,8 +18,8 @@ bg_color = Color(0.171875, 0.171875, 0.171875, 1)
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -381.0
-offset_bottom = 126.0
+offset_left = -199.0
+offset_bottom = 78.0
 grow_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_2a3yf")
 script = ExtResource("1_bjxsy")
@@ -40,7 +40,7 @@ size_flags_horizontal = 4
 
 [node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 tooltip_text = "Reset"
 theme_type_variation = &"SelectableToolbarItem"
@@ -49,7 +49,7 @@ expand_icon = true
 
 [node name="StopButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 tooltip_text = "Stop"
 theme_type_variation = &"SelectableToolbarItem"
@@ -58,7 +58,7 @@ expand_icon = true
 
 [node name="RunButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 tooltip_text = "Run"
 theme_type_variation = &"SelectableToolbarItem"
@@ -68,7 +68,7 @@ expand_icon = true
 
 [node name="LoopButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 tooltip_text = "Loop"
 theme_type_variation = &"SelectableToolbarItem"
@@ -86,7 +86,7 @@ horizontal_alignment = 2
 
 [node name="TimeField" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_q16gx")
 text = "0"
@@ -98,7 +98,7 @@ text = "End"
 
 [node name="EndTimeField" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 text = "10"
 alignment = 2

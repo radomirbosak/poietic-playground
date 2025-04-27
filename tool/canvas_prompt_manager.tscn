@@ -13,16 +13,14 @@ script = ExtResource("1_wilto")
 
 [node name="FormulaPrompt" parent="." instance=ExtResource("2_5jmky")]
 visible = false
-offset_right = 372.0
-offset_bottom = 86.0
 
 [node name="ContextMenu" parent="." instance=ExtResource("3_sbbhr")]
 visible = false
 
 [node name="LabelPrompt" type="LineEdit" parent="."]
 visible = false
-offset_right = 200.0
-offset_bottom = 58.0
+offset_right = 118.0
+offset_bottom = 30.0
 alignment = 1
 script = ExtResource("4_6aihm")
 metadata/_custom_type_script = "uid://ca8frkyxoem7n"

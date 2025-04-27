@@ -37,11 +37,11 @@ static func create_connector(type_name: String, origin_point: Vector2 = Vector2(
 	match type_name:
 		"Flow":
 			connector = FatConnector.new()
-			connector.head_size = 40
+			connector.head_size = 30
 		"Parameter":
 			connector = ThinConnector.new()
-			connector.head_size = 20
-			connector.tail_size = 15
+			connector.head_size = 15
+			connector.tail_size = 10
 			connector.head_type = ThinConnector.ArrowheadType.STICK
 			connector.tail_type = ThinConnector.ArrowheadType.BALL
 		_:
@@ -49,7 +49,7 @@ static func create_connector(type_name: String, origin_point: Vector2 = Vector2(
 			connector.head_size = 20
 	connector.outline_color = DiagramCanvas.default_selection_color
 	connector.set_endpoints(origin_point, target_point)
-	connector.line_width = 2.0
+	connector.line_width = 1.0
 	return connector
 
 func _process(_delta: float) -> void:

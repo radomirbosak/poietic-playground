@@ -13,7 +13,7 @@ class_name FatConnector extends Connector
 		queue_redraw()
 
 # Outline (move to separate node type)
-@export var width: float = 10.0
+@export var width: float = 7.0
 @export var fill_color: Color = Color.DARK_GRAY
 
 enum ArrowStyle {
