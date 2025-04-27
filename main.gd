@@ -38,7 +38,7 @@ func _ready():
 	get_viewport().connect("size_changed", _on_window_resized)
 	
 	_initialize_main_menu()
-	
+		
 	design_ctrl = PoieticDesignController.new()
 	
 	Global.initialize(design_ctrl, player)
@@ -48,24 +48,12 @@ func _ready():
 	inspector_panel.initialize(design_ctrl, player, canvas)
 	prompt_manager.initialize(canvas)
 
-	# Initialize and connect Inspector
-	design_ctrl.design_changed.connect(inspector_panel._on_design_changed)
-	canvas.selection.selection_changed.connect(inspector_panel._on_selection_changed)
-
-	# Initialize and connect Canvas
-
 	design_ctrl.design_changed.connect(self._on_design_changed)
 	design_ctrl.design_reset.connect(self._on_design_reset)
-
-	canvas.canvas_view_changed.connect(self._on_canvas_view_changed)
-
-	# TODO: See inspector panel source comment about selection
-	inspector_panel.selection = canvas.selection
-	
 	design_ctrl.simulation_started.connect(self._on_simulation_started)
 	design_ctrl.simulation_finished.connect(self._on_simulation_success)
-
 	design_ctrl.simulation_failed.connect(self._on_simulation_failure)
+	canvas.canvas_view_changed.connect(self._on_canvas_view_changed)
 
 	# Load demo design
 	var path = "res://resources/new_canvas_demo_design.json"
@@ -334,10 +322,10 @@ func import_foreign_frame():
 	$FileDialog.show()
 
 func import_foreign_frame_from(path: String):
-	Global.design.import_from_path(path)
+	design_ctrl.import_from_path(path)
 
 func import_foreign_frame_from_data(data: PackedByteArray):
-	Global.design.import_from_data(data)
+	design_ctrl.import_from_data(data)
 
 # Edit Menu
 # -------------------------------------------------------------------------

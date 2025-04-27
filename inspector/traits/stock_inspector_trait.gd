@@ -1,11 +1,12 @@
 extends InspectorTraitPanel
 
-@onready var allows_negative_check: TriStateCheckButton = $VBoxContainer/AllowsNegativeCheck
+@onready var allows_negative_check: TriStateCheckButton = %AllowsNegativeCheck
 
+func _ready():
+	pass
 
 func on_selection_changed():
 	var distinct_allow_negative = Global.design.get_distinct_values(selection, "allows_negative")
-	print("DISTINCT: ", distinct_allow_negative)
 	if len(distinct_allow_negative) == 0:
 		allows_negative_check.disabled = true
 	elif len(distinct_allow_negative) == 1:

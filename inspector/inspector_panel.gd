@@ -4,7 +4,7 @@ class_name InspectorPanel extends PanelContainer
 @onready var subtitle_label = %InspectorSubtitle
 @onready var chart = %Chart
 @onready var primary_attribute_label = %PrimaryAttributeLabel
-@onready var primary_attribute_icon = %PrimaryAttributeIcon
+# @onready var primary_attribute_icon = %PrimaryAttributeIcon
 @onready var traits_container = %TraitsContainer
 
 var selection: PoieticSelection
@@ -18,6 +18,9 @@ func initialize(design_ctrl: PoieticDesignController, player: PoieticPlayer, can
 	self.player = player
 	self.canvas = canvas
 	
+	selection = canvas.selection
+
+	design_ctrl.design_changed.connect(_on_design_changed)
 	design_ctrl.simulation_finished.connect(_on_simulation_success)
 	design_ctrl.simulation_failed.connect(_on_simulation_failed)
 	canvas.selection.selection_changed.connect(_on_selection_changed)

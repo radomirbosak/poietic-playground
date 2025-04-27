@@ -9,19 +9,29 @@ offset_bottom = 58.0
 size_flags_horizontal = 3
 script = ExtResource("1_sl5ee")
 
-[node name="VBoxContainer" type="GridContainer" parent="."]
+[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="FormContainer" type="GridContainer" parent="VBoxContainer2"]
 layout_mode = 2
 columns = 2
 
-[node name="AllowsNegativeLabel" type="Label" parent="VBoxContainer"]
+[node name="AllowsNegativeLabel" type="Label" parent="VBoxContainer2/FormContainer"]
 layout_mode = 2
 text = "Allows negative"
 
-[node name="AllowsNegativeCheck" type="CheckButton" parent="VBoxContainer"]
+[node name="AllowsNegativeCheck" type="CheckButton" parent="VBoxContainer2/FormContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("3_pu7ig")
 state = 2
 metadata/_custom_type_script = "uid://dq551sb5tha7p"
 
-[connection signal="toggled" from="VBoxContainer/AllowsNegativeCheck" to="." method="_on_allows_negative_check_toggled"]
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer2"]
+layout_mode = 2
+
+[node name="ColorGridContainer" type="GridContainer" parent="."]
+layout_mode = 2
+
+[connection signal="toggled" from="VBoxContainer2/FormContainer/AllowsNegativeCheck" to="." method="_on_allows_negative_check_toggled"]
