@@ -3,16 +3,15 @@ class_name TriStateCheckButton extends CheckButton
 enum State { UNCHECKED, CHECKED, INDETERMINATE }
 @export var state: State = State.UNCHECKED
 
-var on_texture = preload("res://resources/icons/check-button-on@2x.png")
-var off_texture = preload("res://resources/icons/check-button-off@2x.png")
-var indeterminate_texture = preload("res://resources/icons/check-button-indeterminate@2x.png")
+var on_texture = preload("res://resources/icons/check-button-on.png")
+var off_texture = preload("res://resources/icons/check-button-off.png")
+var indeterminate_texture = preload("res://resources/icons/check-button-indeterminate.png")
 
 func _ready():
-	button_pressed = false
+	# button_pressed = false
 	toggle_mode = true
 	add_theme_icon_override("checked", on_texture)
 	add_theme_icon_override("unchecked", off_texture)
-	
 	set_state_no_signal(state)
 
 func set_state_no_signal(new_state: State):
@@ -29,7 +28,11 @@ func set_state_no_signal(new_state: State):
 
 	queue_redraw()
 
+func _pressed():
+	print("PRESSED")
+
 func _toggled(button_pressed: bool):
+	print("TOGGLED")
 	# Convert indeterminate state to checked when clicked
 	if button_pressed:
 		set_state_no_signal(State.CHECKED)

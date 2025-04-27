@@ -4,8 +4,8 @@
 [ext_resource type="Script" uid="uid://dq551sb5tha7p" path="res://gui/tristate_check_button.gd" id="3_pu7ig"]
 
 [node name="StockInspectorTrait" type="PanelContainer"]
-offset_right = 67.0
-offset_bottom = 58.0
+offset_right = 148.0
+offset_bottom = 87.0
 size_flags_horizontal = 3
 script = ExtResource("1_sl5ee")
 
@@ -18,20 +18,22 @@ columns = 2
 
 [node name="AllowsNegativeLabel" type="Label" parent="VBoxContainer2/FormContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Allows negative"
 
 [node name="AllowsNegativeCheck" type="CheckButton" parent="VBoxContainer2/FormContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+icon_alignment = 1
 script = ExtResource("3_pu7ig")
-state = 2
 metadata/_custom_type_script = "uid://dq551sb5tha7p"
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer2"]
 layout_mode = 2
 
-[node name="ColorGridContainer" type="GridContainer" parent="."]
+[node name="ColorGridContainer" type="GridContainer" parent="VBoxContainer2"]
 layout_mode = 2
 
+[connection signal="pressed" from="VBoxContainer2/FormContainer/AllowsNegativeCheck" to="." method="_on_allows_negative_check_pressed"]
 [connection signal="toggled" from="VBoxContainer2/FormContainer/AllowsNegativeCheck" to="." method="_on_allows_negative_check_toggled"]

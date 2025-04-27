@@ -2,9 +2,6 @@ extends InspectorTraitPanel
 
 @onready var allows_negative_check: TriStateCheckButton = %AllowsNegativeCheck
 
-func _ready():
-	pass
-
 func on_selection_changed():
 	var distinct_allow_negative = Global.design.get_distinct_values(selection, "allows_negative")
 	if len(distinct_allow_negative) == 0:
@@ -28,5 +25,4 @@ func update_allows_negative(flag: bool):
 	Global.design.accept(trans)
 
 func _on_allows_negative_check_toggled(toggled_on):
-	print("Toggled negative: ", toggled_on)
 	update_allows_negative(toggled_on)

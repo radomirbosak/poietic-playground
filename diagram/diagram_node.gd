@@ -2,7 +2,7 @@ class_name DiagramNode extends DiagramObject
 # Physics: extends RigidBody2D
 
 const label_offset = 10
-const formula_offset = 45
+const formula_offset = 32
 const default_radius = 50
 const highlight_padding = 5
 

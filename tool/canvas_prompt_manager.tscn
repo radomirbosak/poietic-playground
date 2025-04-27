@@ -16,6 +16,7 @@ visible = false
 
 [node name="ContextMenu" parent="." instance=ExtResource("3_sbbhr")]
 visible = false
+offset_right = 194.0
 
 [node name="LabelPrompt" type="LineEdit" parent="."]
 visible = false
