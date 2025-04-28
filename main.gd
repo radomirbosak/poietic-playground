@@ -19,9 +19,10 @@ const default_window_size = Vector2(1280, 720)
 var design_ctrl: PoieticDesignController
 
 @onready var canvas: DiagramCanvas = $Canvas
-@onready var prompt_manager: CanvasPromptManager = $Gui/CanvasPromptManager
+@onready var prompt_manager: CanvasPromptManager = %Gui/CanvasPromptManager
 
 @onready var inspector_panel: InspectorPanel = %InspectorPanel
+@onready var object_panel: ObjectPanel = %Gui/ObjectPanel
 
 @onready var result_panel: PanelContainer = %ResultPanel
 @onready var player: PoieticPlayer = $SimulationPlayer
@@ -33,6 +34,8 @@ func _init():
 func _ready():
 	$FileDialog.use_native_dialog = true
 	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
+
+	initialize_menu_bar()
 		
 	load_settings()
 	get_viewport().connect("size_changed", _on_window_resized)
@@ -66,14 +69,23 @@ func _ready():
 	
 	print("Done initializing main.")
 
+func initialize_menu_bar():
+	# TODO: Not sure what is going on here. On Ubuntu the menu is not displayed.
+	if DisplayServer.has_feature(DisplayServer.FEATURE_GLOBAL_MENU):
+		%MenuBar.prefer_global_menu = true
+		print("Using system's native main menu")
+		return
+	print("Using Godot's built-in main menu")
+	%MenuBar.prefer_global_menu = false
+
 func initialize_tools():
-	$Gui/ObjectPanel.hide()
+	object_panel.hide()
 	Global.selection_tool.initialize(canvas, design_ctrl, prompt_manager)
-	Global.selection_tool.object_panel = $Gui/ObjectPanel
+	Global.selection_tool.object_panel = object_panel
 	Global.place_tool.initialize(canvas, design_ctrl, prompt_manager)
-	Global.place_tool.object_panel = $Gui/ObjectPanel
+	Global.place_tool.object_panel = object_panel
 	Global.connect_tool.initialize(canvas, design_ctrl, prompt_manager)
-	Global.connect_tool.object_panel = $Gui/ObjectPanel
+	Global.connect_tool.object_panel = object_panel
 
 func _initialize_main_menu():
 	# Add working shortcuts here
@@ -198,7 +210,7 @@ func update_status_text():
 	text += "Design issues: " + str(stats["design_issues"])
 	text += " / object issues: " + str(stats["object_issues"])
 	text += " | zoom: " + str(int(canvas.zoom_level * 100)) + "%"
-	$Gui/StatusText.text = text
+	%Gui/StatusText.text = text
 
 func _on_window_resized():
 	save_settings()
@@ -224,10 +236,10 @@ func load_settings():
 		)
 
 	if config.get_value("inspector", "visible", true):
-		$MenuBar/ViewMenu.set_item_checked(0, true)
+		%MenuBar/ViewMenu.set_item_checked(0, true)
 		inspector_panel.show()
 	else:
-		$MenuBar/ViewMenu.set_item_checked(0, false)
+		%MenuBar/ViewMenu.set_item_checked(0, false)
 		inspector_panel.hide()
 		
 	var last_path = config.get_value("design", "last_opened_path")
@@ -393,19 +405,19 @@ func edit_name():
 func toggle_inspector():
 	if inspector_panel.visible:
 		inspector_panel.hide()
-		$MenuBar/ViewMenu.set_item_checked(0, false)
+		%MenuBar/ViewMenu.set_item_checked(0, false)
 	else:
-		$MenuBar/ViewMenu.set_item_checked(0, true)
+		%MenuBar/ViewMenu.set_item_checked(0, true)
 		inspector_panel.show()
 	save_settings()
 
 func toggle_value_indicators():
 	if Global.show_value_indicators:
 		Global.show_value_indicators = false
-		$MenuBar/ViewMenu.set_item_checked(2, false)
+		%MenuBar/ViewMenu.set_item_checked(2, false)
 	else:
 		Global.show_value_indicators = true
-		$MenuBar/ViewMenu.set_item_checked(2, true)
+		%MenuBar/ViewMenu.set_item_checked(2, true)
 	save_settings()
 
 func zoom_actual():

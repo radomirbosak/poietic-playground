@@ -13,74 +13,16 @@
 [node name="Main" type="Node2D"]
 script = ExtResource("1_2q6io")
 
-[node name="Gui" type="Node" parent="."]
-
-[node name="MainBar" parent="Gui" instance=ExtResource("2_kek77")]
-
-[node name="PlayerControlBar" parent="Gui" instance=ExtResource("7_kek77")]
-unique_name_in_owner = true
-
-[node name="ToolBar" parent="Gui" instance=ExtResource("3_qq1bh")]
-anchors_preset = 0
-anchor_top = 0.0
-anchor_bottom = 0.0
-offset_top = 161.0
-offset_bottom = 269.0
-grow_vertical = 1
-
-[node name="StatusText" type="Label" parent="Gui"]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -561.0
-offset_top = -198.0
-offset_bottom = -154.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_font_sizes/font_size = 12
-text = "Text"
-horizontal_alignment = 2
-
-[node name="InspectorPanel" parent="Gui" instance=ExtResource("4_uq7uj")]
-unique_name_in_owner = true
-offset_left = -240.0
-offset_top = -172.0
-offset_bottom = 132.0
-
-[node name="ObjectPanel" parent="Gui" instance=ExtResource("5_4c57u")]
-anchors_preset = 0
-anchor_top = 0.0
-anchor_bottom = 0.0
-offset_top = 335.0
-offset_bottom = 455.0
-grow_vertical = 1
-
-[node name="CanvasPromptManager" parent="Gui" instance=ExtResource("6_272bh")]
-
-[node name="BottomPanel" type="PanelContainer" parent="Gui"]
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -150.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="ResultPanel" parent="Gui/BottomPanel" instance=ExtResource("5_272bh")]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Canvas" type="Node2D" parent="."]
-script = ExtResource("2_lulh0")
-
-[node name="FileDialog" type="FileDialog" parent="."]
-
 [node name="MenuBar" type="MenuBar" parent="."]
-visible = false
-offset_right = 40.0
-offset_bottom = 40.0
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 452.0
+offset_top = 1.0
+offset_right = 711.0
+offset_bottom = 31.0
+grow_horizontal = 2
 
 [node name="FileMenu" type="PopupMenu" parent="MenuBar"]
 title = "File"
@@ -152,14 +94,79 @@ item_2/text = "Show value indicators"
 item_2/checkable = 1
 item_2/id = 2
 
+[node name="Gui" type="Node" parent="."]
+unique_name_in_owner = true
+
+[node name="MainBar" parent="Gui" instance=ExtResource("2_kek77")]
+
+[node name="PlayerControlBar" parent="Gui" instance=ExtResource("7_kek77")]
+unique_name_in_owner = true
+
+[node name="ToolBar" parent="Gui" instance=ExtResource("3_qq1bh")]
+anchors_preset = 0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_top = 161.0
+offset_bottom = 269.0
+grow_vertical = 1
+
+[node name="StatusText" type="Label" parent="Gui"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -561.0
+offset_top = -198.0
+offset_bottom = -154.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 12
+text = "Text"
+horizontal_alignment = 2
+
+[node name="InspectorPanel" parent="Gui" instance=ExtResource("4_uq7uj")]
+unique_name_in_owner = true
+offset_left = -240.0
+offset_top = -172.0
+offset_bottom = 132.0
+
+[node name="ObjectPanel" parent="Gui" instance=ExtResource("5_4c57u")]
+anchors_preset = 0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_top = 335.0
+offset_bottom = 455.0
+grow_vertical = 1
+
+[node name="CanvasPromptManager" parent="Gui" instance=ExtResource("6_272bh")]
+
+[node name="BottomPanel" type="PanelContainer" parent="Gui"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -150.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ResultPanel" parent="Gui/BottomPanel" instance=ExtResource("5_272bh")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Canvas" type="Node2D" parent="."]
+script = ExtResource("2_lulh0")
+
+[node name="FileDialog" type="FileDialog" parent="."]
+
 [node name="SimulationPlayer" type="PoieticPlayer" parent="."]
 step_duration = 0.01
 
-[connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
-[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
-[connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
 [connection signal="id_pressed" from="MenuBar/FileMenu" to="." method="_on_file_menu_id_pressed"]
 [connection signal="id_pressed" from="MenuBar/EditMenu" to="." method="_on_edit_menu_id_pressed"]
 [connection signal="id_pressed" from="MenuBar/DiagramMenu" to="." method="_on_diagram_menu_id_pressed"]
 [connection signal="id_pressed" from="MenuBar/ViewMenu" to="." method="_on_view_menu_id_pressed"]
+[connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
 [connection signal="simulation_player_step" from="SimulationPlayer" to="." method="_on_simulation_player_step"]
