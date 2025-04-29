@@ -6,7 +6,7 @@ BUILD_PATH=poietic-godot/.build/debug
 
 git submodule update --init --recursive
 
-pushd $(pwd) > /dev/null
+pushd "$(pwd)" > /dev/null
 cd poietic-godot
 swift build
 popd
