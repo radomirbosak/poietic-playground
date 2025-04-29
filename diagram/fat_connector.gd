@@ -1,5 +1,7 @@
 class_name FatConnector extends Connector
 
+const outline_offset = 2.0
+
 ## Shape of the arrow head, at the target point.
 @export var head_type: ArrowheadType = ArrowheadType.REGULAR:
 	set(value):
@@ -114,6 +116,6 @@ func arrow_polygons() -> Array[PackedVector2Array]:
 func selection_outline(width: float = selection_outline_width) -> Array[PackedVector2Array]:
 	var polygons: Array[PackedVector2Array] = []
 	for poly in arrow_polygons():
-		var offset = Geometry2D.offset_polygon(poly, width, Geometry2D.JOIN_ROUND)
+		var offset = Geometry2D.offset_polygon(poly, outline_offset, Geometry2D.JOIN_ROUND)
 		polygons.append_array(offset)
 	return polygons

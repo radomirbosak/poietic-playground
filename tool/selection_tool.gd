@@ -29,6 +29,7 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 		state = SelectToolState.OBJECT_SELECT
 		return true
 
+	print("TARGET: ", target, " TYPE: ", target.type)
 	match target.type:
 		DiagramCanvas.HitTargetType.OBJECT:
 			var object: DiagramObject = target.object as DiagramObject

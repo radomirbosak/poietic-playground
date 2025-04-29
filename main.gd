@@ -86,6 +86,8 @@ func initialize_tools():
 	Global.place_tool.object_panel = object_panel
 	Global.connect_tool.initialize(canvas, design_ctrl, prompt_manager)
 	Global.connect_tool.object_panel = object_panel
+	Global.pan_tool.initialize(canvas, design_ctrl, prompt_manager)
+	Global.pan_tool.object_panel = object_panel
 
 func _initialize_main_menu():
 	# Add working shortcuts here
@@ -142,6 +144,11 @@ func _unhandled_input(event):
 		Global.change_tool(Global.place_tool)
 	elif event.is_action_pressed("connect-tool"):
 		Global.change_tool(Global.connect_tool)
+	elif event.is_action_pressed("pan-tool"):
+		if Global.current_tool is PanTool:
+			Global.change_tool(Global.previous_tool)
+		else:
+			Global.change_tool(Global.pan_tool)
 
 	# File
 	elif event.is_action_pressed("new-design"):

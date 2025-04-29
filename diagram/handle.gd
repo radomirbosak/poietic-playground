@@ -2,7 +2,7 @@ class_name Handle extends Node2D
 
 const touch_shape_radius = 10
 
-@export var size: float = 20:
+@export var size: float = 10:
 	set(value):
 		size = value
 		circle.radius = size / 2
@@ -28,7 +28,7 @@ func _init():
 	shape.radius = size / 2
 	circle = Circle2D.new()
 	circle.radius = shape.radius
-	circle.width = 4
+	circle.width = 2
 	circle.color = outline_color
 	circle.fill_color = color
 	circle.filled = true

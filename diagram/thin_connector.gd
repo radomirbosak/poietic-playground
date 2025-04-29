@@ -55,7 +55,7 @@ func _draw():
 		for points in polylines:
 			if len(points) < 2:
 				continue
-			draw_polyline(points,  outline_color, outline_width * 2, true)
+			draw_polyline(points,  outline_color, outline_width, true)
 	for points in polylines:
 		if len(points) < 2:
 			continue

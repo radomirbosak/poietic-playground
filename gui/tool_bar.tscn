@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://l7uejktm712d"]
+[gd_scene load_steps=8 format=3 uid="uid://l7uejktm712d"]
 
 [ext_resource type="Script" uid="uid://b4ejxps4pdjfo" path="res://gui/tool_bar.gd" id="1_kmcp4"]
 [ext_resource type="Texture2D" uid="uid://dkstlplra76ek" path="res://resources/icons/white/select.png" id="4_sgvfb"]
+[ext_resource type="Texture2D" uid="uid://bjknep42b1b0p" path="res://resources/icons/white/hand.png" id="5_vabnl"]
 [ext_resource type="Texture2D" uid="uid://dyo6l5ny3ler4" path="res://resources/icons/white/place.png" id="6_ac1f5"]
 [ext_resource type="Texture2D" uid="uid://x0r31pdutv1s" path="res://resources/icons/white/connect.png" id="7_bicm0"]
 
@@ -36,7 +37,8 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-tooltip_text = "Select Objects"
+tooltip_text = "Select Objects (1): Select and move objects on canvas"
+focus_mode = 0
 theme_type_variation = &"SelectableToolbarItem"
 toggle_mode = true
 button_pressed = true
@@ -49,7 +51,8 @@ expand_icon = true
 unique_name_in_owner = true
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-tooltip_text = "Place Objects"
+tooltip_text = "Place Objects (2): Place nodes on canvas"
+focus_mode = 0
 theme_type_variation = &"SelectableToolbarItem"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_0m4ov")
@@ -61,7 +64,8 @@ expand_icon = true
 unique_name_in_owner = true
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-tooltip_text = "Connect"
+tooltip_text = "Connect (3): Create connectors between nodes"
+focus_mode = 0
 theme_type_variation = &"SelectableToolbarItem"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_0m4ov")
@@ -69,6 +73,23 @@ icon = ExtResource("7_bicm0")
 icon_alignment = 1
 expand_icon = true
 
+[node name="HSeparator" type="HSeparator" parent="Container/ToolContainer"]
+layout_mode = 2
+
+[node name="PanToolButton" type="Button" parent="Container/ToolContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+tooltip_text = "Pan (Space): Drag canvas around"
+focus_mode = 0
+theme_type_variation = &"SelectableToolbarItem"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_0m4ov")
+icon = ExtResource("5_vabnl")
+icon_alignment = 1
+expand_icon = true
+
 [connection signal="pressed" from="Container/ToolContainer/SelectionToolButton" to="." method="_on_selection_tool_button_pressed"]
 [connection signal="pressed" from="Container/ToolContainer/PlaceToolButton" to="." method="_on_place_tool_button_pressed"]
 [connection signal="pressed" from="Container/ToolContainer/ConnectToolButton" to="." method="_on_connect_tool_button_pressed"]
+[connection signal="pressed" from="Container/ToolContainer/PanToolButton" to="." method="_on_pan_tool_button_pressed"]
