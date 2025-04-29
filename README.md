@@ -55,3 +55,7 @@ The `build` script does the following:
 ## Authors
 
 - [Stefan Urbanek](mailto:stefan.urbanek@gmail.com)
+
+### Contributors
+
+- Radomír Bosák
