@@ -34,6 +34,8 @@ gdscript/warnings/shadowed_global_identifier=0
 window/size/viewport_width=1280
 window/size/viewport_height=960
 window/size/initial_position_type=0
+window/energy_saving/keep_screen_on=false
+window/subwindows/embed_subwindows=false
 window/stretch/aspect="ignore"
 window/dpi/allow_hidpi=false
 

@@ -4,6 +4,10 @@ class_name SelectionTool extends CanvasTool
 # 1. Selection -> Handles
 # 2. Objects
 # 3. Prompts
+# Canvas should sort by (is selected?, z-index, target type)
+# Where:
+# selected > not selected
+# handle > object > prompt
 
 var last_pointer_position = Vector2()
 enum SelectToolState {
@@ -29,7 +33,7 @@ func input_began(event: InputEvent, pointer_position: Vector2) -> bool:
 		state = SelectToolState.OBJECT_SELECT
 		return true
 
-	print("TARGET: ", target, " TYPE: ", target.type)
+	print("TARGET: ", target, " TYPE: ", target.type, " (debugging pictogram hit)")
 	match target.type:
 		DiagramCanvas.HitTargetType.OBJECT:
 			var object: DiagramObject = target.object as DiagramObject

@@ -32,6 +32,11 @@ func _init():
 	pass
 
 func _ready():
+	prints("Screen DPI:", DisplayServer.screen_get_dpi(), 
+			"scale:",  DisplayServer.screen_get_scale(),
+			"max scale:", DisplayServer.screen_get_max_scale(),
+			"usable rect:", DisplayServer.screen_get_usable_rect().size)
+	
 	$FileDialog.use_native_dialog = true
 	$FileDialog.access = FileDialog.Access.ACCESS_FILESYSTEM
 
