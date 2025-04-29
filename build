@@ -12,5 +12,5 @@ swift build
 popd
 
 echo Copying to ${INSTALL_PATH}
-cp ${BUILD_PATH}/*.dylib  ${INSTALL_PATH}
+cp ${BUILD_PATH}/*.{dylib,so} ${INSTALL_PATH} 2>/dev/null || true
 
