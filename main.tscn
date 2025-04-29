@@ -17,6 +17,7 @@ script = ExtResource("1_2q6io")
 [node name="Gui" type="Node" parent="."]
 
 [node name="MainBar" parent="Gui" instance=ExtResource("2_kek77")]
+visible = false
 
 [node name="PlayerControlBar" parent="Gui" instance=ExtResource("7_kek77")]
 unique_name_in_owner = true
@@ -99,9 +100,9 @@ script = ExtResource("2_lulh0")
 [node name="FileDialog" type="FileDialog" parent="."]
 
 [node name="MenuBar" type="MenuBar" parent="."]
-visible = false
 offset_right = 40.0
 offset_bottom = 40.0
+prefer_global_menu = false
 
 [node name="FileMenu" type="PopupMenu" parent="MenuBar"]
 title = "File"

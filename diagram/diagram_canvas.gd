@@ -198,6 +198,7 @@ func sync_indicators(result: PoieticResult):
 				
 	
 func _unhandled_input(event):
+	print(event)
 	if event is InputEventPanGesture:
 		canvas_offset += (-event.delta) * zoom_level * 10
 		update_canvas_view()
