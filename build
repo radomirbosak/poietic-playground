@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 INSTALL_PATH=bin
@@ -6,11 +6,11 @@ BUILD_PATH=poietic-godot/.build/debug
 
 git submodule update --init --recursive
 
-pushd $(pwd) > /dev/null
+pushd "$(pwd)" > /dev/null
 cd poietic-godot
 swift build
 popd
 
 echo Copying to ${INSTALL_PATH}
-cp ${BUILD_PATH}/*.dylib  ${INSTALL_PATH}
+cp ${BUILD_PATH}/*.{dylib,so} ${INSTALL_PATH} 2>/dev/null || true
 
