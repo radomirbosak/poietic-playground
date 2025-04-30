@@ -127,11 +127,7 @@ func selection_outline(width: float = selection_outline_width) -> Array[PackedVe
 			var out = Geometry2D.offset_polyline(points, width, Geometry2D.JOIN_ROUND, Geometry2D.END_ROUND)
 			result.append_array(out)
 
-	if len(result) > 1:
-		var combined = result[0]
-		for index in range(1, len(result)):
-			combined = Geometry2D.merge_polygons(combined, result[index])
-		result = combined
+	return DiagramGeometry.merge_polygons(result)
 
 	return result
 
@@ -231,84 +227,3 @@ func create_arrowhead(head_point: Vector2, direction: Vector2, size: float = 10.
 	curves.append(curve)
 	var arrowhead = Arrowhead.new(curves, get_touch_point_offset(size,type))
 	return arrowhead
-
-## Get a polygon underneath the arrowhead
-#func create_arrowhead_mask(head_point: Vector2, direction: Vector2, size: float = 10.0, type: ArrowheadType = ArrowheadType.STICK) -> PackedVector2Array:
-	#const line_width: float = 1.0
-	#var curve = Curve2D.new()
-	#var perpendicular = direction.orthogonal()
-	#
-	#match type:
-		#ArrowheadType.NONE:
-			#pass
-		#ArrowheadType.STICK:
-			#var point1 = head_point - (direction * size * 1.5) + (perpendicular * size/2)
-			#var point2 = head_point - (direction * size * 1.5) - (perpendicular * size/2)
-			#curve.add_point(point1)
-			#curve.add_point(head_point)
-			#curve.add_point(point2)
-			#curve.add_point(point1)
-		#
-		#ArrowheadType.DIAMOND:
-			#var back = head_point - direction * size 
-			#var side1 = head_point - direction * (size / 2) + perpendicular * (size/2)
-			#var side2 = head_point - direction * (size / 2) - perpendicular * (size/2)
-			#curve.add_point(side1)
-			#curve.add_point(head_point)
-			#curve.add_point(side2)
-			#curve.add_point(back)
-			#curve.add_point(side1)
-		#
-		#ArrowheadType.BOX:
-			#var c1 = head_point - perpendicular * (size / 2)
-			#var c2 = c1 - direction * size
-			#var c3 = c2 + perpendicular * size
-			#var c4 = c3 + direction * size
-			#curve.add_point(c1)
-			#curve.add_point(c2)
-			#curve.add_point(c3)
-			#curve.add_point(c4)
-			#curve.add_point(c1)
-		#
-		#ArrowheadType.BAR:
-			#var point1 = head_point - direction * (size / 2) - perpendicular * (size / 2)
-			#var point2 = head_point - direction * (size / 2) + perpendicular * (size / 2)
-			#curve.add_point(point1 + direction * line_width)
-			#curve.add_point(point1 - direction * line_width)
-			#curve.add_point(point2 - direction * line_width)
-			#curve.add_point(point2 + direction * line_width)
-			#curve.add_point(point1 + direction * line_width)
-#
-		#ArrowheadType.NEGATIVE:
-			#var point1 = head_point - perpendicular * (size / 2)
-			#var point2 = head_point + perpendicular * (size / 2)
-			#curve.add_point(point1 + direction * line_width)
-			#curve.add_point(point1 - direction * line_width)
-			#curve.add_point(point2 - direction * line_width)
-			#curve.add_point(point2 + direction * line_width)
-			#curve.add_point(point1 + direction * line_width)
-		#
-		#ArrowheadType.NON_NAVIGABLE:  # X-shaped
-			#var c1 = head_point - direction * (size) - perpendicular * (size / 2)
-			#var c2 = c1 - direction * size
-			#var c3 = c2 + perpendicular * size
-			#var c4 = c3 + direction * size
-			## TODO: Fix this curve
-			#curve.add_point(c1)
-			#curve.add_point(c3)
-			#curve.add_point(c4)
-			#curve.add_point(c2)
-			#curve.add_point(c1)
-		#
-		#ArrowheadType.BALL:
-			#var radius = size / 2
-			#var centre = head_point - direction * radius
-			#curve = create_circle_curve(centre, radius)
-	#
-		#ArrowheadType.BALL_CENTER:
-			#var radius = size / 2
-			#var centre = head_point
-			#curve = create_circle_curve(centre, radius)
-#
-	#return curve.tesselate()
-	#

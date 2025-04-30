@@ -39,7 +39,7 @@ func initialize(design: PoieticDesignController, player: PoieticPlayer):
 static func _load_pictograms():
 	# TODO: Adjust the scales based on the rules for the pictogram sizes (not yet defined)
 	var circle = CircleShape2D.new()
-	circle.radius = Pictogram.tile_size / 2.0
+	circle.radius = Pictogram.tile_size * 0.6
 	var square = RectangleShape2D.new()
 	square.size = Vector2(Pictogram.tile_size, Pictogram.tile_size)
 	var rectangle = RectangleShape2D.new()

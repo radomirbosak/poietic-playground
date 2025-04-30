@@ -252,3 +252,23 @@ static func convex_hull_from_rects(rects: Array[Rect2]) -> PackedVector2Array:
 		points.append(rect.position + Vector2(0, rect.size.y))
 	
 	return Geometry2D.convex_hull(points)
+
+static func merge_polygons(polygons: Array[PackedVector2Array]) -> Array[PackedVector2Array]:
+	var merged: Array[PackedVector2Array] = []
+	var to_process: Array[PackedVector2Array] = polygons.duplicate()
+
+	while to_process.size() > 0:
+		var current = to_process.pop_back()
+		var merged_this_round = false
+		
+		for i in range(merged.size()):
+			var merge_result = Geometry2D.merge_polygons(current, merged[i])
+			if merge_result.size() == 1:
+				merged[i] = merge_result[0]
+				merged_this_round = true
+				break
+		
+		# If couldn't merge, add as new polygon
+		if not merged_this_round:
+			merged.append(current)
+	return merged

@@ -2,7 +2,7 @@
 ##
 class_name Connector extends Node2D
 
-const selection_outline_width: float = 5
+const selection_outline_width: float = 4
 
 @export var origin_point: Vector2 = Vector2():
 	set(value):

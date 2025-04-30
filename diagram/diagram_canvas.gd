@@ -254,8 +254,39 @@ func set_charts_visible(flag: bool):
 ## See also: `hit_object(hit_position)`
 ##
 func hit_target(hit_position: Vector2) -> HitTarget:
-	var target: HitTarget = null
+	var targets: Array[HitTarget] = []
 	
+	for child in get_children():
+		if child is not DiagramObject:
+			continue
+
+		for handle in child.get_handles():
+			if handle.visible and handle.contains_point(hit_position):
+				targets.append(HitTarget.new(HitTargetType.HANDLE, handle))
+			
+		if child is DiagramNode and child.issues_indicator.visible:
+			if child.issues_indicator.get_rect().has_point(child.to_local(hit_position)):
+				targets.append(HitTarget.new(HitTargetType.ERROR_INDICATOR, child))
+
+		if child is DiagramNode and child.name_label.visible:
+			if child.name_label.get_rect().has_point(child.to_local(hit_position)):
+				targets.append(HitTarget.new(HitTargetType.NAME, child))
+
+			if child.formula_label.get_rect().has_point(child.to_local(hit_position)):
+				targets.append(HitTarget.new(HitTargetType.PRIMARY_ATTRIBUTE, child))
+
+		if child.contains_point(hit_position):
+			targets.append(HitTarget.new(HitTargetType.OBJECT, child))
+
+	prints("Targets: ", targets)
+	if targets.is_empty():
+		return null
+	else:
+		return targets[0]
+	
+func old_hit_target(hit_position: Vector2) -> HitTarget:
+	var target: HitTarget = null
+
 	for child in get_children():
 		if child is not DiagramObject:
 			continue
@@ -271,6 +302,7 @@ func hit_target(hit_position: Vector2) -> HitTarget:
 			if child.issues_indicator.get_rect().has_point(child.to_local(hit_position)):
 				target = HitTarget.new(HitTargetType.ERROR_INDICATOR, child)
 				break
+
 		if child is DiagramNode and child.name_label.visible:
 			if child.name_label.get_rect().has_point(child.to_local(hit_position)):
 				target = HitTarget.new(HitTargetType.NAME, child)
@@ -284,7 +316,7 @@ func hit_target(hit_position: Vector2) -> HitTarget:
 				break   # No handles are visible, no need to test them
 
 	return target
-	
+
 ## Returns an object under given position.
 ##
 ## See also: `hit_target(hit_position)`

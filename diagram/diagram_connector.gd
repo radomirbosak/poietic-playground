@@ -140,7 +140,7 @@ func update_connector():
 	
 	connector.set_endpoints(arrow_origin + origin_offset, arrow_target + target_offset)
 	
-	touchable_outline = connector.selection_outline(10)
+	touchable_outline = connector.selection_outline()
 
 	update_midpoint_handles()
 	update_selection()
